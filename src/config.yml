@@ -1,0 +1,66 @@
+# Copyright DarkBlade12 - All rights reserved.
+# DarkBlade12 is the developer and respective owner of this plugin.
+
+# This section contains general plugin settings
+General_Settings:
+
+ # Determines whether the debug mode is enabled (prints error stacktraces in the console)
+ # You should only set this to 'true' if you have some problems you can't solve
+ Debug_Mode_Enabled: false
+ 
+ # This is the ending of the language file name that will be loaded
+ # ItemSlotMachine will attempt to load 'lang_<name>.txt'
+ # Built-in names are 'EN' for English and 'DE' for German
+ Language_Name: EN
+
+# This section contains general slot machine settings
+Slot_Machine_Settings:
+
+ # This is the default name for slot machines that will be used for generating ids
+ # This string has to contain <num> otherwise it'll automatically add this to the end of this name
+ # Please note: <num> can't be in the middle of the name
+ Default_Name: slot<num>
+ 
+ # This section contains settings for the space check upon attempting to build a slot machine
+ # The space check will deny building of the slot machine if it finds any block in the area of the slot machine that is not air and not on the ignored blocks list
+ Space_Check:
+ 
+  # Determines whether the space check is enabled
+  # If this is set to false building a slot machine will replace EVERY block
+  Enabled: true
+  
+  # This is a list of blocks which are ignored in the space check
+  # Block format: <block_id/block_name>
+  # Format: <block>(, <block>...)
+  Ignored_Blocks: 78, 31
+ 
+ # This section contains settings for the coin which is used to activate a slot machine
+ Coin_Settings:
+  
+  # This is the item that will be used as coin
+  # Item format: <item_id/item_name> OR <item_id/item_name>-<data>
+  Item: 371
+  
+  # Determines whether only the renamed coin item can be used to activate a slot machine
+  Common_Item_Enabled: false
+  
+  # This is the price for a single coin which is important for purchasing coins
+  # This value can be either a point number or a normal number
+  Price: 100
+ 
+ # This section contains settings for the limited usage of slot machines
+ Limited_Usage:
+ 
+  # Determines whether limited use is enabled
+  Enabled: true
+  
+  # This is the maximum amount of slot machines that can be used by ONE player at once
+  Amount: 1
+ 
+# This section contains general design settings
+Design_Settings:
+
+ # This is the default name for designs that will be used for generating ids
+ # This string has to contain <num> otherwise it'll automatically add this to the end of this name
+ # Please note: <num> can't be in the middle of the name
+ Default_Name: design<num>
