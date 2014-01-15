@@ -349,17 +349,17 @@ public abstract class SlotMachineBase implements Nameable {
 				ItemStack s = c[i];
 				if (s != null && plugin.coinManager.isCoin(s)) {
 					int amount = s.getAmount();
-					if (a == 0) {
-						return;
-					} else if (amount > a) {
+					if (amount > a) {
 						s.setAmount(amount - a);
-						return;
+						break;
 					} else if (amount == a) {
 						s.setType(Material.AIR);
-						return;
+						break;
 					} else if (a > amount) {
 						s.setType(Material.AIR);
 						a -= amount;
+						if (a == 0)
+							break;
 					}
 					c[i] = s;
 				}
