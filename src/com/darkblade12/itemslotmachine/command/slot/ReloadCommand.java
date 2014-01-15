@@ -14,7 +14,7 @@ public final class ReloadCommand implements ICommand {
 	public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
 		if (params.length == 0) {
 			long check = System.currentTimeMillis();
-			plugin.reload();
+			plugin.onReload();
 			sender.sendMessage(plugin.messageManager.plugin_reloaded(System.currentTimeMillis() - check));
 		} else {
 			SlotMachine s = plugin.slotMachineManager.getSlotMachine(params[0]);

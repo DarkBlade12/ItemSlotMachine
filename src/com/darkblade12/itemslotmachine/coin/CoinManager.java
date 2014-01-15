@@ -35,11 +35,11 @@ public final class CoinManager extends Manager {
 
 	public CoinManager(ItemSlotMachine plugin) {
 		super(plugin);
-		initialize();
+		onInitialize();
 	}
 
 	@Override
-	public boolean initialize() {
+	public boolean onInitialize() {
 		coin = Settings.isCommonCoinItemEnabled() ? Settings.getCoinItem() : ItemFactory.setNameAndLore(Settings.getCoinItem(), plugin.messageManager.coin_name(), plugin.messageManager.coin_lore());
 		lastShop = new ConcurrentHashMap<String, SafeLocation>();
 		shopCoins = new HashMap<String, Integer>();
@@ -64,7 +64,7 @@ public final class CoinManager extends Manager {
 	}
 
 	@Override
-	public void disable() {
+	public void onDisable() {
 		task.cancel();
 		unregisterListener();
 	}

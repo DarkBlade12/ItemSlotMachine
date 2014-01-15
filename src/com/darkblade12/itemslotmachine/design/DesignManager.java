@@ -37,11 +37,11 @@ public final class DesignManager extends Manager implements NameGenerator {
 
 	public DesignManager(ItemSlotMachine plugin) {
 		super(plugin);
-		initialize();
+		onInitialize();
 	}
 
 	@Override
-	public boolean initialize() {
+	public boolean onInitialize() {
 		WAND = ItemFactory.setNameAndLore(new ItemStack(Material.BONE), plugin.messageManager.design_wand_name(), plugin.messageManager.design_wand_lore());
 		comparator = new NameableComparator<Design>(Settings.getRawDesignName());
 		loadDesigns();
@@ -51,7 +51,7 @@ public final class DesignManager extends Manager implements NameGenerator {
 	}
 
 	@Override
-	public void disable() {
+	public void onDisable() {
 		unregisterListener();
 	}
 

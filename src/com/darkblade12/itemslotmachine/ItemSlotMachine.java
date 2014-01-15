@@ -60,7 +60,7 @@ public final class ItemSlotMachine extends JavaPlugin {
 		if (vaultHook.load())
 			l.info("Vault hooked, money distribution is active.");
 		messageManager = new MessageManager(this);
-		if (!messageManager.initialize())
+		if (!messageManager.onInitialize())
 			return;
 		designManager = new DesignManager(this);
 		coinManager = new CoinManager(this);
@@ -78,8 +78,25 @@ public final class ItemSlotMachine extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		if (slotMachineManager != null)
-			slotMachineManager.disable();
+			slotMachineManager.onDisable();
 		l.info("Gambling system deactivated!");
+	}
+
+	public void onReload() {
+		try {
+			settings.reload();
+		} catch (Exception e) {
+			l.warning("An error occurred while loading the settings from config.yml, plugin will disable! Cause: " + e.getMessage());
+			if (Settings.isDebugModeEnabled())
+				e.printStackTrace();
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		if (!messageManager.onReload())
+			return;
+		designManager.onReload();
+		coinManager.onReload();
+		slotMachineManager.onReload();
 	}
 
 	public Configuration loadConfig() {
@@ -104,22 +121,5 @@ public final class ItemSlotMachine extends JavaPlugin {
 			if (Settings.isDebugModeEnabled())
 				e.printStackTrace();
 		}
-	}
-
-	public void reload() {
-		try {
-			settings.reload();
-		} catch (Exception e) {
-			l.warning("An error occurred while loading the settings from config.yml, plugin will disable! Cause: " + e.getMessage());
-			if (Settings.isDebugModeEnabled())
-				e.printStackTrace();
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-		if (!messageManager.initialize())
-			return;
-		designManager.reload();
-		coinManager.reload();
-		slotMachineManager.reload();
 	}
 }

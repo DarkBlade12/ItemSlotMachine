@@ -15,13 +15,13 @@ public abstract class Manager implements Listener {
 		this.plugin = plugin;
 	}
 
-	public abstract boolean initialize();
+	public abstract boolean onInitialize();
 
-	public abstract void disable();
+	public abstract void onDisable();
 
-	public void reload() {
-		disable();
-		initialize();
+	public boolean onReload() {
+		onDisable();
+		return onInitialize();
 	}
 
 	protected void registerListener() {

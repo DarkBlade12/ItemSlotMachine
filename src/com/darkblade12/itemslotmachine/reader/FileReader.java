@@ -38,10 +38,9 @@ public abstract class FileReader {
 		new File(outputPath).mkdirs();
 		try {
 			OutputStream out = new FileOutputStream(outputFile);
-			byte[] buf = new byte[1024];
-			int len;
-			while ((len = in.read(buf)) > 0)
-				out.write(buf, 0, len);
+			byte[] buffer = new byte[1024];
+			for (int length = in.read(buffer); length > 0; length = in.read(buffer))
+				out.write(buffer, 0, length);
 			out.close();
 			in.close();
 			return true;

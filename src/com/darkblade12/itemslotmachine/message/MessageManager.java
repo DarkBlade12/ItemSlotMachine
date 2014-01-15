@@ -57,7 +57,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 	}
 
 	@Override
-	public boolean initialize() {
+	public boolean onInitialize() {
 		String fileName = "lang_" + Settings.getLanguageName() + ".txt";
 		textReader = new TextReader(plugin, fileName, "plugins/ItemSlotMachine/");
 		if (!textReader.readFile()) {
@@ -72,7 +72,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 	}
 
 	@Override
-	public void disable() {}
+	public void onDisable() {}
 
 	private boolean loadMessages() {
 		messages = new HashMap<String, String>();

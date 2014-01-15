@@ -45,11 +45,11 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 
 	public SlotMachineManager(ItemSlotMachine plugin) {
 		super(plugin);
-		initialize();
+		onInitialize();
 	}
 
 	@Override
-	public boolean initialize() {
+	public boolean onInitialize() {
 		comparator = new NameableComparator<SlotMachine>(Settings.getRawSlotMachineName());
 		loadSlotMachines();
 		registerListener();
@@ -57,7 +57,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 	}
 
 	@Override
-	public void disable() {
+	public void onDisable() {
 		unregisterListener();
 		for (int i = 0; i < slotMachines.size(); i++)
 			slotMachines.get(i).deactivate();

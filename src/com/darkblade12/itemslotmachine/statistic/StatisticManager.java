@@ -21,17 +21,17 @@ public final class StatisticManager extends Manager {
 
 	public StatisticManager(ItemSlotMachine plugin) {
 		super(plugin);
-		initialize();
+		onInitialize();
 	}
 
 	@Override
-	public boolean initialize() {
+	public boolean onInitialize() {
 		loadStatistics();
 		return true;
 	}
 
 	@Override
-	public void disable() {}
+	public void onDisable() {}
 
 	public void loadStatistics() {
 		statistics = new NameableList<PlayerStatistic>(true);
