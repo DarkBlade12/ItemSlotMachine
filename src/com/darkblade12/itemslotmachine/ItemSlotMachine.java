@@ -21,7 +21,6 @@ import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 
 public final class ItemSlotMachine extends JavaPlugin {
-	public static final String PREFIX = "§7§l[§2Item§eSlotMachine§7§l] §r";
 	public static final String MASTER_PERMISSION = "ItemSlotMachine.*";
 	public Logger l;
 	private Settings settings;

@@ -1,6 +1,11 @@
 package com.darkblade12.itemslotmachine.message;
 
 public abstract interface MessageContainer {
+
+	public abstract String plugin_prefix();
+
+	public abstract String plugin_reloaded(String version, long time);
+
 	public abstract String command_no_console_executor();
 
 	public abstract String command_no_permission();
@@ -212,6 +217,4 @@ public abstract interface MessageContainer {
 	public abstract String won_money();
 
 	public abstract String won_items();
-
-	public abstract String plugin_reloaded(String version, long time);
 }

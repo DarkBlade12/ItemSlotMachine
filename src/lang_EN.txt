@@ -4,6 +4,13 @@
 # Message format: <name>=<message>                                #
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Plugin messages and message parts #
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+plugin_prefix=&7&l[&2Item&eSlotMachine&7&l] &r
+plugin_reloaded=&7Plugin version <version> was reloaded. (<time> ms)
+
 #=#=#=#=#=#=#=#=#=#=#
 # Command messages  #
 #=#=#=#=#=#=#=#=#=#=#
@@ -158,9 +165,9 @@ statistic_top_player=&aTop &2ten &aplayers for category &6<category>&a: <top>
 statistic_reset_slot_machine=&aThe statistic of slot machine &6<name> &awas reset.
 statistic_reset_player=&aThe statistic of player &6<name> &awas reset.
 
-#=#=#=#=#=#=#=#=#=#=#=#
-# Sign message parts  #
-#=#=#=#=#=#=#=#=#=#=#=#
+#=#=#=#=#=#=#=#=#=#
+# Sign lettering  #
+#=#=#=#=#=#=#=#=#=#
 
 sign_coin_shop_header=&8&l[CoinShop]
 sign_coin_shop_coins=&bCoins: &3<coins>
@@ -186,4 +193,3 @@ lost_spins=Lost Spins
 coins_spent=Coins Spent
 won_money=Won Money
 won_items=Won Items
-plugin_reloaded=&7Plugin version <version> was reloaded. (<time> ms)

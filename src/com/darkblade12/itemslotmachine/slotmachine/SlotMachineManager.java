@@ -110,10 +110,9 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 	}
 
 	public void reload(SlotMachine s) throws Exception {
-		String name = s.getName();
 		s.deactivate();
-		slotMachines.remove(name);
-		slotMachines.add(SlotMachine.load(plugin, name));
+		slotMachines.remove(s.name);
+		slotMachines.add(SlotMachine.load(plugin, s.name));
 	}
 
 	private void deactivateUsed(Player p) {
@@ -299,7 +298,8 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 					if (!h.getType().isBlock() || h.getType() == Material.AIR)
 						if (p.hasPermission("ItemSlotMachine.slot.check") || p.hasPermission("ItemSlotMachine.slot.*") || p.hasPermission("ItemSlotMachine.*"))
 							p.sendMessage(plugin.messageManager.slot_machine_clicked(s.getName()));
-				} else if (s.hasInteracted(l))
+				} else if (s.hasInteracted(l)) {
+					event.setCancelled(true);
 					if (!s.isPermittedToUse(p)) {
 						p.sendMessage(plugin.messageManager.slot_machine_usage_not_allowed());
 					} else {
@@ -318,6 +318,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 						else
 							s.activate(p);
 					}
+				}
 			}
 		} else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
 			SlotMachine s = getInteractedSlotMachine(event.getClickedBlock().getLocation());

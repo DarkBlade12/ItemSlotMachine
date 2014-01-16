@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -121,7 +122,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 	}
 
 	public String getMessage(String name, boolean prefix) {
-		return (prefix ? ItemSlotMachine.PREFIX : "") + getMessage(name);
+		return (prefix ? plugin_prefix() : "") + getMessage(name);
 	}
 
 	private static String designsToString(List<Design> list) {
@@ -149,13 +150,75 @@ public final class MessageManager extends Manager implements MessageContainer {
 		return s.toString();
 	}
 
-	public static String itemToString(ItemStack item) {
-		StringBuilder s = new StringBuilder(item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : "§2" + formatEnumName(item.getType().name()));
+	public static String getItemName(ItemStack item) {
+		Material m = item.getType();
 		short durability = item.getDurability();
-		if (durability != 0)
-			s.append(" §8(§c" + durability + "§8)");
-		s.append(" §8\u00D7 §7" + item.getAmount());
-		return s.toString();
+		switch (m) {
+			case DIRT:
+				if (durability == 2)
+					return "Podzol";
+			case SKULL_ITEM:
+				if (durability == 0)
+					return "Skeleton Skull";
+				else if (durability == 1)
+					return "Wither Skeleton Skull";
+				else if (durability == 2)
+					return "Zombie Skull";
+				else if (durability == 3)
+					return "Human Skull";
+				else if (durability == 4)
+					return "Creeper Skull";
+			case COAL:
+				if (durability == 1)
+					return "Charcoal";
+			case INK_SACK:
+				if (durability == 1)
+					return "Rose Red";
+				else if (durability == 2)
+					return "Cactus Green";
+				else if (durability == 3)
+					return "Cocoa Beans";
+				else if (durability == 4)
+					return "Lapis Lazuli";
+				else if (durability == 5)
+					return "Purple Dye";
+				else if (durability == 6)
+					return "Cyan Dye";
+				else if (durability == 7)
+					return "Light Gray Dye";
+				else if (durability == 8)
+					return "Gray Dye";
+				else if (durability == 9)
+					return "Pink Dye";
+				else if (durability == 10)
+					return "Lime Dye";
+				else if (durability == 11)
+					return "Dandelion Yellow";
+				else if (durability == 12)
+					return "Light Blue Dye";
+				else if (durability == 13)
+					return "Magenta Dye";
+				else if (durability == 14)
+					return "Orange Dye";
+				else if (durability == 15)
+					return "Bone Meal";
+			case RAW_FISH:
+				if (durability == 1)
+					return "Salmon";
+				else if (durability == 2)
+					return "Clownfish";
+				else if (durability == 3)
+					return "Pufferfish";
+			case COOKED_FISH:
+				if (durability == 1)
+					return "Cooked Salmon";
+			default:
+				return formatEnumName(m.name());
+		}
+	}
+
+	public static String itemToString(ItemStack item) {
+		return (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : "§2" + getItemName(item)) + " §8\u00D7 §7" + item.getAmount();
 	}
 
 	public String itemsToString(ItemList items, String colors) {
@@ -204,6 +267,20 @@ public final class MessageManager extends Manager implements MessageContainer {
 			s.append("\n§r " + getSymbol(i + 1) + " §a" + p.getName() + " §8(§e" + p.getObject(category).getValue() + "§8)");
 		}
 		return s.toString();
+	}
+
+	@Override
+	public String plugin_prefix() {
+		return getMessage("plugin_prefix");
+	}
+
+	@Override
+	public String plugin_reloaded(String version, long time) {
+		return getMessage("plugin_reloaded", true).replace("<version>", version).replace("<time>", Long.toString(time));
+	}
+
+	public String plugin_reloaded(long time) {
+		return plugin_reloaded(plugin.getDescription().getVersion(), time);
 	}
 
 	@Override
@@ -822,14 +899,5 @@ public final class MessageManager extends Manager implements MessageContainer {
 	@Override
 	public String won_items() {
 		return getMessage("won_items");
-	}
-
-	@Override
-	public String plugin_reloaded(String version, long time) {
-		return getMessage("plugin_reloaded", true).replace("<version>", version).replace("<time>", Long.toString(time));
-	}
-
-	public String plugin_reloaded(long time) {
-		return plugin_reloaded(plugin.getDescription().getVersion(), time);
 	}
 }
