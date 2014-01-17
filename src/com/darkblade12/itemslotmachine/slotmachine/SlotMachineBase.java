@@ -63,8 +63,6 @@ public abstract class SlotMachineBase implements Nameable {
 	protected Direction initialDirection;
 	protected SafeLocation sign, slot;
 	protected Cuboid region;
-	protected double moneyPot;
-	protected ItemList itemPot;
 	protected int activationAmount;
 	protected ItemList itemIcons;
 	protected boolean creativeUsageEnabled;
@@ -105,6 +103,8 @@ public abstract class SlotMachineBase implements Nameable {
 	protected int itemPotHouseCutAmount;
 	protected boolean itemPotCombosEnabled;
 	protected ComboList<ItemPotCombo> itemPotCombos;
+	protected double moneyPot;
+	protected ItemList itemPot;
 
 	public SlotMachineBase(ItemSlotMachine plugin, String name) throws Exception {
 		this.plugin = plugin;
@@ -122,8 +122,6 @@ public abstract class SlotMachineBase implements Nameable {
 			throw new Exception("The design of this slot machine does no longer exist");
 		center = SafeLocation.fromString(p[1]);
 		initialDirection = Direction.valueOf(p[2]);
-		moneyPot = Double.parseDouble(p[3]);
-		itemPot = p.length == 5 ? ItemList.fromString(p[4]) : new ItemList();
 		Location l = center.getBukkitLocation();
 		sign = design.getSign().getSafeLocation(l, initialDirection);
 		slot = design.getSlot().getSafeLocation(l, initialDirection);
@@ -133,6 +131,14 @@ public abstract class SlotMachineBase implements Nameable {
 		if (!configReader.readConfig())
 			throw new Exception("Failed to read " + configReader.getOuputFileName());
 		loadSettings();
+		if (p.length == 3) {
+			moneyPot = moneyPotDefaultSize;
+			itemPot = itemPotDefaultItems.clone();
+			saveInstance();
+		} else {
+			moneyPot = Double.parseDouble(p[3]);
+			itemPot = p.length == 5 ? ItemList.fromString(p[4]) : new ItemList();
+		}
 		updateSign();
 	}
 
@@ -540,22 +546,6 @@ public abstract class SlotMachineBase implements Nameable {
 		return region.isInside(l);
 	}
 
-	public double getMoneyPot() {
-		return this.moneyPot;
-	}
-
-	public boolean isMoneyPotEmpty() {
-		return moneyPot == 0;
-	}
-
-	public ItemList getItemPot() {
-		return itemPot.clone();
-	}
-
-	public boolean isItemPotEmpty() {
-		return itemPot.size() == 0;
-	}
-
 	public int getActivationAmount() {
 		return this.activationAmount;
 	}
@@ -653,6 +643,22 @@ public abstract class SlotMachineBase implements Nameable {
 
 	public ItemList getItemPotRaise() {
 		return itemPotRaise.clone();
+	}
+
+	public double getMoneyPot() {
+		return this.moneyPot;
+	}
+
+	public boolean isMoneyPotEmpty() {
+		return moneyPot == 0;
+	}
+
+	public ItemList getItemPot() {
+		return itemPot.clone();
+	}
+
+	public boolean isItemPotEmpty() {
+		return itemPot.size() == 0;
 	}
 
 	public boolean isPermittedToModify(Player p) {

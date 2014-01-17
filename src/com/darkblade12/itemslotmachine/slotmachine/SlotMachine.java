@@ -39,8 +39,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 
 	public static SlotMachine create(ItemSlotMachine plugin, String name, Design d, Player p) throws Exception {
 		d.build(p);
-		new CompressedStringReader(name + ".instance", "plugins/ItemSlotMachine/slot machines/").saveToFile(d.getName() + "#" + SafeLocation.fromBukkitLocation(p.getLocation()) + "#" + Direction.get(p).name()
-				+ "#1000.0#288-5, 264-1, 265-20");
+		new CompressedStringReader(name + ".instance", "plugins/ItemSlotMachine/slot machines/").saveToFile(d.getName() + "#" + SafeLocation.fromBukkitLocation(p.getLocation()) + "#" + Direction.get(p).name());
 		return load(plugin, name);
 	}
 
