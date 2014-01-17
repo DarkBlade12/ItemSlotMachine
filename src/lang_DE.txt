@@ -4,6 +4,13 @@
 # Message format: <name>=<message>                                #
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+# Plugin messages and message parts #
+#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
+
+plugin_prefix=&7&l[&2Item&eSlotMachine&7&l] &r
+plugin_reloaded=&7Plugin Version <version> wurde neu geladen. (<time> ms)
+
 #=#=#=#=#=#=#=#=#=#=#
 # Command messages  #
 #=#=#=#=#=#=#=#=#=#=#
@@ -157,9 +164,9 @@ statistic_top_player=&aTop &2Zehn &aSpieler für Kategorie &6<category>&a: <top>
 statistic_reset_slot_machine=&aDie Statistik des Münzautomaten &6<name> &awurde zurückgesetzt.
 statistic_reset_player=&aDie Statistik des Spielers &6<name> &awurde zurückgesetzt.
 
-#=#=#=#=#=#=#=#=#=#=#=#
-# Sign message parts  #
-#=#=#=#=#=#=#=#=#=#=#=#
+#=#=#=#=#=#=#=#=#=#
+# Sign lettering  #
+#=#=#=#=#=#=#=#=#=#
 
 sign_coin_shop_header=&8&l[MünzenShop]
 sign_coin_shop_coins=&bMünzen: &3<coins>
@@ -185,4 +192,3 @@ lost_spins=Verlorene Spins
 coins_spent=Münzen Ausgegeben
 won_money=Gewonnenes Geld
 won_items=Gewonnene Items
-plugin_reloaded=&7Plugin Version <version> wurde neu geladen. (<time> ms)
