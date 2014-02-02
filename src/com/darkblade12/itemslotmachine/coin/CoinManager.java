@@ -59,14 +59,14 @@ public final class CoinManager extends Manager {
 				}
 			}
 		}.runTaskTimer(plugin, 10, 10);
-		registerListener();
+		registerEvents();
 		return true;
 	}
 
 	@Override
 	public void onDisable() {
 		task.cancel();
-		unregisterListener();
+		unregisterAll();
 	}
 
 	public double calculatePrice(int coins) {

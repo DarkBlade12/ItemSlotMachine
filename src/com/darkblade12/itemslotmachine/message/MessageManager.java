@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,6 +25,7 @@ import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
 import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
 
 public final class MessageManager extends Manager implements MessageContainer {
+	private static final Random RANDOM = new Random();
 	private static final String[] COLOR_CODE_MODIFIERS = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e" };
 	private static final Map<String, String> EQUAL_COLOR_CODES = new HashMap<String, String>();
 	private static final Map<Integer, String> NUMBER_SYMBOLS = new HashMap<Integer, String>();

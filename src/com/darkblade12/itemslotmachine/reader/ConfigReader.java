@@ -40,21 +40,12 @@ public final class ConfigReader extends FileReader {
 		}
 	}
 
-	public boolean saveConfig(YamlConfiguration config) {
-		setConfig(config);
-		return saveConfig();
-	}
-
 	public boolean saveDefaultConfig() {
 		return saveResourceFile(plugin);
 	}
 
 	public void deleteConfig() {
 		deleteFile();
-	}
-
-	public void setConfig(YamlConfiguration config) {
-		this.config = config;
 	}
 
 	public TemplateReader getTemplate() {

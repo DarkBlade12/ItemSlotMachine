@@ -21,42 +21,41 @@ public final class Settings {
 	private static final SimpleSection DESIGN_SETTINGS = new SimpleSection("Design_Settings");
 	private static final String BLOCK_LIST_FORMAT = "(\\d+|[\\w\\s]+)(, (\\d+|[\\w\\s]+))*";
 	private ItemSlotMachine plugin;
-	private Configuration c;
-	private static boolean DEBUG_MODE_ENABLED;
-	private static String LANGUAGE_NAME;
-	private static String DEFAULT_SLOT_MACHINE_NAME;
-	private static String RAW_SLOT_MACHINE_NAME;
-	private static boolean SPACE_CHECK_ENABLED;
-	private static Set<Material> SPACE_CHECK_IGNORED_BLOCKS;
-	private static ItemStack COIN_ITEM;
-	private static boolean COIN_COMMON_ITEM_ENABLED;
-	private static double COIN_PRICE;
-	private static boolean LIMITED_USAGE_ENABLED;
-	private static int LIMITED_USAGE_AMOUNT;
-	private static String DEFAULT_DESIGN_NAME;
-	private static String RAW_DESIGN_NAME;
+	private static boolean debugModeEnabled;
+	private static String languageName;
+	private static String defaultSlotMachineName;
+	private static String rawSlotMachineName;
+	private static boolean spaceCheckEnabled;
+	private static Set<Material> spaceCheckIgnoredBlocks;
+	private static ItemStack cointItem;
+	private static boolean coinCommonItemEnabled;
+	private static double coinPrice;
+	private static boolean limitedUsageEnabled;
+	private static int limitedUsageAmount;
+	private static String defaultDesignName;
+	private static String rawDesignName;
 
 	public Settings(ItemSlotMachine plugin) {
 		this.plugin = plugin;
-		c = plugin.loadConfig();
 	}
 
 	public void load() throws InvalidValueException {
-		DEBUG_MODE_ENABLED = GENERAL_SETTINGS.getBoolean(c, "Debug_Mode_Enabled");
-		LANGUAGE_NAME = GENERAL_SETTINGS.getString(c, "Language_Name");
-		if (LANGUAGE_NAME == null)
+		Configuration c = plugin.loadConfig();
+		debugModeEnabled = GENERAL_SETTINGS.getBoolean(c, "Debug_Mode_Enabled");
+		languageName = GENERAL_SETTINGS.getString(c, "Language_Name");
+		if (languageName == null)
 			throw new InvalidValueException("Language_Name", GENERAL_SETTINGS, "is null");
-		DEFAULT_SLOT_MACHINE_NAME = SLOT_MACHINE_SETTINGS.getString(c, "Default_Name");
-		if (DEFAULT_SLOT_MACHINE_NAME == null)
+		defaultSlotMachineName = SLOT_MACHINE_SETTINGS.getString(c, "Default_Name");
+		if (defaultSlotMachineName == null)
 			throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "is null");
-		else if (DEFAULT_SLOT_MACHINE_NAME.matches(".+<num>.+"))
+		else if (defaultSlotMachineName.matches(".+<num>.+"))
 			throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "has <num> at an invalid position (middle)");
-		else if (!DEFAULT_SLOT_MACHINE_NAME.contains("<num>"))
-			DEFAULT_SLOT_MACHINE_NAME += "<num>";
-		RAW_SLOT_MACHINE_NAME = DEFAULT_SLOT_MACHINE_NAME.replace("<num>", "");
-		SPACE_CHECK_ENABLED = SPACE_CHECK.getBoolean(c, "Enabled");
-		if (SPACE_CHECK_ENABLED) {
-			SPACE_CHECK_IGNORED_BLOCKS = new HashSet<Material>();
+		else if (!defaultSlotMachineName.contains("<num>"))
+			defaultSlotMachineName += "<num>";
+		rawSlotMachineName = defaultSlotMachineName.replace("<num>", "");
+		spaceCheckEnabled = SPACE_CHECK.getBoolean(c, "Enabled");
+		if (spaceCheckEnabled) {
+			spaceCheckIgnoredBlocks = new HashSet<Material>();
 			String ignoredBlocksString = SPACE_CHECK.getString(c, "Ignored_Blocks");
 			if (ignoredBlocksString != null) {
 				if (!ignoredBlocksString.matches(BLOCK_LIST_FORMAT))
@@ -72,7 +71,7 @@ public final class Settings {
 					}
 					if (m == null || !m.isBlock())
 						throw new InvalidValueException("Ignored_Blocks", SPACE_CHECK, "contains an invalid block " + (id ? "id" : "name"));
-					SPACE_CHECK_IGNORED_BLOCKS.add(m);
+					spaceCheckIgnoredBlocks.add(m);
 				}
 			}
 		}
@@ -80,89 +79,88 @@ public final class Settings {
 		if (coinString == null)
 			throw new InvalidValueException("Item", COIN_SETTINGS, "is null");
 		try {
-			COIN_ITEM = ItemFactory.fromString(coinString);
+			cointItem = ItemFactory.fromString(coinString);
 		} catch (Exception e) {
 			throw new InvalidValueException("Item", COIN_SETTINGS, e.getMessage());
 		}
-		COIN_COMMON_ITEM_ENABLED = COIN_SETTINGS.getBoolean(c, "Common_Item_Enabled");
-		COIN_PRICE = COIN_SETTINGS.getDouble(c, "Price");
-		if (COIN_PRICE < 0)
+		coinCommonItemEnabled = COIN_SETTINGS.getBoolean(c, "Common_Item_Enabled");
+		coinPrice = COIN_SETTINGS.getDouble(c, "Price");
+		if (coinPrice < 0)
 			throw new InvalidValueException("Price", COIN_SETTINGS, "is invalid (lower than 0)");
-		LIMITED_USAGE_ENABLED = LIMITED_USAGE.getBoolean(c, "Enabled");
-		if (LIMITED_USAGE_ENABLED) {
-			LIMITED_USAGE_AMOUNT = LIMITED_USAGE.getInt(c, "Amount");
-			if (LIMITED_USAGE_AMOUNT < 1)
+		limitedUsageEnabled = LIMITED_USAGE.getBoolean(c, "Enabled");
+		if (limitedUsageEnabled) {
+			limitedUsageAmount = LIMITED_USAGE.getInt(c, "Amount");
+			if (limitedUsageAmount < 1)
 				throw new InvalidValueException("Amount", LIMITED_USAGE, "is invalid (lower than 1)");
 		}
-		DEFAULT_DESIGN_NAME = DESIGN_SETTINGS.getString(c, "Default_Name");
-		if (DEFAULT_DESIGN_NAME == null)
+		defaultDesignName = DESIGN_SETTINGS.getString(c, "Default_Name");
+		if (defaultDesignName == null)
 			throw new InvalidValueException("Default_Name", DESIGN_SETTINGS, "is null");
-		else if (DEFAULT_DESIGN_NAME.matches(".+<num>.+"))
+		else if (defaultDesignName.matches(".+<num>.+"))
 			throw new InvalidValueException("Default_Name", DESIGN_SETTINGS, "has <num> at an invalid position (middle)");
-		else if (!DEFAULT_DESIGN_NAME.contains("<num>"))
-			DEFAULT_DESIGN_NAME += "<num>";
-		RAW_DESIGN_NAME = DEFAULT_DESIGN_NAME.replace("<num>", "");
+		else if (!defaultDesignName.contains("<num>"))
+			defaultDesignName += "<num>";
+		rawDesignName = defaultDesignName.replace("<num>", "");
 	}
 
 	public void reload() throws InvalidValueException {
 		plugin.reloadConfig();
-		c = plugin.getConfig();
 		load();
 	}
 
 	public static boolean isDebugModeEnabled() {
-		return DEBUG_MODE_ENABLED;
+		return debugModeEnabled;
 	}
 
 	public static String getLanguageName() {
-		return LANGUAGE_NAME;
+		return languageName;
 	}
 
 	public static boolean isSpaceCheckEnabled() {
-		return SPACE_CHECK_ENABLED;
+		return spaceCheckEnabled;
 	}
 
 	public static Set<Material> getSpaceCheckIgnoredBlocks() {
-		return Collections.unmodifiableSet(SPACE_CHECK_IGNORED_BLOCKS);
+		return Collections.unmodifiableSet(spaceCheckIgnoredBlocks);
 	}
 
 	public static boolean isBlockIgnored(Material m) {
-		return SPACE_CHECK_IGNORED_BLOCKS.contains(m);
+		return spaceCheckIgnoredBlocks.contains(m);
 	}
 
 	public static ItemStack getCoinItem() {
-		return COIN_ITEM;
+		return cointItem;
 	}
 
 	public static String getDefaultSlotMachineName() {
-		return DEFAULT_SLOT_MACHINE_NAME;
+		return defaultSlotMachineName;
 	}
 
 	public static String getRawSlotMachineName() {
-		return RAW_SLOT_MACHINE_NAME;
+		return rawSlotMachineName;
 	}
 
 	public static boolean isCommonCoinItemEnabled() {
-		return COIN_COMMON_ITEM_ENABLED;
+		return coinCommonItemEnabled;
 	}
 
 	public static double getCoinPrice() {
-		return COIN_PRICE;
+		return coinPrice;
 	}
 
 	public static boolean isLimitedUsageEnabled() {
-		return LIMITED_USAGE_ENABLED;
+		return limitedUsageEnabled;
 	}
 
 	public static int getLimitedUsageAmount() {
-		return LIMITED_USAGE_AMOUNT;
+		return limitedUsageAmount;
 	}
 
 	public static String getDefaultDesignName() {
-		return DEFAULT_DESIGN_NAME;
+		return defaultDesignName;
 	}
 
 	public static String getRawDesignName() {
-		return RAW_DESIGN_NAME;
+		return rawDesignName;
 	}
 }

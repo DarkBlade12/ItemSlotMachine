@@ -89,17 +89,13 @@ public enum Type {
 		return new StatisticObject(this);
 	}
 
-	public Number parse(String s) {
-		throw new UnsupportedOperationException("This type can not parse a string into a number");
-	}
+	public abstract Number parse(String s);
 
 	public Class<? extends Number> getValueType() {
 		return this.valueType;
 	}
 
-	public String getRealName(ItemSlotMachine plugin) {
-		throw new UnsupportedOperationException("This type does not have a real name");
-	}
+	public abstract String getRealName(ItemSlotMachine plugin);
 
 	public static Type fromName(String name) {
 		return name == null ? null : NAME_MAP.get(name.toUpperCase());

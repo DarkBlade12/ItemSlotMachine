@@ -52,13 +52,13 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 	public boolean onInitialize() {
 		comparator = new NameableComparator<SlotMachine>(Settings.getRawSlotMachineName());
 		loadSlotMachines();
-		registerListener();
+		registerEvents();
 		return true;
 	}
 
 	@Override
 	public void onDisable() {
-		unregisterListener();
+		unregisterAll();
 		for (int i = 0; i < slotMachines.size(); i++)
 			slotMachines.get(i).deactivate();
 	}

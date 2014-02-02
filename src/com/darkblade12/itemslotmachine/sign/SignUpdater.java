@@ -11,11 +11,11 @@ import com.darkblade12.itemslotmachine.util.ReflectionUtil;
 import com.darkblade12.itemslotmachine.util.ReflectionUtil.DynamicPackage;
 
 public final class SignUpdater {
-	private static Constructor<?> SIGN_UPDATE_PACKET_CONSTRUCTOR;
+	private static Constructor<?> packetPlayOutUpdateSign;
 
 	static {
 		try {
-			SIGN_UPDATE_PACKET_CONSTRUCTOR = ReflectionUtil.getConstructor(ReflectionUtil.getClass("PacketPlayOutUpdateSign", DynamicPackage.MINECRAFT_SERVER), int.class, int.class, int.class, String[].class);
+			packetPlayOutUpdateSign = ReflectionUtil.getConstructor(ReflectionUtil.getClass("PacketPlayOutUpdateSign", DynamicPackage.MINECRAFT_SERVER), int.class, int.class, int.class, String[].class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -27,7 +27,7 @@ public final class SignUpdater {
 		try {
 			if (p.getWorld().getBlockAt(x, y, z).getState() instanceof Sign) {
 				Object playerConnection = ReflectionUtil.getValue("playerConnection", ReflectionUtil.invokeMethod("getHandle", p.getClass(), p));
-				ReflectionUtil.invokeMethod("sendPacket", playerConnection.getClass(), playerConnection, SIGN_UPDATE_PACKET_CONSTRUCTOR.newInstance(x, y, z, validateLines(lines, splittable)));
+				ReflectionUtil.invokeMethod("sendPacket", playerConnection.getClass(), playerConnection, packetPlayOutUpdateSign.newInstance(x, y, z, validateLines(lines, splittable)));
 			}
 		} catch (Exception e) {
 			if (Settings.isDebugModeEnabled())

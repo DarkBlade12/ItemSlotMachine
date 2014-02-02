@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.darkblade12.itemslotmachine.nameable.NameableList;
 
-public class Statistic {
+public abstract class Statistic {
 	private static final String FORMAT = "\\w+@\\d+(\\.\\d+)?(#\\w+@\\d+(\\.\\d+)?)*";
 	private NameableList<StatisticObject> objects;
 
