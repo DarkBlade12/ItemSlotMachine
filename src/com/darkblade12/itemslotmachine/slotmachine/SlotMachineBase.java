@@ -267,7 +267,7 @@ public abstract class SlotMachineBase implements Nameable {
 			moneyPotHouseCutEnabled = MONEY_POT_HOUSE_CUT.getBoolean(configReader.config, "Enabled");
 			if (moneyPotHouseCutEnabled) {
 				moneyPotHouseCutPercentage = MONEY_POT_HOUSE_CUT.getBoolean(configReader.config, "Percentage");
-				moneyPotHouseCutAmount = MONEY_POT_HOUSE_CUT.getInt(configReader.config, "Amount");
+				moneyPotHouseCutAmount = MONEY_POT_HOUSE_CUT.getDouble(configReader.config, "Amount");
 				if (moneyPotHouseCutAmount < 1)
 					throw new InvalidValueException("Amount", MONEY_POT_HOUSE_CUT, "is invalid (lower than 1)");
 			}
