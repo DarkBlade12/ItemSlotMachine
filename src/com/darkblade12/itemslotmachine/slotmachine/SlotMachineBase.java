@@ -298,9 +298,9 @@ public abstract class SlotMachineBase implements Nameable {
 				throw new InvalidValueException("Pot_Raise", ITEM_POT_SETTINGS, e.getMessage());
 			}
 			itemPotHouseCutEnabled = ITEM_POT_HOUSE_CUT.getBoolean(configReader.config, "Enabled");
-			if (moneyPotHouseCutEnabled) {
-				moneyPotHouseCutAmount = ITEM_POT_HOUSE_CUT.getInt(configReader.config, "Amount");
-				if (moneyPotHouseCutAmount < 1)
+			if (itemPotHouseCutEnabled) {
+				itemPotHouseCutAmount = ITEM_POT_HOUSE_CUT.getInt(configReader.config, "Amount");
+				if (itemPotHouseCutAmount < 1)
 					throw new InvalidValueException("Amount", ITEM_POT_HOUSE_CUT, "is invalid (lower than 1)");
 			}
 		}
