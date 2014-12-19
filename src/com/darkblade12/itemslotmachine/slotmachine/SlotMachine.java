@@ -80,7 +80,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 	private void playWinEffect() {
 		playWinSounds();
 		if (fireworksEnabled)
-			Rocket.randomize().displayEffects(slot.getBukkitLocation().add(0.5, 2, 0.5));
+			Rocket.randomize().displayEffects(plugin, slot.getBukkitLocation().add(0.5, 2, 0.5));
 	}
 
 	public void activate(final Player p) {

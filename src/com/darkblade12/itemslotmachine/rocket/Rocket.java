@@ -14,7 +14,9 @@ import org.bukkit.entity.Firework;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
 
 public class Rocket {
@@ -115,8 +117,7 @@ public class Rocket {
 	public static List<FireworkEffect> randomizeEffects(int min, int max, int minColors, int maxColors) {
 		List<FireworkEffect> effects = new ArrayList<FireworkEffect>();
 		for (int a = 1; a <= calculateRandom(min, max); a++)
-			effects.add(FireworkEffect.builder().flicker(RANDOM.nextBoolean()).with(Type.values()[RANDOM.nextInt(Type.values().length)]).trail(RANDOM.nextBoolean())
-					.withColor(randomizeColors(minColors, maxColors)).withFade(randomizeColors(minColors, maxColors)).build());
+			effects.add(FireworkEffect.builder().flicker(RANDOM.nextBoolean()).with(Type.values()[RANDOM.nextInt(Type.values().length)]).trail(RANDOM.nextBoolean()).withColor(randomizeColors(minColors, maxColors)).withFade(randomizeColors(minColors, maxColors)).build());
 		return effects;
 	}
 
@@ -126,8 +127,14 @@ public class Rocket {
 		return f;
 	}
 
-	public void displayEffects(Location l) {
-		launch(l).detonate(); // TODO #detonate() not working...
+	public void displayEffects(ItemSlotMachine plugin, Location l) {
+		final Firework f = launch(l);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				f.detonate();
+			}
+		}.runTaskLater(plugin, 1);
 	}
 
 	public boolean saveToFile(String name) {
