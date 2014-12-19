@@ -49,7 +49,7 @@ public final class SafeLocation implements Cloneable {
 	}
 
 	public static boolean noDistance(Location l1, Location l2) {
-		return l1 != null && l2 != null && l1.getWorld().getName().equals(l2.getWorld().getName()) && l1.distance(l2) == 0;
+		return l1 != null && l2 != null && l1.getWorld().getName().equals(l2.getWorld().getName()) && l1.distanceSquared(l2) == 0;
 	}
 
 	public boolean noDistance(Location l) {

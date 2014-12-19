@@ -52,9 +52,12 @@ public final class CoinManager extends Manager {
 					Player p = Bukkit.getPlayerExact(name);
 					if (p == null) {
 						resetShop(name);
-					} else if (s.distance(p.getLocation()) > 8) {
-						updateShop(p, s.getBukkitLocation(), 1);
-						resetShop(name);
+					} else {
+						Location l = p.getLocation();
+						if (!s.getWorldName().equals(l.getWorld().getName()) || s.distanceSquared(l) > 64) {
+							updateShop(p, s.getBukkitLocation(), 1);
+							resetShop(name);
+						}
 					}
 				}
 			}
@@ -77,9 +80,7 @@ public final class CoinManager extends Manager {
 		String name = p.getName();
 		lastShop.put(name, SafeLocation.fromBukkitLocation(l));
 		shopCoins.put(name, coins);
-		SignUpdater.updateSign(p, l,
-				new String[] { plugin.messageManager.sign_coin_shop_header(), plugin.messageManager.sign_coin_shop_coins(coins), plugin.messageManager.sign_coin_shop_price(calculatePrice(coins)),
-						plugin.messageManager.sign_coin_shop_spacer() }, 2);
+		SignUpdater.updateSign(p, l, new String[] { plugin.messageManager.sign_coin_shop_header(), plugin.messageManager.sign_coin_shop_coins(coins), plugin.messageManager.sign_coin_shop_price(calculatePrice(coins)), plugin.messageManager.sign_coin_shop_spacer() }, 2);
 	}
 
 	private void resetLastShop(String name) {
@@ -127,8 +128,7 @@ public final class CoinManager extends Manager {
 	public void onSignChange(SignChangeEvent event) {
 		if (event.getLine(0).equalsIgnoreCase("[CoinShop]")) {
 			String[] lines = SignUpdater.validateLines(
-					new String[] { plugin.messageManager.sign_coin_shop_header(), plugin.messageManager.sign_coin_shop_coins(1), plugin.messageManager.sign_coin_shop_price(Settings.getCoinPrice()),
-							plugin.messageManager.sign_coin_shop_spacer() }, 2);
+					new String[] { plugin.messageManager.sign_coin_shop_header(), plugin.messageManager.sign_coin_shop_coins(1), plugin.messageManager.sign_coin_shop_price(Settings.getCoinPrice()), plugin.messageManager.sign_coin_shop_spacer() }, 2);
 			event.setLine(0, lines[0]);
 			event.setLine(1, lines[1]);
 			event.setLine(2, lines[2]);
