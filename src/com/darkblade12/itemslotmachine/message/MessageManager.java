@@ -312,8 +312,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 
 	@Override
 	public String help_page_command_format(String command, String description, boolean executableAsConsole, String permission) {
-		return getMessage("help_page_command_format").replace("<command>", command).replace("<description>", description).replace("<executable_as_console>", executableAsConsole ? TRUE : FALSE)
-				.replace("<permission>", permission);
+		return getMessage("help_page_command_format").replace("<command>", command).replace("<description>", description).replace("<executable_as_console>", executableAsConsole ? TRUE : FALSE).replace("<permission>", permission);
 	}
 
 	@Override
@@ -519,15 +518,17 @@ public final class MessageManager extends Manager implements MessageContainer {
 
 	@Override
 	public String slot_machine_won(double money, String currencyName, int itemAmount, String items) {
-		return getMessage("slot_machine_won", true).replace("<money>", Double.toString(money)).replace("<currency_name>", currencyName).replace("<item_amount>", Integer.toString(itemAmount))
-				.replace("<items>", items);
+		return getMessage("slot_machine_won", true).replace("<money>", Double.toString(money)).replace("<currency_name>", currencyName).replace("<item_amount>", Integer.toString(itemAmount)).replace("<items>", items);
 	}
 
 	public String slot_machine_won(double money, ItemList items) {
 		String message = getMessage("slot_machine_won");
 		int index = message.indexOf("<items>");
-		return slot_machine_won(money, money == 1 ? VaultHook.ECONOMY.currencyNameSingular() : VaultHook.ECONOMY.currencyNamePlural(), items.size(),
-				index == -1 ? "" : itemsToString(items, ChatColor.getLastColors(message.substring(0, index))));
+		String currency = "money";
+		if (VaultHook.isEnabled()) {
+			currency = money == 1 ? VaultHook.ECONOMY.currencyNameSingular() : VaultHook.ECONOMY.currencyNamePlural();
+		}
+		return slot_machine_won(money, currency, items.size(), index == -1 ? "" : itemsToString(items, ChatColor.getLastColors(message.substring(0, index))));
 	}
 
 	@Override
@@ -621,8 +622,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 
 	@Override
 	public String slot_machine_money_pot_deposit(double money, String currencyName, String name, double pot) {
-		return getMessage("slot_machine_money_pot_deposit", true).replace("<money>", Double.toString(money)).replace("<currency_name>", currencyName).replace("<name>", name)
-				.replace("<pot>", Double.toString(pot));
+		return getMessage("slot_machine_money_pot_deposit", true).replace("<money>", Double.toString(money)).replace("<currency_name>", currencyName).replace("<name>", name).replace("<pot>", Double.toString(pot));
 	}
 
 	public String slot_machine_money_pot_deposit(double money, String name, double pot) {
@@ -631,8 +631,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 
 	@Override
 	public String slot_machine_money_pot_withdraw(double money, String currencyName, String name, double pot) {
-		return getMessage("slot_machine_money_pot_withdraw", true).replace("<money>", Double.toString(money)).replace("<currency_name>", currencyName).replace("<name>", name)
-				.replace("<pot>", Double.toString(pot));
+		return getMessage("slot_machine_money_pot_withdraw", true).replace("<money>", Double.toString(money)).replace("<currency_name>", currencyName).replace("<name>", name).replace("<pot>", Double.toString(pot));
 	}
 
 	public String slot_machine_money_pot_withdraw(double money, String name, double pot) {
