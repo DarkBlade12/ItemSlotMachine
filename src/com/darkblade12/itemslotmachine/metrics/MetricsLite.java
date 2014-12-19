@@ -275,6 +275,7 @@ public class MetricsLite {
 	/**
 	 * Generic method that posts a plugin to the metrics website
 	 */
+	@SuppressWarnings("deprecation")
 	private void postPlugin(boolean isPing) throws IOException {
 		// Server software specific section
 		PluginDescriptionFile description = plugin.getDescription();

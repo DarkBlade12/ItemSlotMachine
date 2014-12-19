@@ -12,6 +12,7 @@ import com.darkblade12.itemslotmachine.item.ItemList;
 
 @CommandDetails(name = "purchase", params = "<amount>", executableAsConsole = false, permission = "ItemSlotMachine.coin.purchase")
 public final class PurchaseCommand implements ICommand {
+	@SuppressWarnings("deprecation")
 	@Override
 	public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
 		Player p = (Player) sender;

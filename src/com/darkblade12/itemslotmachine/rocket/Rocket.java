@@ -127,7 +127,7 @@ public class Rocket {
 	}
 
 	public void displayEffects(Location l) {
-		launch(l).detonate();
+		launch(l).detonate(); // TODO #detonate() not working...
 	}
 
 	public boolean saveToFile(String name) {

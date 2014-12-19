@@ -30,29 +30,29 @@ public final class MessageManager extends Manager implements MessageContainer {
 	private static final Map<String, String> EQUAL_COLOR_CODES = new HashMap<String, String>();
 	private static final Map<Integer, String> NUMBER_SYMBOLS = new HashMap<Integer, String>();
 	private static final String[] DICES = new String[] { "\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685" };
-	public static final String TRUE = "§a\u2714";
-	public static final String FALSE = "§c\u2718";
+	public static final String TRUE = "Â§a\u2714";
+	public static final String FALSE = "Â§c\u2718";
 	private TextReader textReader;
 	private Map<String, String> messages;
 
 	static {
-		EQUAL_COLOR_CODES.put("§1", "§9");
-		EQUAL_COLOR_CODES.put("§2", "§a");
-		EQUAL_COLOR_CODES.put("§3", "§b");
-		EQUAL_COLOR_CODES.put("§4", "§c");
-		EQUAL_COLOR_CODES.put("§5", "§d");
-		EQUAL_COLOR_CODES.put("§6", "§e");
-		EQUAL_COLOR_CODES.put("§7", "§8");
-		NUMBER_SYMBOLS.put(1, "§6\u2776");
-		NUMBER_SYMBOLS.put(2, "§7\u2777");
-		NUMBER_SYMBOLS.put(3, "§8\u2778");
-		NUMBER_SYMBOLS.put(4, "§f\u2779");
-		NUMBER_SYMBOLS.put(5, "§f\u277A");
-		NUMBER_SYMBOLS.put(6, "§f\u277B");
-		NUMBER_SYMBOLS.put(7, "§f\u277C");
-		NUMBER_SYMBOLS.put(8, "§f\u277D");
-		NUMBER_SYMBOLS.put(9, "§f\u277E");
-		NUMBER_SYMBOLS.put(10, "§f\u277F");
+		EQUAL_COLOR_CODES.put("Â§1", "Â§9");
+		EQUAL_COLOR_CODES.put("Â§2", "Â§a");
+		EQUAL_COLOR_CODES.put("Â§3", "Â§b");
+		EQUAL_COLOR_CODES.put("Â§4", "Â§c");
+		EQUAL_COLOR_CODES.put("Â§5", "Â§d");
+		EQUAL_COLOR_CODES.put("Â§6", "Â§e");
+		EQUAL_COLOR_CODES.put("Â§7", "Â§8");
+		NUMBER_SYMBOLS.put(1, "Â§6\u2776");
+		NUMBER_SYMBOLS.put(2, "Â§7\u2777");
+		NUMBER_SYMBOLS.put(3, "Â§8\u2778");
+		NUMBER_SYMBOLS.put(4, "Â§f\u2779");
+		NUMBER_SYMBOLS.put(5, "Â§f\u277A");
+		NUMBER_SYMBOLS.put(6, "Â§f\u277B");
+		NUMBER_SYMBOLS.put(7, "Â§f\u277C");
+		NUMBER_SYMBOLS.put(8, "Â§f\u277D");
+		NUMBER_SYMBOLS.put(9, "Â§f\u277E");
+		NUMBER_SYMBOLS.put(10, "Â§f\u277F");
 	}
 
 	public MessageManager(ItemSlotMachine plugin) {
@@ -94,7 +94,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 	}
 
 	public static String randomColorCode() {
-		return "§" + COLOR_CODE_MODIFIERS[RANDOM.nextInt(COLOR_CODE_MODIFIERS.length)];
+		return "Â§" + COLOR_CODE_MODIFIERS[RANDOM.nextInt(COLOR_CODE_MODIFIERS.length)];
 	}
 
 	public static String equalColorCode(String c) {
@@ -119,7 +119,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 
 	public String getMessage(String name) {
 		if (!messages.containsKey(name))
-			return "§cMessage not available, please check your language file! §8(§7Message name: §6" + name + "§8)";
+			return "Â§cMessage not available, please check your language file! Â§8(Â§7Message name: Â§6" + name + "Â§8)";
 		return messages.get(name);
 	}
 
@@ -130,14 +130,14 @@ public final class MessageManager extends Manager implements MessageContainer {
 	private static String designsToString(List<Design> list) {
 		StringBuilder s = new StringBuilder();
 		for (Design d : list)
-			s.append("\n§r §7\u25C9 " + randomColorCode() + d.getName());
+			s.append("\nÂ§r Â§7\u25C9 " + randomColorCode() + d.getName());
 		return s.toString();
 	}
 
 	private static String slotMachinesToString(List<SlotMachine> list) {
 		StringBuilder s = new StringBuilder();
 		for (SlotMachine m : list)
-			s.append("\n§r §6\u25C9 §2" + m.getName() + " §7\u25BB §eActive: " + (m.isActive() ? TRUE : FALSE));
+			s.append("\nÂ§r Â§6\u25C9 Â§2" + m.getName() + " Â§7\u25BB Â§eActive: " + (m.isActive() ? TRUE : FALSE));
 		return s.toString();
 	}
 
@@ -220,12 +220,12 @@ public final class MessageManager extends Manager implements MessageContainer {
 	}
 
 	public static String itemToString(ItemStack item) {
-		return (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : "§2" + getItemName(item)) + " §8\u00D7 §7" + item.getAmount();
+		return (item.hasItemMeta() && item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : "Â§2" + getItemName(item)) + " Â§8\u00D7 Â§7" + item.getAmount();
 	}
 
 	public String itemsToString(ItemList items, String colors) {
 		if (colors.length() == 0)
-			colors = "§a";
+			colors = "Â§a";
 		StringBuilder s = new StringBuilder();
 		int a = 0;
 		for (ItemStack i : items) {
@@ -237,14 +237,14 @@ public final class MessageManager extends Manager implements MessageContainer {
 			s.append(itemToString(i));
 			a++;
 		}
-		return s.length() > 0 ? s.toString() : "§cN/A";
+		return s.length() > 0 ? s.toString() : "Â§cN/A";
 	}
 
 	private String statisticToString(Statistic statistic) {
 		StringBuilder s = new StringBuilder();
 		for (StatisticObject o : statistic.getObjects()) {
 			String c = randomColorCode();
-			s.append("\n§r §7" + randomDice() + " " + c + o.getType().getRealName(plugin) + ": " + equalColorCode(c) + o.getValue());
+			s.append("\nÂ§r Â§7" + randomDice() + " " + c + o.getType().getRealName(plugin) + ": " + equalColorCode(c) + o.getValue());
 		}
 		return s.toString();
 	}
@@ -255,7 +255,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 		int size = top.size();
 		for (int i = 0; i < (size > 10 ? 10 : size); i++) {
 			SlotMachineStatistic m = top.get(i);
-			s.append("\n§r " + getSymbol(i + 1) + " §a" + m.getName() + " §8(§e" + m.getObject(category).getValue() + "§8)");
+			s.append("\nÂ§r " + getSymbol(i + 1) + " Â§a" + m.getName() + " Â§8(Â§e" + m.getObject(category).getValue() + "Â§8)");
 		}
 		return s.toString();
 	}
@@ -266,7 +266,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 		int size = top.size();
 		for (int i = 0; i < (size > 10 ? 10 : size); i++) {
 			PlayerStatistic p = top.get(i);
-			s.append("\n§r " + getSymbol(i + 1) + " §a" + p.getName() + " §8(§e" + p.getObject(category).getValue() + "§8)");
+			s.append("\nÂ§r " + getSymbol(i + 1) + " Â§a" + p.getName() + " Â§8(Â§e" + p.getObject(category).getValue() + "Â§8)");
 		}
 		return s.toString();
 	}
@@ -307,7 +307,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 
 	@Override
 	public String help_page_footer(int currentPage, int pageAmount) {
-		return getMessage("help_page_footer").replace("<current_page>", (currentPage == pageAmount ? "§6§l" : "§a§l") + Integer.toString(currentPage)).replace("<page_amount>", Integer.toString(pageAmount));
+		return getMessage("help_page_footer").replace("<current_page>", (currentPage == pageAmount ? "Â§6Â§l" : "Â§aÂ§l") + Integer.toString(currentPage)).replace("<page_amount>", Integer.toString(pageAmount));
 	}
 
 	@Override

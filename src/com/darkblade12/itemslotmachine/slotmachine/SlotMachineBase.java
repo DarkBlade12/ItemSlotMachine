@@ -33,7 +33,6 @@ import com.darkblade12.itemslotmachine.slotmachine.command.Placeholder;
 import com.darkblade12.itemslotmachine.slotmachine.sound.SoundList;
 import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
 
-@SuppressWarnings("deprecation")
 public abstract class SlotMachineBase implements Nameable {
 	private static final SimpleSection GENERAL_SETTINGS = new SimpleSection("General_Settings");
 	private static final SimpleSection INDIVIDUAL_PERMISSION = new SimpleSection(GENERAL_SETTINGS, "Individual_Permission");
@@ -328,13 +327,11 @@ public abstract class SlotMachineBase implements Nameable {
 		if (s != null) {
 			String[] lines = null;
 			if (moneyPotEnabled && itemPotEnabled)
-				lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_items(itemPot.size()),
-						plugin.messageManager.sign_pot_spacer() };
+				lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_items(itemPot.size()), plugin.messageManager.sign_pot_spacer() };
 			else if (moneyPotEnabled)
 				lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
 			else if (itemPotEnabled)
-				lines = new String[] { plugin.messageManager.sign_pot_items(itemPot.size()), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer(),
-						plugin.messageManager.sign_pot_spacer() };
+				lines = new String[] { plugin.messageManager.sign_pot_items(itemPot.size()), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
 			lines = SignUpdater.validateLines(lines, 0, 2);
 			for (int i = 0; i < lines.length; i++)
 				s.setLine(i, lines[i]);
@@ -433,9 +430,8 @@ public abstract class SlotMachineBase implements Nameable {
 
 	protected void executeCommands(String userName, double money, ItemList items) {
 		if (commandExecutionEnabled)
-			commands.execute(new Placeholder("<user_name>", userName), new Placeholder("<money>", Double.toString(money)),
-					new Placeholder("<currency_name>", money == 1 ? VaultHook.ECONOMY.currencyNameSingular() : VaultHook.ECONOMY.currencyNamePlural()),
-					new Placeholder("<item_amount>", Integer.toString(items.size())), new Placeholder("<items>", plugin.messageManager.itemsToString(items, "")), new Placeholder("<slot_machine>", name));
+			commands.execute(new Placeholder("<user_name>", userName), new Placeholder("<money>", Double.toString(money)), new Placeholder("<currency_name>", money == 1 ? VaultHook.ECONOMY.currencyNameSingular() : VaultHook.ECONOMY.currencyNamePlural()), new Placeholder(
+					"<item_amount>", Integer.toString(items.size())), new Placeholder("<items>", plugin.messageManager.itemsToString(items, "")), new Placeholder("<slot_machine>", name));
 	}
 
 	public void teleport(Player p) throws IllegalStateException {

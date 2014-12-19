@@ -6,8 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.util.org.apache.commons.lang3.StringEscapeUtils;
-
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.bukkit.plugin.Plugin;
 
 public final class TextReader extends FileReader {

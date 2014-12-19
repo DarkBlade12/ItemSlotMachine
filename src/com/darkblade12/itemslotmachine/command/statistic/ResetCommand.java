@@ -13,6 +13,7 @@ import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
 
 @CommandDetails(name = "reset", params = "<slot/player> <name>", permission = "ItemSlotMachine.statistic.reset")
 public final class ResetCommand implements ICommand {
+	@SuppressWarnings("deprecation")
 	@Override
 	public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
 		String type = params[0].toLowerCase();

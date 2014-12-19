@@ -112,8 +112,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 					halted = true;
 				for (int i = 0; i < 3; i++)
 					if (halted ? delayTicks[i] != haltTickDelay[i] : true) {
-						frames[i].setItem(i != 0 && win && delayTicks[i] == haltTickDelay[i] - 1 || i != 0 && win && automaticHaltEnabled && !halted && haltTickDelay[i] == 0
-								&& ticks[i] == automaticHaltTicks - 1 ? frames[0].getItem() : getRandomIcon());
+						frames[i].setItem(i != 0 && win && delayTicks[i] == haltTickDelay[i] - 1 || i != 0 && win && automaticHaltEnabled && !halted && haltTickDelay[i] == 0 && ticks[i] == automaticHaltTicks - 1 ? frames[0].getItem() : getRandomIcon());
 						if (halted)
 							delayTicks[i]++;
 						else
@@ -155,6 +154,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 		return items;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void handleWin(double moneyPrize, ItemList itemPrize, boolean executeCommands) {
 		playWinEffect();
 		statistic.getObject(Type.WON_SPINS).increaseValue(1);

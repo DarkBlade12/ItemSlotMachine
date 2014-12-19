@@ -18,6 +18,7 @@ public final class VaultHook extends Hook<Vault> {
 		return ECONOMY != null || PERMISSION != null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static double getBalance(Player p) {
 		return ECONOMY == null ? 0 : ECONOMY.getBalance(p.getName());
 	}

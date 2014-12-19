@@ -116,7 +116,7 @@ public abstract class CommandHandler implements CommandExecutor {
 	public String getUsage(String label, ICommand i) {
 		CommandDetails c = CommandList.getDetails(i);
 		String params = c.params();
-		return "/" + label + " " + c.name() + (c.params().length() > 0 ? " " + params : "");
+		return "/" + label + " " + c.name() + (params.length() > 0 ? " " + params : "");
 	}
 
 	public String getUsage(ICommand i) {

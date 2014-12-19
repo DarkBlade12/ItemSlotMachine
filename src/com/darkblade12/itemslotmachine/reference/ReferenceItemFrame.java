@@ -51,12 +51,15 @@ public final class ReferenceItemFrame extends ReferenceLocation {
 	}
 
 	public void place(Location c, Direction d) {
-		Block b = getAttachedBlock(c, d);
-		World w = b.getWorld();
+		Location l = getBukkitLocation(c, d);
+		World w = l.getWorld();
 		try {
 			Object world = ReflectionUtil.invokeMethod("getHandle", w.getClass(), w);
-			ReflectionUtil.invokeMethod("addEntity", world.getClass(), world,
-					ReflectionUtil.newInstance("EntityItemFrame", DynamicPackage.MINECRAFT_SERVER, world, b.getX(), b.getY(), b.getZ(), rotate(d).getRotation()));
+			Object position = ReflectionUtil.newInstance("BlockPosition", DynamicPackage.MINECRAFT_SERVER, l.getX(), l.getY(), l.getZ());
+			Class<?> enumDirection = ReflectionUtil.getClass("EnumDirection", DynamicPackage.MINECRAFT_SERVER);
+			Object direction = ReflectionUtil.invokeMethod("valueOf", enumDirection, null, rotate(d).name());
+			Object frame = ReflectionUtil.newInstance("EntityItemFrame", DynamicPackage.MINECRAFT_SERVER, world, position, direction);
+			ReflectionUtil.invokeMethod("addEntity", world.getClass(), world, frame);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -74,7 +77,7 @@ public final class ReferenceItemFrame extends ReferenceLocation {
 		return this.initialDirection;
 	}
 
-	private Block getAttachedBlock(Location c, Direction d) {
+	public Block getAttachedBlock(Location c, Direction d) {
 		return getBukkitBlock(c, d).getRelative(rotate(d).getOppositeDirection().toBlockFace());
 	}
 

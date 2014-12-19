@@ -32,8 +32,8 @@ public final class CommandHelpPage {
 			if (i > visible.size() - 1)
 				break;
 			else
-				b.append("\n§r" + insertIntoFormat(label, visible.get(i)));
-		b.append("\n§r" + plugin.messageManager.help_page_footer(page, getPages(sender)));
+				b.append("\nÂ§r" + insertIntoFormat(label, visible.get(i)));
+		b.append("\nÂ§r" + plugin.messageManager.help_page_footer(page, getPages(sender)));
 		sender.sendMessage(b.toString());
 	}
 

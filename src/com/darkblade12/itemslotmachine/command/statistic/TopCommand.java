@@ -2,8 +2,7 @@ package com.darkblade12.itemslotmachine.command.statistic;
 
 import java.util.Arrays;
 
-import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;

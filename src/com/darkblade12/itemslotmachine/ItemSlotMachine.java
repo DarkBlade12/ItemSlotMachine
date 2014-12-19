@@ -53,6 +53,7 @@ public final class ItemSlotMachine extends JavaPlugin {
 		template = new TemplateReader(this, "template.yml", "plugins/ItemSlotMachine/");
 		if (!template.readTemplate()) {
 			l.warning("Failed to read template.yml, plugin will disable!");
+			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 		vaultHook = new VaultHook();
