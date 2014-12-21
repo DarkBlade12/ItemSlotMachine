@@ -276,6 +276,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 	public void rebuild() {
 		deactivate();
 		super.rebuild();
+		broken = false;
 	}
 
 	@Override
