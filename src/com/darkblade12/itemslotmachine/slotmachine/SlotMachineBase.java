@@ -132,7 +132,9 @@ public abstract class SlotMachineBase implements Nameable {
 		loadSettings();
 		if (p.length == 3) {
 			moneyPot = moneyPotDefaultSize;
-			itemPot = itemPotDefaultItems.clone();
+			if (itemPotEnabled) {
+				itemPot = itemPotDefaultItems.clone();
+			}
 			saveInstance();
 		} else {
 			moneyPot = Double.parseDouble(p[3]);
@@ -319,7 +321,7 @@ public abstract class SlotMachineBase implements Nameable {
 	}
 
 	public void saveInstance() {
-		instanceReader.saveToFile(design.getName() + "#" + center + "#" + initialDirection.name() + "#" + moneyPot + (itemPot.size() > 0 ? "#" + itemPot : ""));
+		instanceReader.saveToFile(design.getName() + "#" + center + "#" + initialDirection.name() + "#" + moneyPot + (itemPotEnabled && itemPot.size() > 0 ? "#" + itemPot : ""));
 	}
 
 	public void updateSign() {
