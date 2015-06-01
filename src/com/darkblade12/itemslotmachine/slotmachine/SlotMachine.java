@@ -100,7 +100,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 		statistic.saveToFile();
 		raisePot();
 		userName = p.getName();
-		final boolean win = predetermineWin();
+		final boolean win = predeterminedWinningChanceEnabled ? predetermineWin() : false;
 		task = new BukkitRunnable() {
 			private int[] ticks = new int[3];
 			private int[] delayTicks = new int[3];
