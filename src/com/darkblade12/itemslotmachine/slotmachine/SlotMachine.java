@@ -134,10 +134,12 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 		halted = false;
 		if (task != null)
 			task.cancel();
-		if (!manual && playerLockEnabled)
+		if (!manual && playerLockEnabled) {
 			lockEnd = System.currentTimeMillis() + playerLockTime * 1000;
-		else
+		} else {
+			lockEnd = 0;
 			userName = null;
+		}
 	}
 
 	public void deactivate() {
