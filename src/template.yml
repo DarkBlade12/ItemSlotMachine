@@ -19,7 +19,7 @@ General_Settings:
  # This section contains settings for an individual permission for this slot machine
  Individual_Permission:
  
-  # Determines whether the individual permission is enabled for thi slot machine
+  # Determines whether the individual permission is enabled for this slot machine
   Enabled: false
   
   # This is the permission which is check if the individual permission is enabled

@@ -665,6 +665,6 @@ public abstract class SlotMachineBase implements Nameable {
 
 	public boolean isPermittedToUse(Player p) {
 		String permission = individualPermissionEnabled ? individualPermission : "ItemSlotMachine.slot.use";
-		return p.hasPermission(permission) || p.hasPermission("ItemSlotMachine.slot.*") || p.hasPermission("ItemSlotMachine.*");
+		return p.hasPermission(permission) || p.hasPermission("ItemSlotMachine.slot.use.*") || p.hasPermission("ItemSlotMachine.slot.*") || p.hasPermission("ItemSlotMachine.*");
 	}
 }
