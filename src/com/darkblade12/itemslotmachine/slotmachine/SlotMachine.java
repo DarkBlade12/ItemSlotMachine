@@ -90,6 +90,11 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 			p.sendMessage(plugin.messageManager.slot_machine_broken());
 			return;
 		}
+		final ItemStack[] icons = generateIcons();
+		if(icons == null) {
+			p.sendMessage(plugin.messageManager.slot_machine_broken());
+			return;
+		}
 		insertCoins(p);
 		PlayerStatistic s = plugin.statisticManager.getStatistic(p, true);
 		s.getObject(Type.TOTAL_SPINS).increaseValue(1);
@@ -100,7 +105,6 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 		statistic.saveToFile();
 		raisePot();
 		userName = p.getName();
-		final boolean win = predeterminedWinningChanceEnabled ? predetermineWin() : false;
 		task = new BukkitRunnable() {
 			private int[] ticks = new int[3];
 			private int[] delayTicks = new int[3];
@@ -112,7 +116,11 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 					halted = true;
 				for (int i = 0; i < 3; i++)
 					if (halted ? delayTicks[i] != haltTickDelay[i] : true) {
-						frames[i].setItem(i != 0 && win && delayTicks[i] == haltTickDelay[i] - 1 || i != 0 && win && automaticHaltEnabled && !halted && haltTickDelay[i] == 0 && ticks[i] == automaticHaltTicks - 1 ? frames[0].getItem() : getRandomIcon());
+						if (delayTicks[i] == haltTickDelay[i] - 1 || automaticHaltEnabled && !halted && haltTickDelay[i] == 0 && ticks[i] == automaticHaltTicks - 1) {
+							frames[i].setItem(icons[i]);
+						} else {
+							frames[i].setItem(getRandomIcon());
+						}
 						if (halted)
 							delayTicks[i]++;
 						else
@@ -181,8 +189,8 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 	}
 
 	private void distribute(ItemStack... display) {
-		MoneyPotCombo m = moneyPotCombosEnabled && moneyPotEnabled && VaultHook.isEnabled() ? moneyPotCombos.getActivated(display) : null;
-		ItemPotCombo i = itemPotCombosEnabled && itemPotEnabled ? itemPotCombos.getActivated(display) : null;
+		MoneyPotCombo m = getMoneyPotCombosEnabled() ? moneyPotCombos.getActivated(display) : null;
+		ItemPotCombo i = getItemPotCombosEnabled() ? itemPotCombos.getActivated(display) : null;
 		if (display[0].isSimilar(display[1]) && display[1].isSimilar(display[2])) {
 			double moneyPrize = 0;
 			if (moneyPotEnabled && VaultHook.isEnabled()) {

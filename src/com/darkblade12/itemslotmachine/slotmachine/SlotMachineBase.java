@@ -25,6 +25,7 @@ import com.darkblade12.itemslotmachine.safe.SafeLocation;
 import com.darkblade12.itemslotmachine.settings.InvalidValueException;
 import com.darkblade12.itemslotmachine.settings.SimpleSection;
 import com.darkblade12.itemslotmachine.sign.SignUpdater;
+import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
 import com.darkblade12.itemslotmachine.slotmachine.combo.ComboList;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.ItemPotCombo;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.MoneyPotCombo;
@@ -426,8 +427,115 @@ public abstract class SlotMachineBase implements Nameable {
 		update();
 	}
 
-	protected boolean predetermineWin() {
-		return RANDOM.nextInt(predeterminedWinningChanceMax) < predeterminedWinningChanceMin;
+	private boolean isRegularWin(ItemStack[] icons) {
+		return icons[0].isSimilar(icons[1]) && icons[1].isSimilar(icons[2]);
+	}
+
+	private boolean isMoneyPotComboWin(ItemStack[] icons) {
+		if (!getMoneyPotCombosEnabled()) {
+			return false;
+		}
+		for (MoneyPotCombo combo : moneyPotCombos) {
+			if (combo.isActivated(icons)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isItemPotComboWin(ItemStack[] icons) {
+		if (!getItemPotCombosEnabled()) {
+			return false;
+		}
+		for (ItemPotCombo combo : itemPotCombos) {
+			if (combo.isActivated(icons)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isComboWin(ItemStack[] icons) {
+		return isMoneyPotComboWin(icons) || isItemPotComboWin(icons);
+	}
+
+	private boolean isWin(ItemStack[] icons) {
+		return isRegularWin(icons) || isComboWin(icons);
+	}
+
+	private ItemStack[] generateWinIcons() {
+		ComboList<? extends Combo> combos = null;
+		if (getMoneyPotCombosEnabled() && (!getItemPotCombosEnabled() || RANDOM.nextBoolean())) {
+			combos = moneyPotCombos;
+		} else if (getItemPotCombosEnabled()) {
+			combos = itemPotCombos;
+		}
+		boolean regular = combos == null ? true : RANDOM.nextInt(100) < 80;
+		ItemStack[] icons = new ItemStack[3];
+		if (regular) {
+			ItemStack icon = getRandomIcon();
+			icons[0] = icon;
+			icons[1] = icon;
+			icons[2] = icon;
+		} else {
+			Combo combo = combos.get(RANDOM.nextInt(combos.size()));
+			ItemStack[] comboIcons = combo.getIcons();
+			for (int i = 0; i < 3; i++) {
+				ItemStack finalIcon = comboIcons[i];
+				if (finalIcon.getType() == Material.AIR) {
+					finalIcon = getRandomIcon();
+				}
+				icons[i] = finalIcon;
+			}
+		}
+		return icons;
+	}
+
+	private ItemStack[] generateLoseIcons(int loops) {
+		if (loops == 4) {
+			/* Couldn't find a lose combination! */
+			return null;
+		}
+		ItemStack[] icons = getRandomIcons();
+		if (!isWin(icons)) {
+			return icons;
+		}
+		int[] positions = new int[3];
+		int size = itemIcons.size();
+		if (loops < 3) {
+			for (int i = 0; i < size; i++) {
+				ItemStack icon = itemIcons.get(i);
+				for (int j = 0; j < 3; j++) {
+					if (!icon.isSimilar(icons[j])) {
+						continue;
+					}
+					positions[j] = i;
+				}
+			}
+		}
+		for (int k = positions[0]; k < size; k++) {
+			for (int l = positions[1]; l < size; l++) {
+				for (int m = positions[2]; m < size; m++) {
+					ItemStack[] newIcons = new ItemStack[] { itemIcons.get(k), itemIcons.get(l), itemIcons.get(m) };
+					if (isWin(newIcons)) {
+						continue;
+					}
+					return newIcons;
+				}
+			}
+		}
+		return generateLoseIcons(loops + 1);
+
+	}
+
+	protected ItemStack[] generateIcons() {
+		if (!predeterminedWinningChanceEnabled) {
+			return getRandomIcons();
+		}
+		if (RANDOM.nextInt(predeterminedWinningChanceMax) < predeterminedWinningChanceMin) {
+			return generateWinIcons();
+		}
+		return generateLoseIcons(0);
 	}
 
 	protected void executeCommands(String userName, double money, ItemList items) {
@@ -571,6 +679,10 @@ public abstract class SlotMachineBase implements Nameable {
 		return itemIcons.get(RANDOM.nextInt(itemIcons.size()));
 	}
 
+	private ItemStack[] getRandomIcons() {
+		return new ItemStack[] { getRandomIcon(), getRandomIcon(), getRandomIcon() };
+	}
+
 	public boolean isCreativeUsageEnabled() {
 		return this.creativeUsageEnabled;
 	}
@@ -651,12 +763,20 @@ public abstract class SlotMachineBase implements Nameable {
 		return moneyPot == 0;
 	}
 
+	protected boolean getMoneyPotCombosEnabled() {
+		return moneyPotCombosEnabled && moneyPotEnabled && VaultHook.isEnabled();
+	}
+
 	public ItemList getItemPot() {
 		return itemPot.clone();
 	}
 
 	public boolean isItemPotEmpty() {
 		return itemPot.size() == 0;
+	}
+
+	protected boolean getItemPotCombosEnabled() {
+		return itemPotCombosEnabled && itemPotEnabled;
 	}
 
 	public boolean isPermittedToModify(Player p) {
