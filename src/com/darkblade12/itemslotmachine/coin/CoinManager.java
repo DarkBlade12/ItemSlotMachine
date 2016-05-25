@@ -144,7 +144,7 @@ public final class CoinManager extends Manager {
 			Player p = event.getPlayer();
 			Sign s;
 			try {
-				s = (Sign) p.getTargetBlock(null, 6).getState();
+				s = (Sign) p.getTargetBlock((HashSet<Byte>) null, 6).getState();
 				if (!isShop(s))
 					return;
 			} catch (Exception e) {
