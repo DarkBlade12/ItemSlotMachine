@@ -11,8 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.command.CommandDetails;
 import com.darkblade12.itemslotmachine.command.ICommand;
-import com.darkblade12.itemslotmachine.item.ItemList;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.util.ItemList;
 
 @CommandDetails(name = "item", params = "<name> <deposit/set> <hand/items>", permission = "ItemSlotMachine.slot.item", infiniteParams = true)
 public final class ItemCommand implements ICommand {

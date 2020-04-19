@@ -6,10 +6,8 @@ import java.util.Set;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.item.ItemFactory;
 
 public final class Settings {
     private static final SimpleSection GENERAL_SETTINGS = new SimpleSection("General_Settings");
@@ -26,7 +24,7 @@ public final class Settings {
     private static String rawSlotMachineName;
     private static boolean spaceCheckEnabled;
     private static Set<Material> spaceCheckIgnoredBlocks;
-    private static ItemStack cointItem;
+    private static Material coinMaterial;
     private static boolean coinCommonItemEnabled;
     private static double coinPrice;
     private static boolean limitedUsageEnabled;
@@ -71,7 +69,7 @@ public final class Settings {
         if (coinString == null)
             throw new InvalidValueException("Item", COIN_SETTINGS, "is null");
         try {
-            cointItem = ItemFactory.fromString(coinString);
+            coinMaterial = Material.matchMaterial(coinString);
         } catch (Exception e) {
             throw new InvalidValueException("Item", COIN_SETTINGS, e.getMessage());
         }
@@ -120,8 +118,8 @@ public final class Settings {
         return spaceCheckIgnoredBlocks.contains(m);
     }
 
-    public static ItemStack getCoinItem() {
-        return cointItem;
+    public static Material getCoinMaterial() {
+        return coinMaterial;
     }
 
     public static String getDefaultSlotMachineName() {

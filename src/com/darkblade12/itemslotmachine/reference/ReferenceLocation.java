@@ -5,7 +5,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public class ReferenceLocation {
     protected int l, f, u;
@@ -16,30 +16,30 @@ public class ReferenceLocation {
         this.u = u;
     }
 
-    public static ReferenceLocation fromBukkitLocation(Location c, Direction d, Location l) {
-        int cX = c.getBlockX();
-        int cY = c.getBlockY();
-        int cZ = c.getBlockZ();
-        int x = l.getBlockX();
-        int y = l.getBlockY();
-        int z = l.getBlockZ();
+    public static ReferenceLocation fromBukkitLocation(Location viewPoint, Direction viewDirection, Location location) {
+        int vX = viewPoint.getBlockX();
+        int vY = viewPoint.getBlockY();
+        int vZ = viewPoint.getBlockZ();
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
 
-        switch (d) {
+        switch (viewDirection) {
             case NORTH:
-                return new ReferenceLocation(x - cX, cZ - z, y - cY);
+                return new ReferenceLocation(vX - x, vZ - z, y - vY);
             case EAST:
-                return new ReferenceLocation(cZ - z, x - cX, y - cY);
+                return new ReferenceLocation(vZ - z, x - vX, y - vY);
             case SOUTH:
-                return new ReferenceLocation(x - cX, z - cZ, y - cY);
+                return new ReferenceLocation(x - vX, z - vZ, y - vY);
             case WEST:
-                return new ReferenceLocation(z - cZ, cX - x, y - cY);
+                return new ReferenceLocation(z - vZ, vX - x, y - vY);
         }
 
         return null;
     }
 
-    public static ReferenceLocation fromBukkitLocation(Player p, Location l) {
-        return fromBukkitLocation(p.getLocation(), Direction.getViewDirection(p), l);
+    public static ReferenceLocation fromBukkitLocation(Player player, Location location) {
+        return fromBukkitLocation(player.getLocation(), Direction.getViewDirection(player), location);
     }
 
     public ReferenceLocation add(int l, int f, int u) {

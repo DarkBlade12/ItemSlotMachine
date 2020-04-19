@@ -2,7 +2,7 @@ package com.darkblade12.itemslotmachine.coin;
 
 import org.bukkit.Location;
 
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public class ShopInfo {
     private SafeLocation location;

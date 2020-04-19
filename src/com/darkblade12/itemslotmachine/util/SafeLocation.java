@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.safe;
+package com.darkblade12.itemslotmachine.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

@@ -14,15 +14,12 @@ import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.coin.CoinManager;
-import com.darkblade12.itemslotmachine.cuboid.Cuboid;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.hook.VaultHook;
-import com.darkblade12.itemslotmachine.item.ItemList;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
 import com.darkblade12.itemslotmachine.reader.ConfigReader;
 import com.darkblade12.itemslotmachine.reference.Direction;
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
 import com.darkblade12.itemslotmachine.settings.InvalidValueException;
 import com.darkblade12.itemslotmachine.settings.SimpleSection;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
@@ -33,6 +30,9 @@ import com.darkblade12.itemslotmachine.slotmachine.command.CommandList;
 import com.darkblade12.itemslotmachine.slotmachine.command.Placeholder;
 import com.darkblade12.itemslotmachine.slotmachine.sound.SoundList;
 import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
+import com.darkblade12.itemslotmachine.util.Cuboid;
+import com.darkblade12.itemslotmachine.util.ItemList;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public abstract class SlotMachineBase implements Nameable {
     private static final SimpleSection GENERAL_SETTINGS = new SimpleSection("General_Settings");

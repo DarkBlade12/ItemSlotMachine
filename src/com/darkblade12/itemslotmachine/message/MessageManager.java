@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.hook.VaultHook;
-import com.darkblade12.itemslotmachine.item.ItemList;
 import com.darkblade12.itemslotmachine.manager.Manager;
 import com.darkblade12.itemslotmachine.reader.TextReader;
 import com.darkblade12.itemslotmachine.settings.Settings;
@@ -22,6 +21,7 @@ import com.darkblade12.itemslotmachine.statistic.StatisticObject;
 import com.darkblade12.itemslotmachine.statistic.Type;
 import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
 import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
+import com.darkblade12.itemslotmachine.util.ItemList;
 
 public final class MessageManager extends Manager implements MessageContainer {
     private static final Random RANDOM = new Random();
@@ -335,8 +335,13 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     @Override
-    public String design_removal(String name) {
-        return getMessage("design_removal", true).replace("<name>", name);
+    public String design_removal_failure(String name) {
+        return getMessage("design_removal_failure", true).replace("<name>", name);
+    }
+
+    @Override
+    public String design_removal_success(String name) {
+        return getMessage("design_removal_success", true).replace("<name>", name);
     }
 
     @Override
@@ -500,7 +505,7 @@ public final class MessageManager extends Manager implements MessageContainer {
 
     @Override
     public String slot_machine_building_failure(String cause) {
-        return getMessage("slot_machine_building_failure", true).replace("<cause>", cause);
+        return getMessage("slot_machine_building_failure", true).replace("<cause>", cause == null ? "Unknown" : cause);
     }
 
     @Override

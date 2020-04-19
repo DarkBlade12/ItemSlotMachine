@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.cuboid;
+package com.darkblade12.itemslotmachine.util;
 
 import java.util.Iterator;
 

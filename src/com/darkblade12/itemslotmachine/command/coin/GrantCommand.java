@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.command.CommandDetails;
 import com.darkblade12.itemslotmachine.command.ICommand;
-import com.darkblade12.itemslotmachine.item.ItemList;
+import com.darkblade12.itemslotmachine.util.ItemList;
 
 @CommandDetails(name = "grant", params = "<player> <amount>", executableAsConsole = true, permission = "ItemSlotMachine.coin.grant")
 public final class GrantCommand implements ICommand {

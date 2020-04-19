@@ -6,24 +6,25 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Player;
 
 public class ReferenceBlock extends ReferenceLocation {
-    private String initialData;
+    private String data;
     private Direction initialDirection;
 
-    public ReferenceBlock(int l, int f, int u, String initialData, Direction initialDirection) {
+    public ReferenceBlock(int l, int f, int u, String data, Direction initialDirection) {
         super(l, f, u);
-        this.initialData = initialData;
+        this.data = data;
         this.initialDirection = initialDirection;
     }
 
-    public ReferenceBlock(int l, int f, int u, BlockData initialData, Direction initialDirection) {
-        this(l, f, u, initialData.getAsString(), initialDirection);
+    public ReferenceBlock(int l, int f, int u, BlockData data, Direction initialDirection) {
+        this(l, f, u, data.getAsString(), initialDirection);
     }
 
-    public ReferenceBlock(ReferenceLocation location, BlockData initialData, Direction initialDirection) {
-        this(location.l, location.f, location.u, initialData, initialDirection);
+    public ReferenceBlock(ReferenceLocation location, BlockData data, Direction initialDirection) {
+        this(location.l, location.f, location.u, data, initialDirection);
     }
 
     public static ReferenceBlock fromBukkitBlock(Location viewPoint, Direction viewDirection, Block block) {
@@ -37,17 +38,19 @@ public class ReferenceBlock extends ReferenceLocation {
     }
 
     private BlockData rotate(Direction viewDirection) {
-        BlockData data = Bukkit.createBlockData(initialData);
+        BlockData blockData = Bukkit.createBlockData(data);
 
-        if (!(data instanceof Directional)) {
-            return data;
+        if (blockData instanceof Directional) {
+            Directional directional = (Directional) blockData;
+            BlockFace newFacing = Direction.rotate(directional.getFacing(), initialDirection, viewDirection);
+            directional.setFacing(newFacing);
+        } else if (blockData instanceof Rotatable) {
+            Rotatable rotatable = (Rotatable) blockData;
+            BlockFace newRotation = Direction.rotate(rotatable.getRotation(), initialDirection, viewDirection);
+            rotatable.setRotation(newRotation);
         }
 
-        Directional directional = (Directional) data;
-        BlockFace newFacing = Direction.rotate(directional.getFacing(), initialDirection, viewDirection);
-        directional.setFacing(newFacing);
-
-        return directional;
+        return blockData;
     }
 
     public void place(Location viewPoint, Direction viewDirection) {
@@ -60,11 +63,11 @@ public class ReferenceBlock extends ReferenceLocation {
 
     @Override
     public ReferenceBlock clone() {
-        return new ReferenceBlock(l, f, u, initialData, initialDirection);
+        return new ReferenceBlock(l, f, u, data, initialDirection);
     }
 
-    public String getInitialData() {
-        return initialData;
+    public String getData() {
+        return data;
     }
 
     public Direction getInitialDirection() {

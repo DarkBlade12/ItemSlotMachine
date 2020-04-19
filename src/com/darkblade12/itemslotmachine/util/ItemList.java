@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.item;
+package com.darkblade12.itemslotmachine.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +27,7 @@ public final class ItemList extends ArrayList<ItemStack> implements Cloneable {
             throw new IllegalArgumentException("has an invalid format");
         ItemList list = new ItemList();
         for (String i : s.split(", "))
-            list.add(ItemFactory.fromString(i, amount), false);
+            list.add(ItemBuilder.fromString(i, amount), false);
         return list;
     }
 
@@ -108,7 +108,7 @@ public final class ItemList extends ArrayList<ItemStack> implements Cloneable {
         for (int i = 0; i < size(); i++) {
             if (s.length() > 0)
                 s.append(", ");
-            s.append(ItemFactory.toString(get(i)));
+            s.append(ItemBuilder.toString(get(i)));
         }
         return s.toString();
     }

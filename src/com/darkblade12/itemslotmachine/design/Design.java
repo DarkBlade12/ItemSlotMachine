@@ -16,19 +16,19 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.cuboid.Cuboid;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reference.Direction;
 import com.darkblade12.itemslotmachine.reference.ReferenceBlock;
 import com.darkblade12.itemslotmachine.reference.ReferenceCuboid;
 import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
-import com.darkblade12.itemslotmachine.reference.ReferenceLocation;
 import com.darkblade12.itemslotmachine.settings.Settings;
+import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public final class Design implements Nameable {
     public static final File DIRECTORY = new File("plugins/ItemSlotMachine/designs/");
+    public static final String DEFAULT_NAME = "default";
     private String name;
     private Set<ReferenceBlock> blocks;
     private ReferenceItemFrame[] itemFrames;
@@ -47,37 +47,41 @@ public final class Design implements Nameable {
         this.initialDirection = initialDirection;
     }
 
-    public static Design create(Player p, Cuboid c, String name) throws Exception {
+    public static Design create(Player player, Cuboid cuboid, String name) throws Exception {
         Set<ReferenceBlock> blocks = new HashSet<ReferenceBlock>();
         ReferenceItemFrame[] itemFrames = new ReferenceItemFrame[3];
         ReferenceBlock sign = null, slot = null;
-        ReferenceCuboid region = new ReferenceCuboid(ReferenceLocation.fromBukkitLocation(p, c.getUpperSW()),
-                ReferenceLocation.fromBukkitLocation(p, c.getLowerNE()));
-        Direction direction = Direction.getViewDirection(p);
-        int f = 0;
-        for (Block b : c) {
-            Material m = b.getType();
-            if (b.getState() instanceof Sign && sign == null)
-                sign = ReferenceBlock.fromBukkitBlock(p, b);
-            else if (m == Material.JUKEBOX && slot == null)
-                slot = ReferenceBlock.fromBukkitBlock(p, b);
-            else if (m != Material.AIR)
-                blocks.add(ReferenceBlock.fromBukkitBlock(p, b));
-            else if (f < 3) {
-                ItemFrame i = ReferenceItemFrame.findItemFrame(b.getLocation());
-                if (i != null) {
-                    itemFrames[f] = ReferenceItemFrame.fromBukkitItemFrame(p, i);
-                    f++;
+        ReferenceCuboid region = ReferenceCuboid.fromCuboid(player, cuboid);
+        Direction direction = Direction.getViewDirection(player);
+        int frameIndex = 0;
+
+        for (Block block : cuboid) {
+            Material material = block.getType();
+
+            if (block.getState() instanceof Sign && sign == null) {
+                sign = ReferenceBlock.fromBukkitBlock(player, block);
+            } else if (material == Material.JUKEBOX && slot == null) {
+                slot = ReferenceBlock.fromBukkitBlock(player, block);
+            } else if (material != Material.AIR) {
+                blocks.add(ReferenceBlock.fromBukkitBlock(player, block));
+            } else if (frameIndex < 3) {
+                ItemFrame frame = ReferenceItemFrame.findItemFrame(block.getLocation());
+
+                if (frame != null) {
+                    itemFrames[frameIndex++] = ReferenceItemFrame.fromBukkitItemFrame(player, frame);
                 }
             }
         }
-        if (f < 3) {
-            int m = 3 - f;
-            throw new Exception(m + " item frame" + (m == 1 ? " is" : "s are") + " missing");
-        } else if (sign == null)
+
+        if (frameIndex < 3) {
+            int missingFrames = 3 - frameIndex;
+            throw new Exception(missingFrames + " item frame" + (missingFrames == 1 ? " is" : "s are") + " missing");
+        } else if (sign == null) {
             throw new Exception("The sign is missing");
-        else if (slot == null)
+        } else if (slot == null) {
             throw new Exception("The slot is missing (Jukebox block)");
+        }
+
         return new Design(name, blocks, itemFrames, sign, slot, region, direction);
     }
 
@@ -118,43 +122,66 @@ public final class Design implements Nameable {
         saveToFile();
     }
 
-    public void build(Location c, Direction d) throws Exception {
-        if (Settings.isSpaceCheckEnabled())
-            for (Block b : region.getCuboid(c, d)) {
-                Material m = b.getType();
-                if (m != Material.AIR && !Settings.isBlockIgnored(m))
+    public void build(Location viewPoint, Direction viewDirection) throws Exception {
+        Cuboid cuboid = region.getCuboid(viewPoint, viewDirection);
+
+        if (Settings.isSpaceCheckEnabled()) {
+            for (Block block : cuboid) {
+                Material material = block.getType();
+
+                if (material != Material.AIR && !Settings.isBlockIgnored(material)) {
                     throw new Exception("There is not enough space for this design");
+                }
             }
-        for (ReferenceBlock r : blocks)
-            r.place(c, d);
-        sign.place(c, d);
-        slot.place(c, d);
-        for (ReferenceItemFrame r : itemFrames)
-            r.place(c, d);
-    }
-
-    public void build(Player p) throws Exception {
-        build(p.getLocation(), Direction.getViewDirection(p));
-    }
-
-    public void destruct(Location c, Direction d) {
-        for (ReferenceItemFrame r : itemFrames) {
-            ItemFrame i = r.getBukkitItemFrame(c, d);
-            if (i != null)
-                i.remove();
         }
-        sign.getBukkitBlock(c, d).setType(Material.AIR);
-        slot.getBukkitBlock(c, d).setType(Material.AIR);
-        for (ReferenceBlock r : blocks)
-            r.getBukkitBlock(c, d).setType(Material.AIR);
+
+        try {
+            for (ReferenceBlock refBlock : blocks) {
+                refBlock.place(viewPoint, viewDirection);
+            }
+
+            sign.place(viewPoint, viewDirection);
+            slot.place(viewPoint, viewDirection);
+
+            for (ReferenceItemFrame refFrame : itemFrames) {
+                refFrame.place(viewPoint, viewDirection);
+            }
+        } catch (Exception e) {
+            for (Block block : cuboid) {
+                block.setType(Material.AIR);
+            }
+
+            throw e;
+        }
     }
 
-    public void destruct(Player p) {
-        destruct(p.getLocation(), Direction.getViewDirection(p));
+    public void build(Player player) throws Exception {
+        build(player.getLocation(), Direction.getViewDirection(player));
+    }
+
+    public void destruct(Location viewPoint, Direction viewDirection) {
+        for (ReferenceItemFrame refFrame : itemFrames) {
+            ItemFrame frame = refFrame.getBukkitItemFrame(viewPoint, viewDirection);
+
+            if (frame != null) {
+                frame.remove();
+            }
+        }
+
+        sign.getBukkitBlock(viewPoint, viewDirection).setType(Material.AIR);
+        slot.getBukkitBlock(viewPoint, viewDirection).setType(Material.AIR);
+
+        for (ReferenceBlock refBlock : blocks) {
+            refBlock.getBukkitBlock(viewPoint, viewDirection).setType(Material.AIR);
+        }
+    }
+
+    public void destruct(Player player) {
+        destruct(player.getLocation(), Direction.getViewDirection(player));
     }
 
     public boolean saveToFile() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 
         if (!DIRECTORY.exists()) {
             DIRECTORY.mkdirs();

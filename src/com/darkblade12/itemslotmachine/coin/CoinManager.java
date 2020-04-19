@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -22,10 +23,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.command.ICommand;
-import com.darkblade12.itemslotmachine.item.ItemFactory;
 import com.darkblade12.itemslotmachine.manager.Manager;
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
 import com.darkblade12.itemslotmachine.settings.Settings;
+import com.darkblade12.itemslotmachine.util.ItemBuilder;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public final class CoinManager extends Manager {
     private ItemStack coin;
@@ -64,9 +65,15 @@ public final class CoinManager extends Manager {
 
     @Override
     public boolean onInitialize() {
-        coin = Settings.isCommonCoinItemEnabled() ? Settings.getCoinItem()
-                : ItemFactory.setNameAndLore(Settings.getCoinItem(), plugin.messageManager.coin_name(),
-                                             plugin.messageManager.coin_lore());
+        String coinName = plugin.messageManager.coin_name();
+        String[] coinLore = plugin.messageManager.coin_lore();
+        ItemBuilder builder = new ItemBuilder().withMaterial(Settings.getCoinMaterial());
+
+        if (!Settings.isCommonCoinItemEnabled()) {
+            builder = builder.withName(coinName).withLore(coinLore);
+        }
+
+        coin = builder.build();
         lastShop = new ConcurrentHashMap<UUID, ShopInfo>();
         task = new BukkitRunnable() {
             @Override
@@ -90,7 +97,7 @@ public final class CoinManager extends Manager {
             }
         }.runTaskTimer(plugin, 10, 10);
         registerEvents();
-        
+
         return true;
     }
 
@@ -179,13 +186,14 @@ public final class CoinManager extends Manager {
     public void onPlayerItemHeld(PlayerItemHeldEvent event) {
         int previous = event.getPreviousSlot();
         int next = event.getNewSlot();
+        Player player = event.getPlayer();
+        Block target = player.getTargetBlockExact(6);
 
-        if (next == previous) {
+        if (next == previous || target == null) {
             return;
         }
 
-        Player player = event.getPlayer();
-        BlockState state = player.getTargetBlockExact(6).getState();
+        BlockState state = target.getState();
 
         if (!(state instanceof Sign)) {
             return;

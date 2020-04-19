@@ -1,496 +1,496 @@
 {
-    "name": "default",
-    "blocks": [
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dtrue,north\u003dfalse,south\u003dtrue,up\u003dtrue,waterlogged\u003dfalse,west\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 3,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dfalse,north\u003dtrue,south\u003dfalse,up\u003dtrue,waterlogged\u003dfalse,west\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 1,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 3,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dsouth,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 3,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dtop,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 2,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dtrue,north\u003dfalse,south\u003dtrue,up\u003dtrue,waterlogged\u003dfalse,west\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 3,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 2,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 3,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dnorth,half\u003dbottom,shape\u003douter_left,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 1,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dfalse,north\u003dfalse,south\u003dtrue,up\u003dtrue,waterlogged\u003dfalse,west\u003dtrue]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 3,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:infested_stone_bricks",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 2,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003dwest,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 2,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 2,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003deast,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 2,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 2,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 2,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dsouth,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 3,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 2,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:infested_stone_bricks",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 2,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003dnorth,half\u003dtop,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 1,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dnorth,half\u003dbottom,shape\u003douter_right,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 1,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 3,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 3,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 2,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dfalse,north\u003dtrue,south\u003dfalse,up\u003dtrue,waterlogged\u003dfalse,west\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 1,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003dsouth,half\u003dtop,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 3,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dtop,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 2,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 3,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 1,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dwest,half\u003dbottom,shape\u003douter_left,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 3,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dbottom,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 2,
-            "u": 5
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003dsouth,half\u003dtop,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 3,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 2,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dbottom,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 2,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 1,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 3,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dtop,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 1,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 3,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 3,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 1,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 3,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dbottom,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 2,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dnorth,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 1,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 2,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 2,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dfalse,north\u003dtrue,south\u003dfalse,up\u003dtrue,waterlogged\u003dfalse,west\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 1,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 3,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dfalse,north\u003dtrue,south\u003dfalse,up\u003dtrue,waterlogged\u003dfalse,west\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 1,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 2,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003dsouth,half\u003dtop,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 3,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 2,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:stone_brick_wall[east\u003dfalse,north\u003dfalse,south\u003dtrue,up\u003dtrue,waterlogged\u003dfalse,west\u003dtrue]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 3,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 3,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dsouth,half\u003dbottom,shape\u003douter_left,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -2,
-            "f": 3,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 3,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dtop,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 2,
-            "u": 3
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 2,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:smooth_stone_slab[type\u003ddouble,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 2,
-            "f": 1,
-            "u": 0
-        },
-        {
-            "initialData": "minecraft:spruce_stairs[facing\u003dnorth,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 1,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dbottom,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 2,
-            "u": 1
-        },
-        {
-            "initialData": "minecraft:oak_stairs[facing\u003dsouth,half\u003dbottom,shape\u003dstraight,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 3,
-            "u": 4
-        },
-        {
-            "initialData": "minecraft:oak_planks",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 3,
-            "u": 2
-        },
-        {
-            "initialData": "minecraft:oak_slab[type\u003dtop,waterlogged\u003dfalse]",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 1,
-            "u": 0
-        }
-    ],
-    "itemFrames": [
-        {
-            "initialFacing": "SOUTH",
-            "initialDirection": "NORTH",
-            "l": -1,
-            "f": 2,
-            "u": 2
-        },
-        {
-            "initialFacing": "SOUTH",
-            "initialDirection": "NORTH",
-            "l": 0,
-            "f": 2,
-            "u": 2
-        },
-        {
-            "initialFacing": "SOUTH",
-            "initialDirection": "NORTH",
-            "l": 1,
-            "f": 2,
-            "u": 2
-        }
-    ],
-    "sign": {
-        "initialData": "minecraft:oak_wall_sign[facing\u003dsouth,waterlogged\u003dfalse]",
-        "initialDirection": "NORTH",
-        "l": 0,
-        "f": 1,
-        "u": 1
+  "name": "default",
+  "blocks": [
+    {
+      "data": "minecraft:stone_brick_wall[east=false,north=false,south=true,up=true,waterlogged=false,west=true]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 3,
+      "u": 2
     },
-    "slot": {
-        "initialData": "minecraft:jukebox[has_record\u003dfalse]",
-        "initialDirection": "NORTH",
-        "l": 0,
-        "f": 1,
-        "u": 0
+    {
+      "data": "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 3,
+      "u": 4
     },
-    "region": {
-        "firstLocation": {
-            "l": 2,
-            "f": 1,
-            "u": 5
-        },
-        "secondLocation": {
-            "l": -2,
-            "f": 3,
-            "u": 0
-        }
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 2,
+      "u": 2
     },
-    "initialDirection": "NORTH"
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 1,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_slab[type=bottom,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 2,
+      "u": 1
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 3,
+      "u": 3
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=west,half=bottom,shape=outer_left,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 3,
+      "u": 4
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 1,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 2,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=south,half=top,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 3,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 3,
+      "u": 2
+    },
+    {
+      "data": "minecraft:infested_stone_bricks",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 2,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 2,
+      "u": 2
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 2,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_slab[type=top,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 1,
+      "u": 0
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 1,
+      "u": 2
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 2,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 3,
+      "u": 2
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 1,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_slab[type=top,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 2,
+      "u": 3
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 1,
+      "u": 2
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=true,north=false,south=true,up=true,waterlogged=false,west=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 3,
+      "u": 1
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=south,half=bottom,shape=outer_left,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 3,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 2,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 2,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 2,
+      "u": 4
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 3,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 3,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 2,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 3,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_slab[type=top,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 2,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 3,
+      "u": 2
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=north,half=bottom,shape=outer_right,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 1,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_slab[type=top,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 1,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 3,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 3,
+      "u": 3
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 1,
+      "u": 0
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=true,north=false,south=true,up=true,waterlogged=false,west=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 3,
+      "u": 2
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 3,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 2,
+      "u": 4
+    },
+    {
+      "data": "minecraft:infested_stone_bricks",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 2,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_slab[type=top,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 2,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_slab[type=bottom,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 2,
+      "u": 5
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 2,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 2,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 2,
+      "u": 3
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 1,
+      "u": 1
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 3,
+      "u": 0
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 3,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_planks",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 3,
+      "u": 3
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 1,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=south,half=top,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 3,
+      "u": 0
+    },
+    {
+      "data": "minecraft:smooth_stone_slab[type=double,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 3,
+      "u": 3
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 2,
+      "f": 2,
+      "u": 4
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 1,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=south,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 3,
+      "u": 4
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=south,half=top,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 3,
+      "u": 0
+    },
+    {
+      "data": "minecraft:oak_slab[type=bottom,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 2,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_slab[type=bottom,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 2,
+      "u": 1
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 1,
+      "u": 4
+    },
+    {
+      "data": "minecraft:spruce_stairs[facing=north,half=bottom,shape=outer_left,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 1,
+      "u": 4
+    },
+    {
+      "data": "minecraft:stone_brick_wall[east=false,north=false,south=true,up=true,waterlogged=false,west=true]",
+      "initialDirection": "NORTH",
+      "l": -2,
+      "f": 3,
+      "u": 1
+    },
+    {
+      "data": "minecraft:oak_stairs[facing=north,half=top,shape=straight,waterlogged=false]",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 1,
+      "u": 4
+    }
+  ],
+  "itemFrames": [
+    {
+      "facing": "SOUTH",
+      "initialDirection": "NORTH",
+      "l": 1,
+      "f": 2,
+      "u": 2
+    },
+    {
+      "facing": "SOUTH",
+      "initialDirection": "NORTH",
+      "l": 0,
+      "f": 2,
+      "u": 2
+    },
+    {
+      "facing": "SOUTH",
+      "initialDirection": "NORTH",
+      "l": -1,
+      "f": 2,
+      "u": 2
+    }
+  ],
+  "sign": {
+    "data": "minecraft:oak_wall_sign[facing=south,waterlogged=false]",
+    "initialDirection": "NORTH",
+    "l": 0,
+    "f": 1,
+    "u": 1
+  },
+  "slot": {
+    "data": "minecraft:jukebox[has_record=false]",
+    "initialDirection": "NORTH",
+    "l": 0,
+    "f": 1,
+    "u": 0
+  },
+  "region": {
+    "firstVertice": {
+      "l": -2,
+      "f": 1,
+      "u": 5
+    },
+    "secondVertice": {
+      "l": 2,
+      "f": 3,
+      "u": 0
+    }
+  },
+  "initialDirection": "NORTH"
 }

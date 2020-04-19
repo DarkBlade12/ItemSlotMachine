@@ -2,9 +2,9 @@ package com.darkblade12.itemslotmachine.slotmachine.combo.types;
 
 import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.item.ItemFactory;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
+import com.darkblade12.itemslotmachine.util.ItemBuilder;
 
 public final class MoneyPotCombo extends Combo {
     private static final String FORMAT = "(\\d+|[\\w\\s]+)(-\\d+)?(@(\\d+|[\\w\\s]+)(-\\d+)?){2}#\\w+(#\\d+(\\.\\d+)?)?";
@@ -22,8 +22,8 @@ public final class MoneyPotCombo extends Combo {
         String[] i = p[0].split("@");
         if (i.length != 3)
             throw new IllegalArgumentException("contains an invalid format");
-        ItemStack[] icons = new ItemStack[] { ItemFactory.fromString(i[0], false), ItemFactory.fromString(i[1], false),
-                                              ItemFactory.fromString(i[2], false) };
+        ItemStack[] icons = new ItemStack[] { ItemBuilder.fromString(i[0], false), ItemBuilder.fromString(i[1], false),
+                                              ItemBuilder.fromString(i[2], false) };
         Action action = Action.fromName(p[1]);
         if (action == null || !action.isApplicable(MoneyPotCombo.class))
             throw new IllegalArgumentException("contains an invalid action name");

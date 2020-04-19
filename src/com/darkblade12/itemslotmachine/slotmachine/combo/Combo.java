@@ -3,7 +3,7 @@ package com.darkblade12.itemslotmachine.slotmachine.combo;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.item.ItemFactory;
+import com.darkblade12.itemslotmachine.util.ItemBuilder;
 
 public abstract class Combo {
     private ItemStack[] icons;
@@ -40,7 +40,7 @@ public abstract class Combo {
 
     @Override
     public String toString() {
-        return ItemFactory.toString(icons[0], false) + "@" + ItemFactory.toString(icons[1], false) + "@"
-                + ItemFactory.toString(icons[2], false) + "#" + action.name();
+        return ItemBuilder.toString(icons[0], false) + "@" + ItemBuilder.toString(icons[1], false) + "@"
+                + ItemBuilder.toString(icons[2], false) + "#" + action.name();
     }
 }

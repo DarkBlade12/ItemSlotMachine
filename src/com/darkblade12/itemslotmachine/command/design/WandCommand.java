@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.command.CommandDetails;
 import com.darkblade12.itemslotmachine.command.ICommand;
-import com.darkblade12.itemslotmachine.item.ItemList;
+import com.darkblade12.itemslotmachine.util.ItemList;
 
 @CommandDetails(name = "wand", executableAsConsole = false, permission = "ItemSlotMachine.design.wand")
 public final class WandCommand implements ICommand {

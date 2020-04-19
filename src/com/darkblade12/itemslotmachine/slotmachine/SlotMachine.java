@@ -15,17 +15,17 @@ import org.bukkit.scheduler.BukkitTask;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.hook.VaultHook;
-import com.darkblade12.itemslotmachine.item.ItemList;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
 import com.darkblade12.itemslotmachine.reference.Direction;
-import com.darkblade12.itemslotmachine.rocket.Rocket;
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.ItemPotCombo;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.MoneyPotCombo;
 import com.darkblade12.itemslotmachine.statistic.Type;
 import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
+import com.darkblade12.itemslotmachine.util.ItemList;
+import com.darkblade12.itemslotmachine.util.Rocket;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public final class SlotMachine extends SlotMachineBase implements Nameable {
     private boolean broken;

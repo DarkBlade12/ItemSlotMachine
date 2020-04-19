@@ -48,8 +48,10 @@ public abstract interface MessageContainer {
     public abstract String design_creation_failure(String cause);
 
     public abstract String design_creation_success(String name);
+    
+    public abstract String design_removal_failure(String name);
 
-    public abstract String design_removal(String name);
+    public abstract String design_removal_success(String name);
 
     public abstract String design_list(String list);
 

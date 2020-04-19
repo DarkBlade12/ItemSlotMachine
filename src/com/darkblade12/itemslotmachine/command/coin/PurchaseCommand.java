@@ -8,7 +8,7 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.command.CommandDetails;
 import com.darkblade12.itemslotmachine.command.ICommand;
 import com.darkblade12.itemslotmachine.hook.VaultHook;
-import com.darkblade12.itemslotmachine.item.ItemList;
+import com.darkblade12.itemslotmachine.util.ItemList;
 
 @CommandDetails(name = "purchase", params = "<amount>", executableAsConsole = false, permission = "ItemSlotMachine.coin.purchase")
 public final class PurchaseCommand implements ICommand {

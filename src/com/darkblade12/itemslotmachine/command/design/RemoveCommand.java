@@ -11,12 +11,19 @@ import com.darkblade12.itemslotmachine.design.Design;
 public final class RemoveCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
+        if (params[0].equalsIgnoreCase(Design.DEFAULT_NAME)) {
+            sender.sendMessage(plugin.messageManager.design_removal_failure(Design.DEFAULT_NAME));
+            return;
+        }
+
         Design d = plugin.designManager.getDesign(params[0]);
+        
         if (d == null) {
             sender.sendMessage(plugin.messageManager.design_not_existent());
             return;
         }
+        
         plugin.designManager.unregister(d);
-        sender.sendMessage(plugin.messageManager.design_removal(d.getName()));
+        sender.sendMessage(plugin.messageManager.design_removal_success(d.getName()));
     }
 }

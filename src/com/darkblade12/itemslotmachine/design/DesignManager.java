@@ -22,14 +22,14 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.cuboid.Cuboid;
-import com.darkblade12.itemslotmachine.item.ItemFactory;
 import com.darkblade12.itemslotmachine.manager.Manager;
 import com.darkblade12.itemslotmachine.nameable.NameGenerator;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
 import com.darkblade12.itemslotmachine.settings.Settings;
+import com.darkblade12.itemslotmachine.util.Cuboid;
+import com.darkblade12.itemslotmachine.util.ItemBuilder;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public final class DesignManager extends Manager implements NameGenerator {
     private ItemStack wand;
@@ -44,8 +44,9 @@ public final class DesignManager extends Manager implements NameGenerator {
 
     @Override
     public boolean onInitialize() {
-        wand = ItemFactory.setNameAndLore(new ItemStack(Material.BONE), plugin.messageManager.design_wand_name(),
-                                          plugin.messageManager.design_wand_lore());
+        String wandName = plugin.messageManager.design_wand_name();
+        String[] wandLore = plugin.messageManager.design_wand_lore();
+        wand = new ItemBuilder().withMaterial(Material.BONE).withName(wandName).withLore(wandLore).build();
         comparator = new NameableComparator<Design>(Settings.getRawDesignName());
         loadDesigns();
         selections = new HashMap<String, SafeLocation[]>();
@@ -78,8 +79,7 @@ public final class DesignManager extends Manager implements NameGenerator {
         Collections.sort(designs, comparator);
     }
 
-    public void loadDesigns() {
-        designs = new NameableList<Design>(true);
+    private Design loadDefaultDesign() {
         try {
             InputStream stream = plugin.getResource("defaultDesign.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -92,20 +92,35 @@ public final class DesignManager extends Manager implements NameGenerator {
             }
 
             reader.close();
-
-            Design defaultDesign = Design.fromString(json.toString());
-            designs.add(defaultDesign);
+            return Design.fromString(json.toString());
         } catch (Exception e) {
-            if (Settings.isDebugModeEnabled())
+            plugin.l.warning("Failed to load default design! Cause: " + e.getMessage());
+
+            if (Settings.isDebugModeEnabled()) {
                 e.printStackTrace();
+            }
+
+            return null;
         }
+    }
+
+    public void loadDesigns() {
+        designs = new NameableList<Design>(true);
+        Design defDesign = loadDefaultDesign();
+
+        if (defDesign != null) {
+            designs.add(defDesign);
+        }
+
         for (String name : getNames())
             try {
                 designs.add(Design.fromFile(name));
             } catch (Exception e) {
                 plugin.l.warning("Failed to load design '" + name + "'! Cause: " + e.getMessage());
-                if (Settings.isDebugModeEnabled())
+
+                if (Settings.isDebugModeEnabled()) {
                     e.printStackTrace();
+                }
             }
         sort();
         int amount = designs.size();
@@ -182,27 +197,33 @@ public final class DesignManager extends Manager implements NameGenerator {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getHand() == EquipmentSlot.OFF_HAND) {
+        Action action = event.getAction();
+
+        if (event.getHand() == EquipmentSlot.OFF_HAND
+                || action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
 
-        Action a = event.getAction();
-        if (a == Action.LEFT_CLICK_BLOCK || a == Action.RIGHT_CLICK_BLOCK) {
-            Player p = event.getPlayer();
-            if (p.getInventory().getItemInMainHand().isSimilar(wand)) {
-                event.setCancelled(true);
-                Location l = event.getClickedBlock().getLocation();
-                boolean first = a == Action.LEFT_CLICK_BLOCK;
-                selectPosition(p, l, first);
-                if (first)
-                    p.sendMessage(plugin.messageManager.design_wand_first_position_selected(l.getBlockX(), l.getBlockY(),
-                                                                                            l.getBlockZ(),
-                                                                                            l.getWorld().getName()));
-                else
-                    p.sendMessage(plugin.messageManager.design_wand_second_position_selected(l.getBlockX(), l.getBlockY(),
-                                                                                             l.getBlockZ(),
-                                                                                             l.getWorld().getName()));
+        Player p = event.getPlayer();
+
+        if (p.getInventory().getItemInMainHand().isSimilar(wand)) {
+            event.setCancelled(true);
+
+            Location l = event.getClickedBlock().getLocation();
+            boolean first = action == Action.LEFT_CLICK_BLOCK;
+            selectPosition(p, l, first);
+
+            String message;
+
+            if (first) {
+                message = plugin.messageManager.design_wand_first_position_selected(l.getBlockX(), l.getBlockY(), l.getBlockZ(),
+                                                                                    l.getWorld().getName());
+            } else {
+                message = plugin.messageManager.design_wand_second_position_selected(l.getBlockX(), l.getBlockY(), l.getBlockZ(),
+                                                                                     l.getWorld().getName());
             }
+
+            p.sendMessage(message);
         }
     }
 }

@@ -9,20 +9,20 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.safe.SafeLocation;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public final class ReferenceItemFrame extends ReferenceLocation {
-    private BlockFace initialFacing;
+    private BlockFace facing;
     private Direction initialDirection;
 
-    public ReferenceItemFrame(int l, int f, int u, BlockFace initialFacing, Direction initialDirection) {
+    public ReferenceItemFrame(int l, int f, int u, BlockFace facing, Direction initialDirection) {
         super(l, f, u);
-        this.initialFacing = initialFacing;
+        this.facing = facing;
         this.initialDirection = initialDirection;
     }
 
-    public ReferenceItemFrame(ReferenceLocation location, BlockFace initialFacing, Direction initialDirection) {
-        this(location.l, location.f, location.u, initialFacing, initialDirection);
+    public ReferenceItemFrame(ReferenceLocation location, BlockFace facing, Direction initialDirection) {
+        this(location.l, location.f, location.u, facing, initialDirection);
     }
 
     public static ItemFrame findItemFrame(Location location) {
@@ -47,7 +47,7 @@ public final class ReferenceItemFrame extends ReferenceLocation {
     }
 
     private BlockFace rotate(Direction viewDirection) {
-        return Direction.rotate(initialFacing, initialDirection, viewDirection);
+        return Direction.rotate(facing, initialDirection, viewDirection);
     }
 
     public void place(Location viewPoint, Direction viewDirection) {
@@ -61,8 +61,8 @@ public final class ReferenceItemFrame extends ReferenceLocation {
         place(viewer.getLocation(), Direction.getViewDirection(viewer));
     }
 
-    public BlockFace getInitialFacing() {
-        return this.initialFacing;
+    public BlockFace getFacing() {
+        return this.facing;
     }
 
     public Direction getInitialDirection() {
@@ -84,6 +84,6 @@ public final class ReferenceItemFrame extends ReferenceLocation {
 
     @Override
     public ReferenceItemFrame clone() {
-        return new ReferenceItemFrame(l, f, u, initialFacing, initialDirection);
+        return new ReferenceItemFrame(l, f, u, facing, initialDirection);
     }
 }
