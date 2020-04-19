@@ -8,7 +8,7 @@
 # Plugin messages and message parts #
 #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#
 
-plugin_prefix=&7&l[&2Item&eSlotMachine&7&l] &r
+plugin_prefix=&7[&2Item&eSlotMachine&7] &r
 plugin_reloaded=&7Plugin version <version> was reloaded. (<time> ms)
 
 #=#=#=#=#=#=#=#=#=#=#

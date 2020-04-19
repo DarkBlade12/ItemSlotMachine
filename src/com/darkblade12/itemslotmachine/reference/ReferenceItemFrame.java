@@ -3,103 +3,87 @@ package com.darkblade12.itemslotmachine.reference;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.util.ReflectionUtil;
-import com.darkblade12.itemslotmachine.util.ReflectionUtil.DynamicPackage;
+import com.darkblade12.itemslotmachine.safe.SafeLocation;
 
 public final class ReferenceItemFrame extends ReferenceLocation {
-	private static final String FORMAT = "-?\\d+(@-?\\d+){2}@(SOUTH|WEST|NORTH|EAST)@(SOUTH|WEST|NORTH|EAST)";
-	private static final String SECOND_FORMAT = "-?\\d+(@-?\\d+){2}@(SOUTH|WEST|NORTH|EAST)";
-	private Direction initialFacing;
-	private Direction initialDirection;
+    private BlockFace initialFacing;
+    private Direction initialDirection;
 
-	public ReferenceItemFrame(int l, int f, int u, Direction initialFacing, Direction initialDirection) {
-		super(l, f, u);
-		this.initialFacing = initialFacing;
-		this.initialDirection = initialDirection;
-	}
+    public ReferenceItemFrame(int l, int f, int u, BlockFace initialFacing, Direction initialDirection) {
+        super(l, f, u);
+        this.initialFacing = initialFacing;
+        this.initialDirection = initialDirection;
+    }
 
-	public static ReferenceItemFrame fromString(String s) throws IllegalArgumentException {
-		if (!s.matches(FORMAT))
-			throw new IllegalArgumentException("Invalid format");
-		String[] p = s.split("@");
-		return new ReferenceItemFrame(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]), Direction.valueOf(p[3]), Direction.valueOf(p[4]));
-	}
+    public ReferenceItemFrame(ReferenceLocation location, BlockFace initialFacing, Direction initialDirection) {
+        this(location.l, location.f, location.u, initialFacing, initialDirection);
+    }
 
-	public static ReferenceItemFrame fromString(String s, Direction d) throws IllegalArgumentException {
-		if (!s.matches(SECOND_FORMAT))
-			throw new IllegalArgumentException("Invalid format");
-		String[] p = s.split("@");
-		return new ReferenceItemFrame(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]), Direction.valueOf(p[3]), d);
-	}
+    public static ItemFrame findItemFrame(Location location) {
+        for (Entity entity : location.getChunk().getEntities()) {
+            Location entityLocation = entity.getLocation().getBlock().getLocation();
 
-	public static ReferenceItemFrame fromBukkitItemFrame(Location c, Direction d, ItemFrame i) {
-		return fromBukkitLocation(c, d, i.getLocation()).toReferenceItemFrame(Direction.fromBlockFace(i.getFacing()), d);
-	}
+            if (entity instanceof ItemFrame && SafeLocation.noDistance(location, entityLocation)) {
+                return (ItemFrame) entity;
+            }
+        }
 
-	public static ReferenceItemFrame fromBukkitItemFrame(Player p, ItemFrame i) {
-		return fromBukkitItemFrame(p.getLocation(), Direction.get(p), i);
-	}
+        return null;
+    }
 
-	private Direction rotate(Direction d) {
-		Direction facing = initialFacing;
-		for (int i = 1; i <= initialDirection.getRotations(d); i++)
-			facing = facing.getNextDirection();
-		return facing;
-	}
+    public static ReferenceItemFrame fromBukkitItemFrame(Location viewPoint, Direction viewDirection, ItemFrame frame) {
+        ReferenceLocation location = fromBukkitLocation(viewPoint, viewDirection, frame.getLocation());
+        return new ReferenceItemFrame(location, frame.getFacing(), viewDirection);
+    }
 
-	public void place(Location c, Direction d) {
-		Location l = getBukkitLocation(c, d);
-		World w = l.getWorld();
-		try {
-			Object world = ReflectionUtil.invokeMethod("getHandle", w.getClass(), w);
-			Object position = ReflectionUtil.newInstance("BlockPosition", DynamicPackage.MINECRAFT_SERVER, l.getX(), l.getY(), l.getZ());
-			Class<?> enumDirection = ReflectionUtil.getClass("EnumDirection", DynamicPackage.MINECRAFT_SERVER);
-			Object direction = ReflectionUtil.invokeMethod("valueOf", enumDirection, null, rotate(d).name());
-			Object frame = ReflectionUtil.newInstance("EntityItemFrame", DynamicPackage.MINECRAFT_SERVER, world, position, direction);
-			ReflectionUtil.invokeMethod("addEntity", world.getClass(), world, frame);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public static ReferenceItemFrame fromBukkitItemFrame(Player viewer, ItemFrame frame) {
+        return fromBukkitItemFrame(viewer.getLocation(), Direction.getViewDirection(viewer), frame);
+    }
 
-	public void place(Player p) {
-		place(p.getLocation(), Direction.get(p));
-	}
+    private BlockFace rotate(Direction viewDirection) {
+        return Direction.rotate(initialFacing, initialDirection, viewDirection);
+    }
 
-	public Direction getInitialFacing() {
-		return this.initialFacing;
-	}
+    public void place(Location viewPoint, Direction viewDirection) {
+        Location l = getBukkitLocation(viewPoint, viewDirection);
+        World w = l.getWorld();
+        ItemFrame frame = (ItemFrame) w.spawnEntity(l, EntityType.ITEM_FRAME);
+        frame.setFacingDirection(rotate(viewDirection), true);
+    }
 
-	public Direction getInitialDirection() {
-		return this.initialDirection;
-	}
+    public void place(Player viewer) {
+        place(viewer.getLocation(), Direction.getViewDirection(viewer));
+    }
 
-	public Block getAttachedBlock(Location c, Direction d) {
-		return getBukkitBlock(c, d).getRelative(rotate(d).getOppositeDirection().toBlockFace());
-	}
+    public BlockFace getInitialFacing() {
+        return this.initialFacing;
+    }
 
-	public ItemFrame getBukkitItemFrame(Location c, Direction d) {
-		return ItemFrameFinder.find(getBukkitLocation(c, d));
-	}
+    public Direction getInitialDirection() {
+        return this.initialDirection;
+    }
 
-	public ItemFrame getBukkitItemFrame(Player p) {
-		return getBukkitItemFrame(p.getLocation(), Direction.get(p));
-	}
+    public Block getAttachedBlock(Location viewPoint, Direction viewDirection) {
+        BlockFace face = rotate(viewDirection).getOppositeFace();
+        return getBukkitBlock(viewPoint, viewDirection).getRelative(face);
+    }
 
-	public String toString(boolean direction) {
-		return super.toString() + "@" + initialFacing.name() + (direction ? "@" + initialDirection : "");
-	}
+    public ItemFrame getBukkitItemFrame(Location viewPoint, Direction viewDirection) {
+        return findItemFrame(getBukkitLocation(viewPoint, viewDirection));
+    }
 
-	@Override
-	public String toString() {
-		return toString(true);
-	}
+    public ItemFrame getBukkitItemFrame(Player viewer) {
+        return getBukkitItemFrame(viewer.getLocation(), Direction.getViewDirection(viewer));
+    }
 
-	@Override
-	public ReferenceItemFrame clone() {
-		return new ReferenceItemFrame(l, f, u, initialFacing, initialDirection);
-	}
+    @Override
+    public ReferenceItemFrame clone() {
+        return new ReferenceItemFrame(l, f, u, initialFacing, initialDirection);
+    }
 }

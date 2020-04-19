@@ -1,25 +1,40 @@
 name: ItemSlotMachine
-version: 1.3.3
+version: 1.3.4
 author: DarkBlade12
 website: http://dev.bukkit.org/profiles/DarkBladee12
-softdepend: [Vault, Multiverse-Core, Multiworld, PlotMe, MyWorlds]
+api-version: 1.15
+
+softdepend:
+- Vault
+- Multiverse-Core
+- Multiworld
+- PlotMe
+- MyWorlds
 
 main: com.darkblade12.itemslotmachine.ItemSlotMachine
 
 commands:
- design:
-  description: Commands related to designs
-  usage: /<command> help
-  aliases: [sdesign, slotdesign]
- coin:
-  description: Commands related to coins
-  usage: /<command> help
-  aliases: [scoin, slotcoin]
- slot:
-  description: Commands related to slot machines
-  usage: /<command> help
-  aliases: [smachine, slotmachine]
- statistic:
-  description: Commands related to statistics
-  usage: /<command> help
-  aliases: [sstatistic, slotstatistic]
+  design:
+    description: Commands related to designs
+    usage: /<command> help
+    aliases:
+    - sdesign
+    - slotdesign
+  coin:
+    description: Commands related to coins
+    usage: /<command> help
+    aliases:
+    - scoin
+    - slotcoin
+  slot:
+    description: Commands related to slot machines
+    usage: /<command> help
+    aliases:
+    - smachine
+    - slotmachine
+  statistic:
+    description: Commands related to statistics
+    usage: /<command> help
+    aliases:
+    - sstatistic
+    - slotstatistic

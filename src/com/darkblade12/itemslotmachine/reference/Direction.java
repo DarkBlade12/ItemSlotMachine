@@ -7,65 +7,75 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 public enum Direction {
-	SOUTH(0),
-	WEST(1),
-	NORTH(2),
-	EAST(3);
+    SOUTH(0),
+    WEST(1),
+    NORTH(2),
+    EAST(3);
 
-	private static final Map<Integer, Direction> ROTATION_MAP = new HashMap<Integer, Direction>();
-	private int rotation;
+    private static final Map<Integer, Direction> ORDINAL_MAP = new HashMap<Integer, Direction>();
+    private int ordinal;
 
-	static {
-		for (Direction d : values())
-			ROTATION_MAP.put(d.rotation, d);
-	}
+    static {
+        for (Direction d : values()) {
+            ORDINAL_MAP.put(d.ordinal, d);
+        }
+    }
 
-	private Direction(int rotation) {
-		this.rotation = rotation;
-	}
+    private Direction(int ordinal) {
+        this.ordinal = ordinal;
+    }
 
-	public static Direction fromRotation(int i) {
-		return ROTATION_MAP.get(i % 4);
-	}
+    public static Direction fromOrdinal(int ordinal) {
+        return ORDINAL_MAP.get(ordinal % values().length);
+    }
 
-	public static Direction fromBlockFace(BlockFace b) {
-		try {
-			return valueOf(b.name());
-		} catch (Exception e) {
-			return null;
-		}
-	}
+    public static Direction fromBlockFace(BlockFace face) {
+        try {
+            return valueOf(face.name());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-	public static Direction get(Player p) {
-		float yaw = p.getLocation().getYaw();
-		if (yaw < 0.0F)
-			yaw += 360.0F;
-		return yaw > 45 && yaw < 135 ? WEST : yaw > 135 && yaw < 225 ? NORTH : yaw > 225 && yaw < 315 ? EAST : SOUTH;
-	}
+    public static Direction getViewDirection(Player player) {
+        float yaw = player.getLocation().getYaw();
 
-	public int getRotation() {
-		return this.rotation;
-	}
+        if (yaw < 0.0F) {
+            yaw += 360.0F;
+        }
 
-	public Direction getOppositeDirection() {
-		return fromRotation(rotation + 2);
-	}
+        return yaw > 45 && yaw < 135 ? WEST : yaw > 135 && yaw < 225 ? NORTH : yaw > 225 && yaw < 315 ? EAST : SOUTH;
+    }
+    
+    public static BlockFace rotate(BlockFace face, Direction initial, Direction target) {
+        Direction faceDirection = fromBlockFace(face);
+        Direction current = initial;
+        
+        while(current != target) {
+            faceDirection = faceDirection.next();
+            current = current.next();
+        }
+        
+        return faceDirection.toBlockFace();
+    }
 
-	public Direction getNextDirection() {
-		return fromRotation(rotation + 1);
-	}
+    public Direction next() {
+        return fromOrdinal(ordinal + 1);
+    }
 
-	public int getRotations(Direction d) {
-		int rotations = 0;
-		Direction o = this;
-		while (o != d) {
-			o = o.getNextDirection();
-			rotations++;
-		}
-		return rotations;
-	}
+    public Direction previous() {
+        return fromOrdinal(ordinal + (values().length - 1));
+    }
 
-	public BlockFace toBlockFace() {
-		return BlockFace.valueOf(name());
-	}
+    public Direction opposite() {
+        return fromOrdinal(ordinal + (values().length / 2));
+    }
+
+    public int getOrdinal() {
+        return this.ordinal;
+    }
+
+    public BlockFace toBlockFace() {
+        return BlockFace.valueOf(name());
+    }
 }

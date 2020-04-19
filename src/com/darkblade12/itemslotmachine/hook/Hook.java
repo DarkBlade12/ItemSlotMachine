@@ -2,31 +2,22 @@ package com.darkblade12.itemslotmachine.hook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
-@SuppressWarnings("unchecked")
-public abstract class Hook<P extends JavaPlugin> {
-	protected P plugin;
-	protected static boolean ENABLED;
+public abstract class Hook {
+    protected static boolean ENABLED;
 
-	public boolean load() {
-		Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin(getPluginName());
-		if (plugin != null) {
-			this.plugin = (P) plugin;
-			ENABLED = initialize();
-		}
-		return plugin != null && ENABLED;
-	}
+    public boolean enable() {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(getPluginName());
+        ENABLED = plugin != null && plugin.isEnabled() && initialize();
 
-	protected abstract boolean initialize();
+        return ENABLED;
+    }
 
-	public abstract String getPluginName();
+    protected abstract boolean initialize();
 
-	public P getPlugin() {
-		return this.plugin;
-	}
+    public abstract String getPluginName();
 
-	public static boolean isEnabled() {
-		return ENABLED;
-	}
+    public static boolean isEnabled() {
+        return ENABLED;
+    }
 }

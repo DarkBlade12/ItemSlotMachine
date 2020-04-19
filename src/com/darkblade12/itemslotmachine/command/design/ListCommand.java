@@ -8,8 +8,8 @@ import com.darkblade12.itemslotmachine.command.ICommand;
 
 @CommandDetails(name = "list", permission = "ItemSlotMachine.design.list")
 public final class ListCommand implements ICommand {
-	@Override
-	public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-		sender.sendMessage(plugin.messageManager.design_list());
-	}
+    @Override
+    public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
+        sender.sendMessage(plugin.messageManager.design_list());
+    }
 }

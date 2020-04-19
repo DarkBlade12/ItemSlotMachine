@@ -6,35 +6,35 @@ import com.darkblade12.itemslotmachine.statistic.Statistic;
 import com.darkblade12.itemslotmachine.statistic.Type;
 
 public final class PlayerStatistic extends Statistic implements Nameable {
-	private String name;
-	private CompressedStringReader reader;
+    private String name;
+    private CompressedStringReader reader;
 
-	public PlayerStatistic(String name) {
-		super(Type.values());
-		this.name = name;
-		reader = new CompressedStringReader(name + ".statistic", "plugins/ItemSlotMachine/statistics/player/");
-	}
+    public PlayerStatistic(String name) {
+        super(Type.values());
+        this.name = name;
+        reader = new CompressedStringReader(name + ".statistic", "plugins/ItemSlotMachine/statistics/player/");
+    }
 
-	public static PlayerStatistic fromFile(String name) throws Exception {
-		PlayerStatistic p = new PlayerStatistic(name);
-		p.loadStatistic();
-		return p;
-	}
+    public static PlayerStatistic fromFile(String name) throws Exception {
+        PlayerStatistic p = new PlayerStatistic(name);
+        p.loadStatistic();
+        return p;
+    }
 
-	public void loadStatistic() throws Exception {
-		loadStatistic(reader.readFromFile());
-	}
+    public void loadStatistic() throws Exception {
+        loadStatistic(reader.readFromFile());
+    }
 
-	public boolean saveToFile() {
-		return reader.saveToFile(toString());
-	}
+    public boolean saveToFile() {
+        return reader.saveToFile(toString());
+    }
 
-	public void deleteFile() {
-		reader.deleteFile();
-	}
+    public void deleteFile() {
+        reader.deleteFile();
+    }
 
-	@Override
-	public String getName() {
-		return this.name;
-	}
+    @Override
+    public String getName() {
+        return this.name;
+    }
 }

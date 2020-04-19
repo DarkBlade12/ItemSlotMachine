@@ -30,16 +30,16 @@ Slot_Machine_Settings:
   Enabled: true
   
   # This is a list of blocks which are ignored in the space check
-  # Block format: <block_id/block_name>
+  # Block format: <block_name>
   # Format: <block>(, <block>...)
-  Ignored_Blocks: 78, 31
+  Ignored_Blocks: snow, grass, fern, tall_grass, large_fern
  
  # This section contains settings for the coin which is used to activate a slot machine
  Coin_Settings:
   
   # This is the item that will be used as coin
-  # Item format: <item_id/item_name> OR <item_id/item_name>-<data>
-  Item: 371
+  # Item format: <item_name>
+  Item: gold_nugget
   
   # Determines whether only the renamed coin item can be used to activate a slot machine
   Common_Item_Enabled: false

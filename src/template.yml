@@ -5,9 +5,9 @@ General_Settings:
  Activation_Amount: 1
  
  # This is the list of items whose icons can appear in the item frames of this slot machine
- # Item format: <item_id/item_name> OR <item_id/item_name>-<data>
+ # Item format: <item_name> OR <item_name>-<data>
  # Format: <item>(, <item>...)
- Item_Icons: 271, 275, 258, 286, 279, 270, 274, 257, 285, 278, 269, 273, 256, 284, 277, 399, 2256, 2257, 2258, 2259
+ Item_Icons: wooden_axe, stone_axe, iron_axe, diamond_axe, golden_axe
  
  # Determines whether players are able to use this slot machine in creative mode
  # (Players can use slot machines in creative mode without having to insert coins)
@@ -75,7 +75,7 @@ General_Settings:
    # This is the list of sounds which will be played upon ticking
    # Sound format: <sound_name>-<volume>-<pitch>
    # Format: <sound>(, <sound>...)
-   Sounds: CLICK-2-2
+   Sounds: BLOCK_METAL_PRESSURE_PLATE_CLICK_ON-2-2
   
   # This section contains settings for the win sound which will be played when a player wins at this slot machine
   Win_Sounds:
@@ -89,7 +89,7 @@ General_Settings:
    # This is the list of sounds which will be played upon win
    # Sound format: <sound_name>-<volume>-<pitch>
    # Format: <sound>(, <sound>...)
-   Sounds: LEVEL_UP-2-2
+   Sounds: ENTITY_PLAYER_LEVELUP-2-2
    
   # This section contains settings for the lose sound which will be played when a player loses at this slot machine
   Lose_Sounds:
@@ -103,7 +103,7 @@ General_Settings:
    # This is the list of sounds which will be played upon lose
    # Sound format: <sound_name>-<volume>-<pitch>
    # Format: <sound>(, <sound>...)
-   Sounds: NOTE_PIANO-2-2, NOTE_BASS_GUITAR-2-2
+   Sounds: BLOCK_NOTE_BLOCK_GUITAR-2-2, BLOCK_NOTE_BLOCK_BASS-2-2
   
  # This section contains settings for the player lock of this slot machine
  # A player lock will prevent other players from using a slot machine right after the spin of the recent user is over for a specified time
@@ -163,12 +163,12 @@ Money_Pot_Settings:
    
   # This is a list of combos which will are if 'Enabled' is set to true
   # An item id will match everything if it's set to 0
-  # Item format: <item_id/item_name> OR <item_id/item_name>-<data>
+  # Item format: <item_name>
   # Valid action names: MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDANT_MONEY
   # The amount value can either be a point number or a normal number and is only necessary for the actions MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDANT_MONEY
   # Combo format: <item>@<item>@<item>#<action> OR <item>@<item>@<item>#<action>#<amount>
   # Format: <combo>(;<combo>...)
-  Combos: 279@279@279#MULTIPLY_POT_AND_DISTRIBUTE#2.0
+  Combos: diamond_axe@diamond_axe@diamond_axe#MULTIPLY_POT_AND_DISTRIBUTE#2.0
 
 # This section contains settings especially for the item pot
 # Note that one of the pots has to be enabled, otherwise the slot machine won't work. You can also enable both if you want
@@ -178,14 +178,14 @@ Item_Pot_Settings:
  Enabled: true
    
  # These are the default items that are in the pot, the item pot will be set to these items after a player won the pot
- # Item format: <item_id/item_name> OR <item_id/item_name>-<data> OR <item_id/item_name>-<amount>-<data>
+ # Item format: <item_name> OR <item_name>-<amount>
  # Format: <item>(, <item>...)
- Default_Items: 288-5, 264-1, 265-10
+ Default_Items: feather-5, diamond-1, iron_ingot-10
    
  # These are the items that are added to the current pot when a player inserts a coin
- # Item format: <item_id/item_name> OR <item_id/item_name>-<data> OR <item_id/item_name>-<amount>-<data>
+ # Item format: <item_name> OR <item_name>-<amount>
  # Format: <item>(, <item>...)
- Pot_Raise: 348-2, 351-2-4
+ Pot_Raise: glowstone_dust-2, lapis_lazuli-2
   
  # This section contains settings for the House Cut especially for the item pot
  # (The House Cut is in this case the amount of random items that will be taken from the pot by the house, that means that these items will be removed from the actual pot and the rest will be distributed to the player who won)
@@ -206,9 +206,9 @@ Item_Pot_Settings:
    
   # This is a list of combos which are active if 'Enabled' is set to true
   # An item id will match everything if it's set to 0
-  # Item format: <item_id/item_name> OR <item_id/item_name>-<data> (OR <item_id/item_name>-<amount>-<data> for the items value)
+  # Item format: <item_name> (OR <item_name>-<amount> for the items value)
   # Valid action names: DOUBLE_POT_ITEMS_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDANT_ITEMS
   # The items value can either be a point number or a normal number and is only necessary for the actions ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDANT_ITEMS
   # Combo format: <item>@<item>@<item>#<action> OR <item>@<item>@<item>#<action>#<items>
   # Format: <combo>(;<combo>...)
-  Combos: 279@279@279#ADD_TO_POT_AND_DISTRIBUTE#264-3, 267-1, 19-20
+  Combos: diamond_axe@diamond_axe@diamond_axe#ADD_TO_POT_AND_DISTRIBUTE#diamond-3, iron_sword-1, sponge-20
