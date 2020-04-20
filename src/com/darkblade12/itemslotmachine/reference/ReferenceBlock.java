@@ -29,7 +29,6 @@ public class ReferenceBlock extends ReferenceLocation {
 
     public static ReferenceBlock fromBukkitBlock(Location viewPoint, Direction viewDirection, Block block) {
         ReferenceLocation location = fromBukkitLocation(viewPoint, viewDirection, block.getLocation());
-
         return new ReferenceBlock(location, block.getBlockData(), viewDirection);
     }
 
@@ -39,7 +38,6 @@ public class ReferenceBlock extends ReferenceLocation {
 
     private BlockData rotate(Direction viewDirection) {
         BlockData blockData = Bukkit.createBlockData(data);
-
         if (blockData instanceof Directional) {
             Directional directional = (Directional) blockData;
             BlockFace newFacing = Direction.rotate(directional.getFacing(), initialDirection, viewDirection);

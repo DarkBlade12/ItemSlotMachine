@@ -1,43 +1,30 @@
 package com.darkblade12.itemslotmachine.statistic.types;
 
-import com.darkblade12.itemslotmachine.nameable.Nameable;
-import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
-import com.darkblade12.itemslotmachine.statistic.Statistic;
-import com.darkblade12.itemslotmachine.statistic.Type;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-public final class SlotMachineStatistic extends Statistic implements Nameable {
-    private String name;
-    private CompressedStringReader reader;
+import com.darkblade12.itemslotmachine.statistic.Category;
+import com.darkblade12.itemslotmachine.statistic.Statistic;
+import com.darkblade12.itemslotmachine.util.FileUtils;
+
+public final class SlotMachineStatistic extends Statistic {
+    public static final File DIRECTORY = new File("plugins/ItemSlotMachine/statistics/slot machine/");
 
     public SlotMachineStatistic(String name) {
-        super(Type.TOTAL_SPINS, Type.WON_SPINS, Type.LOST_SPINS);
-        this.name = name;
-        reader = new CompressedStringReader(name + ".statistic", "plugins/ItemSlotMachine/statistics/slot machine/");
+        super(name, Category.TOTAL_SPINS, Category.WON_SPINS, Category.LOST_SPINS);
     }
 
-    public static SlotMachineStatistic fromFile(String name) throws Exception {
-        SlotMachineStatistic s = new SlotMachineStatistic(name);
-        s.loadStatistic();
-        return s;
+    public static String getPath(String name) {
+        return DIRECTORY.getPath() + "/" + name + ".json";
     }
 
-    public void loadStatistic() throws Exception {
-        if (reader.getOuputFile().exists())
-            loadStatistic(reader.readFromFile());
-        else
-            saveToFile();
-    }
-
-    public boolean saveToFile() {
-        return reader.saveToFile(toString());
-    }
-
-    public void deleteFile() {
-        reader.deleteFile();
+    public static SlotMachineStatistic fromFile(String name) throws FileNotFoundException, IOException {
+        return FileUtils.readJson(getPath(name), SlotMachineStatistic.class);
     }
 
     @Override
-    public String getName() {
-        return this.name;
+    public String getPath() {
+        return getPath(name);
     }
 }

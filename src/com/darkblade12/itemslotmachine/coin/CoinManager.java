@@ -17,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -46,7 +47,6 @@ public final class CoinManager extends Manager {
         for (int s : splittable) {
             if (s >= 0 && s < lines.length - 1) {
                 String a = lines[s];
-
                 if (a.length() > 15) {
                     String[] p = a.split(" ");
                     lines[s] = p[0];
@@ -68,12 +68,11 @@ public final class CoinManager extends Manager {
         String coinName = plugin.messageManager.coin_name();
         String[] coinLore = plugin.messageManager.coin_lore();
         ItemBuilder builder = new ItemBuilder().withMaterial(Settings.getCoinMaterial());
-
         if (!Settings.isCommonCoinItemEnabled()) {
-            builder = builder.withName(coinName).withLore(coinLore);
+            builder.withName(coinName).withLore(coinLore);
         }
-
         coin = builder.build();
+        
         lastShop = new ConcurrentHashMap<UUID, ShopInfo>();
         task = new BukkitRunnable() {
             @Override
@@ -113,14 +112,12 @@ public final class CoinManager extends Manager {
 
     private void updateShop(Player player, Location signLocation, int coins) {
         BlockState state = signLocation.getBlock().getState();
-
         if (!(state instanceof Sign)) {
             return;
         }
 
         ShopInfo info = getLastShop(player);
         SafeLocation location = SafeLocation.fromBukkitLocation(signLocation);
-
         if (info == null) {
             info = new ShopInfo(location, coins);
             lastShop.put(player.getUniqueId(), info);
@@ -152,8 +149,7 @@ public final class CoinManager extends Manager {
     }
 
     private ShopInfo getLastShop(Player player) {
-        UUID id = player.getUniqueId();
-        return lastShop.containsKey(id) ? lastShop.get(id) : null;
+        return lastShop.getOrDefault(player.getUniqueId(), null);
     }
 
     private int getShopCoins(Player player) {
@@ -188,26 +184,23 @@ public final class CoinManager extends Manager {
         int next = event.getNewSlot();
         Player player = event.getPlayer();
         Block target = player.getTargetBlockExact(6);
-
         if (next == previous || target == null) {
             return;
         }
 
-        BlockState state = target.getState();
 
+        BlockState state = target.getState();
         if (!(state instanceof Sign)) {
             return;
         }
 
         Sign sign = (Sign) state;
-
         if (!isShop(sign)) {
             return;
         }
 
         Location location = sign.getLocation();
         ShopInfo lastShop = getLastShop(player);
-
         if (lastShop != null && !lastShop.getLocation().noDistance(location)) {
             updateShop(player, lastShop.getBukkitLocation(), 1);
         }
@@ -216,7 +209,6 @@ public final class CoinManager extends Manager {
         int amount = player.isSneaking() ? 10 : 1;
         boolean increase = next < previous && (previous != 8 || next != 0) || previous == 0 && next == 8;
         coins += increase ? amount : -amount;
-
         if (coins < 1) {
             coins = 1;
         } else if (coins > 100) {
@@ -228,19 +220,24 @@ public final class CoinManager extends Manager {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        BlockState state = event.getClickedBlock().getState();
+        Block block = event.getClickedBlock();
+        if (event.getHand() == EquipmentSlot.OFF_HAND || event.getAction() != Action.RIGHT_CLICK_BLOCK || block == null) {
+            return;
+        }
 
-        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || !(state instanceof Sign)) {
+        BlockState state = block.getState();
+        if (!(state instanceof Sign)) {
             return;
         }
 
         Sign sign = (Sign) state;
-
-        if (isShop(sign)) {
-            event.setCancelled(true);
-            Player p = event.getPlayer();
-            ICommand purchase = plugin.coinCommandHandler.getCommand("purchase");
-            purchase.execute(plugin, p, "coin", new String[] { Integer.toString(getShopCoins(p)) });
+        if (!isShop(sign)) {
+            return;
         }
+
+        event.setCancelled(true);
+        Player p = event.getPlayer();
+        ICommand purchase = plugin.coinCommandHandler.getCommand("purchase");
+        purchase.execute(plugin, p, "coin", new String[] { Integer.toString(getShopCoins(p)) });
     }
 }

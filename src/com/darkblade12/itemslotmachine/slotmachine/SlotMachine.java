@@ -18,10 +18,13 @@ import com.darkblade12.itemslotmachine.hook.VaultHook;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
 import com.darkblade12.itemslotmachine.reference.Direction;
+import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.ItemPotCombo;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.MoneyPotCombo;
-import com.darkblade12.itemslotmachine.statistic.Type;
+import com.darkblade12.itemslotmachine.slotmachine.sound.SoundList;
+import com.darkblade12.itemslotmachine.statistic.Category;
+import com.darkblade12.itemslotmachine.statistic.Statistic;
 import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
 import com.darkblade12.itemslotmachine.util.ItemList;
 import com.darkblade12.itemslotmachine.util.Rocket;
@@ -40,10 +43,10 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
         super(plugin, name);
     }
 
-    public static SlotMachine create(ItemSlotMachine plugin, String name, Design d, Player p) throws Exception {
-        d.build(p);
-        String data = d.getName() + "#" + SafeLocation.fromBukkitLocation(p.getLocation()) + "#"
-                + Direction.getViewDirection(p).name();
+    public static SlotMachine create(ItemSlotMachine plugin, String name, Design design, Player viewer) throws Exception {
+        design.build(viewer);
+        SafeLocation viewerLoc = SafeLocation.fromBukkitLocation(viewer.getLocation());
+        String data = design.getName() + "#" + viewerLoc + "#" + Direction.getViewDirection(viewer).name();
         new CompressedStringReader(name + ".instance", "plugins/ItemSlotMachine/slot machines/").saveToFile(data);
         return load(plugin, name);
     }
@@ -52,33 +55,30 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
         return new SlotMachine(plugin, name);
     }
 
+    private void playSounds(SoundList sounds, boolean broadcast) {
+        Location slotLoc = slot.getBukkitLocation();
+        if (broadcast) {
+            sounds.play(slotLoc);
+        } else {
+            sounds.play(getUser(), slotLoc);
+        }
+    }
+
     private void playTickingSounds() {
         if (tickingSoundsEnabled) {
-            Location l = slot.getBukkitLocation();
-            if (tickingSoundsBroadcast)
-                tickingSounds.play(l);
-            else
-                tickingSounds.play(getUser(), l);
+            playSounds(tickingSounds, tickingSoundsBroadcast);
         }
     }
 
     private void playWinSounds() {
         if (winSoundsEnabled) {
-            Location l = slot.getBukkitLocation();
-            if (winSoundsBroadcast)
-                winSounds.play(l);
-            else
-                winSounds.play(getUser(), l);
+            playSounds(winSounds, winSoundsBroadcast);
         }
     }
 
     private void playLoseSounds() {
         if (loseSoundsEnabled) {
-            Location l = slot.getBukkitLocation();
-            if (loseSoundsBroadcast)
-                loseSounds.play(l);
-            else
-                loseSounds.play(getUser(), l);
+            playSounds(loseSounds, loseSoundsBroadcast);
         }
     }
 
@@ -88,29 +88,49 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
             Rocket.randomize().displayEffects(plugin, slot.getBukkitLocation().add(0.5, 2, 0.5));
     }
 
-    public void activate(final Player p) {
+    private boolean trySaveStatistic(Statistic statistic) {
+        try {
+            statistic.saveToFile();
+            return true;
+        } catch (Exception e) {
+            String type = statistic instanceof PlayerStatistic ? "player" : "slot machine";
+            plugin.logWarning("Failed to save " + type + " statistic '" + statistic.getName() + "'!");
+            if (Settings.isDebugModeEnabled()) {
+                e.printStackTrace();
+            }
+
+            return false;
+        }
+    }
+
+    public void activate(final Player user) {
         final ItemFrame[] frames = getItemFrameInstances();
         broken = !(getSign() != null && frames != null);
         if (broken) {
-            p.sendMessage(plugin.messageManager.slot_machine_broken());
+            user.sendMessage(plugin.messageManager.slot_machine_broken());
             return;
         }
+
         final ItemStack[] icons = generateIcons();
         if (icons == null) {
-            p.sendMessage(plugin.messageManager.slot_machine_broken());
+            user.sendMessage(plugin.messageManager.slot_machine_broken());
             return;
         }
-        insertCoins(p);
-        PlayerStatistic s = plugin.statisticManager.getStatistic(p, true);
-        s.getObject(Type.TOTAL_SPINS).increaseValue(1);
-        if (p.getGameMode() != GameMode.CREATIVE)
-            s.getObject(Type.COINS_SPENT).increaseValue(activationAmount);
-        s.saveToFile();
-        statistic.getObject(Type.TOTAL_SPINS).increaseValue(1);
-        statistic.saveToFile();
+
+        insertCoins(user);
+        PlayerStatistic userStat = plugin.statisticManager.getStatistic(user, true);
+        userStat.getRecord(Category.TOTAL_SPINS).increaseValue(1);
+        if (user.getGameMode() != GameMode.CREATIVE) {
+            userStat.getRecord(Category.COINS_SPENT).increaseValue(activationAmount);
+        }
+        trySaveStatistic(userStat);
+
+        statistic.getRecord(Category.TOTAL_SPINS).increaseValue(1);
+        trySaveStatistic(statistic);
+
         raisePot();
-        userName = p.getName();
-        userId = p.getUniqueId();
+        userName = user.getName();
+        userId = user.getUniqueId();
         task = new BukkitRunnable() {
             private int[] ticks = new int[3];
             private int[] delayTicks = new int[3];
@@ -118,9 +138,12 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
             @Override
             public void run() {
                 playTickingSounds();
-                if (automaticHaltEnabled && ticks[0] == automaticHaltTicks)
+
+                if (automaticHaltEnabled && ticks[0] == automaticHaltTicks) {
                     halted = true;
-                for (int i = 0; i < 3; i++)
+                }
+
+                for (int i = 0; i < 3; i++) {
                     if (halted ? delayTicks[i] != haltTickDelay[i] : true) {
                         if (delayTicks[i] == haltTickDelay[i] - 1 || automaticHaltEnabled && !halted && haltTickDelay[i] == 0
                                 && ticks[i] == automaticHaltTicks - 1) {
@@ -128,12 +151,17 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
                         } else {
                             frames[i].setItem(getRandomIcon());
                         }
-                        if (halted)
+
+                        if (halted) {
                             delayTicks[i]++;
-                        else
+                        } else {
                             ticks[i]++;
-                    } else if (i == 2)
+                        }
+                    } else if (i == 2) {
                         distribute(frames[0].getItem(), frames[1].getItem(), frames[2].getItem());
+                    }
+                }
+
                 updateSign();
             }
         }.runTaskTimer(plugin, 5, 5);
@@ -147,8 +175,10 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
     private void deactivate(boolean manual) {
         active = false;
         halted = false;
-        if (task != null)
+
+        if (task != null) {
             task.cancel();
+        }
         if (!manual && playerLockEnabled) {
             lockEnd = System.currentTimeMillis() + playerLockTime * 1000;
         } else {
@@ -163,67 +193,79 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
     }
 
     private double applyHouseCut(double money) {
-        return moneyPotHouseCutEnabled ? money
-                - (moneyPotHouseCutPercentage ? money * (moneyPotHouseCutAmount / 100.0D) : moneyPotHouseCutAmount) : money;
+        return moneyPotHouseCutEnabled
+                ? money - (moneyPotHouseCutPercentage ? money * (moneyPotHouseCutAmount / 100.0D) : moneyPotHouseCutAmount)
+                : money;
     }
 
     private ItemList applyHouseCut(ItemList items) {
-        if (itemPotHouseCutEnabled)
+        if (itemPotHouseCutEnabled) {
             items.removeRandom(itemPotHouseCutAmount);
+        }
         return items;
     }
 
-    @SuppressWarnings("deprecation")
     private void handleWin(double moneyPrize, ItemList itemPrize, boolean executeCommands) {
         playWinEffect();
-        statistic.getObject(Type.WON_SPINS).increaseValue(1);
-        statistic.saveToFile();
-        Player u = getUser();
-        PlayerStatistic p = plugin.statisticManager.getStatistic(u, true);
-        p.getObject(Type.WON_SPINS).increaseValue(1);
+
+        statistic.getRecord(Category.WON_SPINS).increaseValue(1);
+        trySaveStatistic(statistic);
+
+        Player user = getUser();
+        PlayerStatistic userStat = plugin.statisticManager.getStatistic(user, true);
+        userStat.getRecord(Category.WON_SPINS).increaseValue(1);
         if (moneyPrize > 0) {
             moneyPrize = applyHouseCut(moneyPrize);
-            p.getObject(Type.WON_MONEY).increaseValue(moneyPrize);
-            VaultHook.ECONOMY.depositPlayer(userName, moneyPrize);
+            userStat.getRecord(Category.WON_MONEY).increaseValue(moneyPrize);
+            VaultHook.depositPlayer(Bukkit.getOfflinePlayer(userId), moneyPrize);
         }
         if (itemPrize.size() > 0) {
             itemPrize = applyHouseCut(itemPrize);
-            p.getObject(Type.WON_ITEMS).increaseValue(itemPrize.size());
-            itemPrize.distribute(u);
+            userStat.getRecord(Category.WON_ITEMS).increaseValue(itemPrize.size());
+            itemPrize.distribute(user);
         }
-        p.saveToFile();
-        if (executeCommands)
+        trySaveStatistic(userStat);
+
+        if (executeCommands) {
             executeCommands(userName, moneyPrize, itemPrize);
-        u.sendMessage(plugin.messageManager.slot_machine_won(moneyPrize, itemPrize));
+        }
+
+        user.sendMessage(plugin.messageManager.slot_machine_won(moneyPrize, itemPrize));
     }
 
     private void distribute(ItemStack... display) {
-        MoneyPotCombo m = getMoneyPotCombosEnabled() ? moneyPotCombos.getActivated(display) : null;
-        ItemPotCombo i = getItemPotCombosEnabled() ? itemPotCombos.getActivated(display) : null;
+        MoneyPotCombo moneyCombo = getMoneyPotCombosEnabled() ? moneyPotCombos.getActivated(display) : null;
+        ItemPotCombo itemCombo = getItemPotCombosEnabled() ? itemPotCombos.getActivated(display) : null;
+
         if (display[0].isSimilar(display[1]) && display[1].isSimilar(display[2])) {
             double moneyPrize = 0;
             if (moneyPotEnabled && VaultHook.isEnabled()) {
                 moneyPrize = moneyPot;
-                if (m != null)
-                    switch (m.getAction()) {
+
+                if (moneyCombo != null) {
+                    switch (moneyCombo.getAction()) {
                         case MULTIPLY_POT_AND_DISTRIBUTE:
-                            moneyPrize *= m.getAmount();
+                            moneyPrize *= moneyCombo.getAmount();
                             break;
                         case ADD_TO_POT_AND_DISTRIBUTE:
-                            moneyPrize += m.getAmount();
+                            moneyPrize += moneyCombo.getAmount();
                             break;
                         default:
                             break;
                     }
+                }
+
                 resetMoneyPot();
             }
+
             ItemList itemPrize = new ItemList();
             if (itemPotEnabled) {
                 itemPrize = itemPot.clone();
-                if (i != null)
-                    switch (i.getAction()) {
+
+                if (itemCombo != null) {
+                    switch (itemCombo.getAction()) {
                         case ADD_TO_POT_AND_DISTRIBUTE:
-                            itemPrize.addAll(i.getItems());
+                            itemPrize.addAll(itemCombo.getItems());
                             break;
                         case DOUBLE_POT_ITEMS_AND_DISTRIBUTE:
                             itemPrize.doubleAmounts();
@@ -231,55 +273,65 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
                         default:
                             break;
                     }
+                }
+
                 resetItemPot();
             }
+
             handleWin(moneyPrize, itemPrize, true);
-        } else if (m != null) {
+        } else if (moneyCombo != null) {
             double moneyPrize = moneyPot;
-            switch (m.getAction()) {
+            switch (moneyCombo.getAction()) {
                 case MULTIPLY_POT_AND_DISTRIBUTE:
-                    moneyPrize *= m.getAmount();
+                    moneyPrize *= moneyCombo.getAmount();
                     break;
                 case ADD_TO_POT_AND_DISTRIBUTE:
-                    moneyPrize += m.getAmount();
+                    moneyPrize += moneyCombo.getAmount();
                     break;
-                case DISTRIBUTE_INDEPENDANT_MONEY:
-                    moneyPrize = m.getAmount();
+                case DISTRIBUTE_INDEPENDENT_MONEY:
+                    moneyPrize = moneyCombo.getAmount();
                     break;
                 default:
                     break;
             }
-            if (m.getAction() != Action.DISTRIBUTE_INDEPENDANT_MONEY)
+            if (moneyCombo.getAction() != Action.DISTRIBUTE_INDEPENDENT_MONEY) {
                 resetMoneyPot();
+            }
+
             handleWin(moneyPrize, new ItemList(), false);
-        } else if (i != null) {
+        } else if (itemCombo != null) {
             ItemList itemPrize = itemPot.clone();
-            switch (i.getAction()) {
+            switch (itemCombo.getAction()) {
                 case ADD_TO_POT_AND_DISTRIBUTE:
-                    itemPrize.addAll(i.getItems());
+                    itemPrize.addAll(itemCombo.getItems());
                     break;
                 case DOUBLE_POT_ITEMS_AND_DISTRIBUTE:
                     itemPrize.doubleAmounts();
                     break;
-                case DISTRIBUTE_INDEPENDANT_ITEMS:
-                    itemPrize = i.getItems();
+                case DISTRIBUTE_INDEPENDENT_ITEMS:
+                    itemPrize = itemCombo.getItems();
                     break;
                 default:
                     break;
             }
-            if (i.getAction() != Action.DISTRIBUTE_INDEPENDANT_ITEMS)
+            if (itemCombo.getAction() != Action.DISTRIBUTE_INDEPENDENT_ITEMS) {
                 resetItemPot();
+            }
+
             handleWin(0, itemPrize, false);
         } else {
-            statistic.getObject(Type.LOST_SPINS).increaseValue(1);
-            statistic.saveToFile();
-            Player u = getUser();
-            PlayerStatistic s = plugin.statisticManager.getStatistic(u, true);
-            s.getObject(Type.LOST_SPINS).increaseValue(1);
-            s.saveToFile();
+            statistic.getRecord(Category.LOST_SPINS).increaseValue(1);
+            trySaveStatistic(statistic);
+
+            Player user = getUser();
+            PlayerStatistic userStat = plugin.statisticManager.getStatistic(user, true);
+            userStat.getRecord(Category.LOST_SPINS).increaseValue(1);
+            trySaveStatistic(userStat);
+
             playLoseSounds();
-            u.sendMessage(plugin.messageManager.slot_machine_lost());
+            user.sendMessage(plugin.messageManager.slot_machine_lost());
         }
+
         deactivate(false);
     }
 
@@ -291,17 +343,21 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
         configReader.deleteConfig();
     }
 
-    @Override
-    public void rebuild() {
+    public void rebuild() throws Exception {
         deactivate();
-        super.rebuild();
+        
+        Location l = center.getBukkitLocation();
+        design.destruct(l, initialDirection);
+        design.build(l, initialDirection);
+        
+        updateSign();
         broken = false;
     }
 
     @Override
-    public void move(BlockFace b, int amount) throws Exception {
+    public void move(BlockFace face, int amount) throws Exception {
         deactivate();
-        super.move(b, amount);
+        super.move(face, amount);
     }
 
     public boolean isBroken() {

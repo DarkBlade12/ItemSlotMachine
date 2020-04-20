@@ -1,61 +1,81 @@
 package com.darkblade12.itemslotmachine.statistic;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
+import com.darkblade12.itemslotmachine.util.FileUtils;
 
-public abstract class Statistic {
-    private static final String FORMAT = "\\w+@\\d+(\\.\\d+)?(#\\w+@\\d+(\\.\\d+)?)*";
-    private NameableList<StatisticObject> objects;
+public abstract class Statistic implements Nameable {
+    private NameableList<StatisticRecord> records;
+    protected String name;
 
-    public Statistic() {
-        objects = new NameableList<StatisticObject>();
+    public Statistic(String name) {
+        this.name = name;
+        this.records = new NameableList<StatisticRecord>();
     }
 
-    public Statistic(Collection<StatisticObject> c) {
-        objects = new NameableList<StatisticObject>(c);
+    public Statistic(String name, Collection<StatisticRecord> records) {
+        this.name = name;
+        this.records = new NameableList<StatisticRecord>(records);
     }
 
-    public Statistic(StatisticObject... objects) {
-        this(Arrays.asList(objects));
+    public Statistic(String name, StatisticRecord... records) {
+        this(name, Arrays.asList(records));
     }
 
-    public Statistic(Type... types) {
-        this();
-        for (Type t : types)
-            objects.add(t.createObject());
+    public Statistic(String name, Category... categories) {
+        this(name);
+
+        for (Category type : categories) {
+            records.add(type.createObject());
+        }
     }
 
-    public void loadStatistic(String s) throws Exception {
-        if (!s.matches(FORMAT))
-            throw new IllegalArgumentException("Invalid format");
-        objects.clear();
-        for (String o : s.split("#"))
-            objects.add(StatisticObject.fromString(o));
+    public void reset() {
+        for (int i = 0; i < records.size(); i++) {
+            records.get(i).resetValue();
+        }
+    }
+    
+    public void saveToFile() throws IOException {
+        FileUtils.saveJson(getPath(), this);
     }
 
-    public void resetValues() {
-        for (int i = 0; i < objects.size(); i++)
-            objects.get(i).resetValue();
+    public void deleteFile() {
+        File file = new File(getPath());
+
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+    
+    @Override
+    public String getName() {
+        return this.name;
+    }
+    
+    public abstract String getPath();
+
+    public List<StatisticRecord> getRecords() {
+        return Collections.unmodifiableList(records);
     }
 
-    public List<StatisticObject> getObjects() {
-        return Collections.unmodifiableList(objects);
+    public StatisticRecord getRecord(String name) {
+        return records.get(name);
     }
 
-    public StatisticObject getObject(String name) {
-        return objects.get(name);
-    }
-
-    public StatisticObject getObject(Type t) {
-        return getObject(t.name());
+    public StatisticRecord getRecord(Category category) {
+        return getRecord(category.name());
     }
 
     @Override
     public String toString() {
-        return objects.toString("#");
+        return records.toString("#");
     }
 }

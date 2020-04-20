@@ -12,13 +12,15 @@ public final class Cuboid implements Iterable<Block> {
     protected int x1, y1, z1, x2, y2, z2;
     protected String worldName;
 
-    public Cuboid(Location l1, Location l2) throws Exception {
-        if (l1 == null || l2 == null)
+    public Cuboid(Location l1, Location l2) {
+        if (l1 == null || l2 == null) {
             throw new NullPointerException("Location can not be null");
-        else if (l1.getWorld() == null)
+        } else if (l1.getWorld() == null) {
             throw new IllegalStateException("Can not create a Cuboid for an unloaded world");
-        else if (!l1.getWorld().getName().equals(l2.getWorld().getName()))
+        } else if (!l1.getWorld().getName().equals(l2.getWorld().getName())) {
             throw new IllegalStateException("Can not create a Cuboid between two different worlds");
+        }
+
         worldName = l1.getWorld().getName();
         x1 = Math.min(l1.getBlockX(), l2.getBlockX());
         y1 = Math.min(l1.getBlockY(), l2.getBlockY());
@@ -29,39 +31,48 @@ public final class Cuboid implements Iterable<Block> {
     }
 
     public boolean isInside(Location l) {
-        if (!l.getWorld().getName().equals(worldName))
+        if (!l.getWorld().getName().equals(worldName)) {
             return false;
+        }
+
         int x = l.getBlockX();
         int y = l.getBlockY();
         int z = l.getBlockZ();
-        if (x >= x1 && x <= x2)
-            if (y >= y1 && y <= y2)
-                if (z >= z1 && z <= z2)
-                    return true;
-        return false;
+        return x >= x1 && x <= x2 && y >= y1 && y <= y2 && z >= z1 && z <= z2;
     }
 
-    public boolean contains(Material m) {
-        if (m.isBlock())
-            throw new IllegalArgumentException("'" + m.name() + "' is not a valid block material");
-        for (Block b : this)
-            if (b.getType() == m)
+    public boolean contains(Material material) {
+        if (material.isBlock()) {
+            throw new IllegalArgumentException("'" + material.name() + "' is not a valid block material");
+        }
+
+        for (Block block : this) {
+            if (block.getType() == material) {
                 return true;
+            }
+        }
+
         return false;
     }
 
     public boolean isEmpty() {
-        for (Block b : this)
-            if (b.getType() != Material.AIR)
+        for (Block block : this) {
+            if (block.getType() != Material.AIR) {
                 return false;
+            }
+        }
+
         return true;
     }
 
-    public void setBlocks(Material m) {
-        if (m.isBlock())
-            throw new IllegalArgumentException("'" + m.name() + "' is not a valid block material");
-        for (Block b : this)
-            b.setType(m);
+    public void setBlocks(Material material) {
+        if (material.isBlock()) {
+            throw new IllegalArgumentException("'" + material.name() + "' is not a valid block material");
+        }
+        
+        for (Block block : this) {
+            block.setType(material);
+        }
     }
 
     public int getSizeX() {
@@ -89,10 +100,12 @@ public final class Cuboid implements Iterable<Block> {
     }
 
     public World getWorld() {
-        World w = Bukkit.getWorld(worldName);
-        if (w == null)
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
             throw new IllegalStateException("World '" + worldName + "' is not loaded");
-        return w;
+        }
+        
+        return world;
     }
 
     @Override
@@ -132,12 +145,13 @@ public final class Cuboid implements Iterable<Block> {
                     ++z;
                 }
             }
+            
             return b;
         }
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("This operation is not available");
+            throw new UnsupportedOperationException();
         }
     }
 }

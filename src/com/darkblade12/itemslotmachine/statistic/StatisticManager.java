@@ -16,7 +16,7 @@ import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
 
 public final class StatisticManager extends Manager {
-    private static final File DIRECTORY = new File("plugins/ItemSlotMachine/statistics/player/");
+    private static final String FILE_EXTENSION = ".json";
     private NameableList<PlayerStatistic> statistics;
 
     public StatisticManager(ItemSlotMachine plugin) {
@@ -35,21 +35,32 @@ public final class StatisticManager extends Manager {
 
     public void loadStatistics() {
         statistics = new NameableList<PlayerStatistic>(true);
-        for (String name : getNames())
+        for (String name : getNames()) {
             try {
-                statistics.add(PlayerStatistic.fromFile(name));
+                PlayerStatistic statistic = PlayerStatistic.fromFile(name);
+                statistics.add(statistic);
             } catch (Exception e) {
-                plugin.l.warning("Failed to load player statistic '" + name + "'! Cause: " + e.getMessage());
-                if (Settings.isDebugModeEnabled())
+                plugin.logWarning("Failed to load player statistic '" + name + "'!");
+                if (Settings.isDebugModeEnabled()) {
                     e.printStackTrace();
+                }
             }
+        }
+
         int amount = statistics.size();
-        plugin.l.info(amount + " player statistic" + (amount == 1 ? "" : "s") + " loaded.");
+        plugin.logInfo(amount + " player statistic" + (amount == 1 ? "" : "s") + " loaded.");
     }
 
-    public void register(PlayerStatistic p) {
-        statistics.add(p);
-        p.saveToFile();
+    public void register(PlayerStatistic statistic) {
+        try {
+            statistic.saveToFile();
+            statistics.add(statistic);
+        } catch (Exception e) {
+            plugin.logWarning("Failed to save player statistic '" + statistic.getName() + "'!");
+            if (Settings.isDebugModeEnabled()) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public PlayerStatistic create(String name) {
@@ -58,18 +69,24 @@ public final class StatisticManager extends Manager {
         return s;
     }
 
-    public PlayerStatistic create(Player p) {
-        return create(p.getName());
+    public PlayerStatistic create(Player player) {
+        return create(player.getName());
     }
 
     public Set<String> getNames() {
         Set<String> names = new HashSet<String>();
-        if (DIRECTORY.exists() && DIRECTORY.isDirectory())
-            for (File f : DIRECTORY.listFiles()) {
-                String name = f.getName();
-                if (name.endsWith(".statistic"))
-                    names.add(name.replace(".statistic", ""));
+
+        if (!PlayerStatistic.DIRECTORY.exists() || !PlayerStatistic.DIRECTORY.isDirectory()) {
+            return names;
+        }
+
+        for (File file : PlayerStatistic.DIRECTORY.listFiles()) {
+            String name = file.getName();
+            if (name.endsWith(FILE_EXTENSION)) {
+                names.add(name.replace(FILE_EXTENSION, ""));
             }
+        }
+
         return names;
     }
 
@@ -82,16 +99,16 @@ public final class StatisticManager extends Manager {
         return p == null ? create ? create(name) : null : p;
     }
 
-    public PlayerStatistic getStatistic(Player p, boolean create) {
-        return getStatistic(p.getName(), create);
+    public PlayerStatistic getStatistic(Player player, boolean create) {
+        return getStatistic(player.getName(), create);
     }
 
     public PlayerStatistic getStatistic(String name) {
         return statistics.get(name);
     }
 
-    public PlayerStatistic getStatistic(Player p) {
-        return getStatistic(p.getName());
+    public PlayerStatistic getStatistic(Player player) {
+        return getStatistic(player.getName());
     }
 
     public boolean hasStatistic(String name) {
@@ -106,9 +123,9 @@ public final class StatisticManager extends Manager {
         return statistics.size();
     }
 
-    public List<PlayerStatistic> getTop(Type t) {
+    public List<PlayerStatistic> getTop(Category category) {
         List<PlayerStatistic> top = new ArrayList<PlayerStatistic>(statistics);
-        Collections.sort(top, new StatisticComparator(t));
+        Collections.sort(top, new StatisticComparator(category));
         return top;
     }
 }

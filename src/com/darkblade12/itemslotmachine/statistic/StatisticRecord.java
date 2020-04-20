@@ -4,33 +4,22 @@ import java.math.BigDecimal;
 
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 
-public final class StatisticObject implements Nameable, Cloneable, Comparable<StatisticObject> {
-    private static final String FORMAT = "\\w+@\\d+(\\.\\d+)?";
-    private Type type;
+public final class StatisticRecord implements Nameable, Cloneable, Comparable<StatisticRecord> {
+    private Category category;
     private Number value;
 
-    private StatisticObject(Type type, Number value) {
-        this.type = type;
+    private StatisticRecord(Category category, Number value) {
+        this.category = category;
         this.value = value;
     }
 
-    public StatisticObject(Type type) {
-        this(type, type.parse("0"));
-    }
-
-    public static StatisticObject fromString(String s) throws Exception {
-        if (!s.matches(FORMAT))
-            throw new IllegalArgumentException("Invalid format");
-        String[] p = s.split("@");
-        Type t = Type.fromName(p[0]);
-        if (t == null)
-            throw new IllegalArgumentException("Invalid type name");
-        return new StatisticObject(t, t.parse(p[1]));
+    public StatisticRecord(Category category) {
+        this(category, category.parse("0"));
     }
 
     @Override
-    public int compareTo(StatisticObject s) {
-        return new BigDecimal(value.doubleValue()).compareTo(new BigDecimal(s.getValue().doubleValue()));
+    public int compareTo(StatisticRecord record) {
+        return new BigDecimal(value.doubleValue()).compareTo(new BigDecimal(record.getValue().doubleValue()));
     }
 
     public void setValue(Number value) {
@@ -38,7 +27,7 @@ public final class StatisticObject implements Nameable, Cloneable, Comparable<St
     }
 
     public void resetValue() {
-        setValue(type.parse("0"));
+        setValue(category.parse("0"));
     }
 
     public void increaseValue(byte amount) {
@@ -67,11 +56,11 @@ public final class StatisticObject implements Nameable, Cloneable, Comparable<St
 
     @Override
     public String getName() {
-        return type.name();
+        return category.name();
     }
 
-    public Type getType() {
-        return this.type;
+    public Category getCategory() {
+        return this.category;
     }
 
     public Number getValue() {
@@ -80,11 +69,11 @@ public final class StatisticObject implements Nameable, Cloneable, Comparable<St
 
     @Override
     public String toString() {
-        return type.name() + "@" + value;
+        return category.name() + "@" + value;
     }
 
     @Override
-    public StatisticObject clone() {
-        return new StatisticObject(type, value);
+    public StatisticRecord clone() {
+        return new StatisticRecord(category, value);
     }
 }

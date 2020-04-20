@@ -17,28 +17,31 @@ public final class SoundData {
     }
 
     public static SoundData fromString(String s) throws IllegalArgumentException {
-        if (!s.matches(FORMAT))
+        if (!s.matches(FORMAT)) {
             throw new IllegalArgumentException("has an invalid format");
-        String[] p = s.split("-");
-        Sound so;
+        }
+        
+        String[] data = s.split("-");
+        Sound sound;
         try {
-            so = Sound.valueOf(p[0]);
+            sound = Sound.valueOf(data[0]);
         } catch (Exception e) {
             throw new IllegalArgumentException("contains an invalid sound name");
         }
-        return new SoundData(so, Float.parseFloat(p[1]), Float.parseFloat(p[2]));
+        
+        return new SoundData(sound, Float.parseFloat(data[1]), Float.parseFloat(data[2]));
     }
 
-    public void play(Location l) {
-        l.getWorld().playSound(l, sound, volume, pitch);
+    public void play(Location location) {
+        location.getWorld().playSound(location, sound, volume, pitch);
     }
 
-    public void play(Player p, Location l) {
-        p.playSound(l, sound, volume, pitch);
+    public void play(Player player, Location location) {
+        player.playSound(location, sound, volume, pitch);
     }
 
-    public void play(Player p) {
-        play(p, p.getLocation());
+    public void play(Player player) {
+        play(player, player.getLocation());
     }
 
     public Sound getSound() {

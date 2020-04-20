@@ -14,41 +14,48 @@ public final class SoundList extends ArrayList<SoundData> {
         super();
     }
 
-    public SoundList(Collection<SoundData> c) {
-        super(c);
+    public SoundList(Collection<SoundData> sounds) {
+        super(sounds);
     }
 
     public static SoundList fromString(String s) throws IllegalArgumentException {
-        if (!s.matches(FORMAT))
+        if (!s.matches(FORMAT)) {
             throw new IllegalArgumentException("has an invalid format");
+        }
+
         SoundList list = new SoundList();
-        for (String d : s.split(", "))
-            list.add(SoundData.fromString(d));
+        for (String data : s.split(", ")) {
+            list.add(SoundData.fromString(data));
+        }
         return list;
     }
 
-    public void play(Location l) {
-        for (int i = 0; i < size(); i++)
-            get(i).play(l);
+    public void play(Location location) {
+        for (int i = 0; i < size(); i++) {
+            get(i).play(location);
+        }
     }
 
-    public void play(Player p, Location l) {
-        for (int i = 0; i < size(); i++)
-            get(i).play(p, l);
+    public void play(Player player, Location location) {
+        for (int i = 0; i < size(); i++) {
+            get(i).play(player, location);
+        }
     }
 
-    public void play(Player p) {
-        play(p, p.getLocation());
+    public void play(Player player) {
+        play(player, player.getLocation());
     }
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
+        StringBuilder text = new StringBuilder();
         for (int i = 0; i < size(); i++) {
-            if (s.length() > 0)
-                s.append(", ");
-            s.append(get(i).toString());
+            if (text.length() > 0) {
+                text.append(", ");
+            }
+
+            text.append(get(i).toString());
         }
-        return s.toString();
+        return text.toString();
     }
 }

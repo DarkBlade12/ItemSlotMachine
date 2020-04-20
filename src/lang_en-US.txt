@@ -87,7 +87,8 @@ design_removal_failure=&cThe design &6<name> &ccan't be removed.
 design_removal_success=&aYou've removed the design &6<name>&a.
 design_list=&aAll available designs: <list>
 design_not_modifiable=&cThis design is not modifiable!
-design_inversion=&aThe item frame loading sequence of design &6<name> &awas inverted.
+design_inversion_failure=&cThe item frame loading sequence of design &6<name> &ccouldn't be inverted. Cause: &6<cause>
+design_inversion_success=&aThe item frame loading sequence of design &6<name> &awas successfully inverted.
 design_reload=&aAll designs were reloaded.
 
 #=#=#=#=#=#=#=#=#
@@ -127,7 +128,8 @@ slot_machine_list_empty=&cThere are no slot machines!
 slot_machine_list=&aAll available slot machines: <list>
 slot_machine_teleportation_failure=&cThe teleportation to slot machine &6<name> &cfailed! Cause: &6<cause>
 slot_machine_teleportation_success=&aYou were teleported to slot machine &6<name>&a.
-slot_machine_rebuilding=&aSlot machine &6<name> &awas rebuilt.
+slot_machine_rebuilding_failure=&cFailed to rebuild slot machine &6<name>&c! Cause: &6<cause>
+slot_machine_rebuilding_success=&aSlot machine &6<name> &awas successfully rebuilt.
 slot_machine_moving_failure=&cThe slot machine moving failed! Cause: &6<cause>
 slot_machine_moving_success=&aYou've successfully moved the slot machine &6<name>&a.
 slot_machine_not_active=&cThis slot machine isn't active!

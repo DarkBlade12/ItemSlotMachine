@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 
-public enum Type {
+public enum Category {
     TOTAL_SPINS(Integer.class) {
         @Override
         public Integer parse(String s) {
@@ -13,7 +13,7 @@ public enum Type {
         }
 
         @Override
-        public String getRealName(ItemSlotMachine plugin) {
+        public String getLocalizedName(ItemSlotMachine plugin) {
             return plugin.messageManager.total_spins();
         }
     },
@@ -24,7 +24,7 @@ public enum Type {
         }
 
         @Override
-        public String getRealName(ItemSlotMachine plugin) {
+        public String getLocalizedName(ItemSlotMachine plugin) {
             return plugin.messageManager.won_spins();
         }
     },
@@ -35,7 +35,7 @@ public enum Type {
         }
 
         @Override
-        public String getRealName(ItemSlotMachine plugin) {
+        public String getLocalizedName(ItemSlotMachine plugin) {
             return plugin.messageManager.lost_spins();
         }
     },
@@ -46,7 +46,7 @@ public enum Type {
         }
 
         @Override
-        public String getRealName(ItemSlotMachine plugin) {
+        public String getLocalizedName(ItemSlotMachine plugin) {
             return plugin.messageManager.coins_spent();
         }
     },
@@ -57,7 +57,7 @@ public enum Type {
         }
 
         @Override
-        public String getRealName(ItemSlotMachine plugin) {
+        public String getLocalizedName(ItemSlotMachine plugin) {
             return plugin.messageManager.won_money();
         }
     },
@@ -68,25 +68,26 @@ public enum Type {
         }
 
         @Override
-        public String getRealName(ItemSlotMachine plugin) {
+        public String getLocalizedName(ItemSlotMachine plugin) {
             return plugin.messageManager.won_items();
         }
     };
 
+    private static final Map<String, Category> NAME_MAP = new HashMap<String, Category>();
     private Class<? extends Number> valueType;
-    private static final Map<String, Type> NAME_MAP = new HashMap<String, Type>();
 
     static {
-        for (Type t : values())
-            NAME_MAP.put(t.name(), t);
+        for (Category c : values()) {
+            NAME_MAP.put(c.name(), c);
+        }
     }
 
-    private Type(Class<? extends Number> valueType) {
+    private Category(Class<? extends Number> valueType) {
         this.valueType = valueType;
     }
 
-    public StatisticObject createObject() {
-        return new StatisticObject(this);
+    public StatisticRecord createObject() {
+        return new StatisticRecord(this);
     }
 
     public abstract Number parse(String s);
@@ -95,20 +96,25 @@ public enum Type {
         return this.valueType;
     }
 
-    public abstract String getRealName(ItemSlotMachine plugin);
+    public abstract String getLocalizedName(ItemSlotMachine plugin);
 
-    public static Type fromName(String name) {
-        return name == null ? null : NAME_MAP.get(name.toUpperCase());
+    public static Category fromName(String name) {
+        return NAME_MAP.getOrDefault(name.toUpperCase(), null);
     }
 
-    public static Type fromName(ItemSlotMachine plugin, String name) {
-        Type t = fromName(name);
-        if (t == null) {
-            for (Type type : values())
-                if (type.getRealName(plugin).equalsIgnoreCase(name))
-                    return type;
-            t = fromName(name.replace(" ", "_"));
+    public static Category fromName(ItemSlotMachine plugin, String name) {
+        Category category = fromName(name);
+
+        if (category == null) {
+            for (Category c : values()) {
+                if (c.getLocalizedName(plugin).equalsIgnoreCase(name)) {
+                    return c;
+                }
+            }
+
+            category = fromName(name.replace(" ", "_"));
         }
-        return t;
+
+        return category;
     }
 }

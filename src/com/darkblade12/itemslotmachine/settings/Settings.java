@@ -19,7 +19,7 @@ public final class Settings {
     private static final String BLOCK_LIST_FORMAT = "[\\w\\s]+(, [\\w\\s]+)*";
     private ItemSlotMachine plugin;
     private static boolean debugModeEnabled;
-    private static String languageName;
+    private static String languageTag;
     private static String defaultSlotMachineName;
     private static String rawSlotMachineName;
     private static boolean spaceCheckEnabled;
@@ -39,9 +39,9 @@ public final class Settings {
     public void load() throws InvalidValueException {
         Configuration c = plugin.loadConfig();
         debugModeEnabled = GENERAL_SETTINGS.getBoolean(c, "Debug_Mode_Enabled");
-        languageName = GENERAL_SETTINGS.getString(c, "Language_Name");
-        if (languageName == null)
-            throw new InvalidValueException("Language_Name", GENERAL_SETTINGS, "is null");
+        languageTag = GENERAL_SETTINGS.getString(c, "Language_Tag");
+        if (languageTag == null)
+            throw new InvalidValueException("Language_Tag", GENERAL_SETTINGS, "is null");
         defaultSlotMachineName = SLOT_MACHINE_SETTINGS.getString(c, "Default_Name");
         if (defaultSlotMachineName == null)
             throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "is null");
@@ -102,8 +102,8 @@ public final class Settings {
         return debugModeEnabled;
     }
 
-    public static String getLanguageName() {
-        return languageName;
+    public static String getLanguageTag() {
+        return languageTag;
     }
 
     public static boolean isSpaceCheckEnabled() {

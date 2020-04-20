@@ -1,10 +1,6 @@
 package com.darkblade12.itemslotmachine.design;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,8 +19,7 @@ import com.darkblade12.itemslotmachine.reference.ReferenceCuboid;
 import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
 import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.Cuboid;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.darkblade12.itemslotmachine.util.FileUtils;
 
 public final class Design implements Nameable {
     public static final File DIRECTORY = new File("plugins/ItemSlotMachine/designs/");
@@ -73,6 +68,7 @@ public final class Design implements Nameable {
             }
         }
 
+        
         if (frameIndex < 3) {
             int missingFrames = 3 - frameIndex;
             throw new Exception(missingFrames + " item frame" + (missingFrames == 1 ? " is" : "s are") + " missing");
@@ -89,36 +85,15 @@ public final class Design implements Nameable {
         return DIRECTORY.getPath() + "/" + name + ".json";
     }
 
-    public static Design fromString(String json) {
-        Gson gson = new Gson();
-        Design design = gson.fromJson(json, Design.class);
-
-        return design;
-    }
-
     public static Design fromFile(String name) throws Exception {
-        File file = new File(getPath(name));
-
-        if (!file.exists()) {
-            return null;
-        }
-
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        StringBuilder json = new StringBuilder();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            json.append(line + "\n");
-        }
-
-        reader.close();
-        return fromString(json.toString());
+        return FileUtils.readJson(getPath(name), Design.class);
     }
 
-    public void invertItemFrames() {
-        ReferenceItemFrame r = itemFrames[0];
+    public void invertItemFrames() throws IOException {
+        ReferenceItemFrame temp = itemFrames[0];
         itemFrames[0] = itemFrames[2];
-        itemFrames[2] = r;
+        itemFrames[2] = temp;
+        
         saveToFile();
     }
 
@@ -147,9 +122,7 @@ public final class Design implements Nameable {
                 refFrame.place(viewPoint, viewDirection);
             }
         } catch (Exception e) {
-            for (Block block : cuboid) {
-                block.setType(Material.AIR);
-            }
+            destruct(viewPoint, viewDirection);
 
             throw e;
         }
@@ -180,29 +153,16 @@ public final class Design implements Nameable {
         destruct(player.getLocation(), Direction.getViewDirection(player));
     }
 
-    public boolean saveToFile() {
-        Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-
-        if (!DIRECTORY.exists()) {
-            DIRECTORY.mkdirs();
-        }
-
-        BufferedWriter writer;
-
-        try {
-            writer = new BufferedWriter(new FileWriter(getPath()));
-            writer.write(gson.toJson(this));
-            writer.close();
-
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+    public void saveToFile() throws IOException {
+        FileUtils.saveJson(getPath(), this);
     }
 
     public void deleteFile() {
-        new File(getPath()).delete();
+        File file = new File(getPath());
+
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     @Override

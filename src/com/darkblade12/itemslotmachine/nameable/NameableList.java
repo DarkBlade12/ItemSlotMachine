@@ -68,11 +68,11 @@ public final class NameableList<T extends Nameable> extends ArrayList<T> {
         return list;
     }
 
-    public String toString(String seperator) {
+    public String toString(String separator) {
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < size(); i++) {
             if (s.length() > 0)
-                s.append(seperator);
+                s.append(separator);
             s.append(get(i).toString());
         }
         return s.toString();

@@ -1,9 +1,11 @@
 package com.darkblade12.itemslotmachine.reader;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 
 import org.bukkit.plugin.Plugin;
 
@@ -39,13 +41,14 @@ public abstract class FileReader {
         }
 
         new File(outputPath).mkdirs();
-        try {
-            OutputStream out = new FileOutputStream(outputFile);
-            byte[] buffer = new byte[1024];
-            for (int length = in.read(buffer); length > 0; length = in.read(buffer))
-                out.write(buffer, 0, length);
-            out.close();
-            in.close();
+        
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                writer.write(line + "\n");
+            }
             return true;
         } catch (Exception ex) {
             return false;

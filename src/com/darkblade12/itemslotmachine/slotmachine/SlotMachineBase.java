@@ -128,6 +128,9 @@ public abstract class SlotMachineBase implements Nameable {
         slot = design.getSlot().getSafeLocation(l, initialDirection);
         region = design.getRegion().getCuboid(l, initialDirection);
         statistic = SlotMachineStatistic.fromFile(name);
+        if (statistic == null) {
+            statistic = new SlotMachineStatistic(name);
+        }
         configReader = new ConfigReader(plugin, plugin.template, name + ".yml", "plugins/ItemSlotMachine/slot machines/");
         if (!configReader.readConfig())
             throw new Exception("Failed to read " + configReader.getOuputFileName());
@@ -331,25 +334,29 @@ public abstract class SlotMachineBase implements Nameable {
     }
 
     public void updateSign() {
-        Sign s = getSignInstance();
-        if (s != null) {
-            String[] lines = null;
-            if (moneyPotEnabled && itemPotEnabled)
-                lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(),
-                                       plugin.messageManager.sign_pot_items(itemPot.size()),
-                                       plugin.messageManager.sign_pot_spacer() };
-            else if (moneyPotEnabled)
-                lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(),
-                                       plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
-            else if (itemPotEnabled)
-                lines = new String[] { plugin.messageManager.sign_pot_items(itemPot.size()),
-                                       plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer(),
-                                       plugin.messageManager.sign_pot_spacer() };
-            lines = CoinManager.validateLines(lines, 0, 2);
-            for (int i = 0; i < lines.length; i++)
-                s.setLine(i, lines[i]);
-            s.update(true);
+        Sign sign = getSignInstance();
+        if (sign == null) {
+            return;
         }
+
+        String[] lines = null;
+        if (moneyPotEnabled && itemPotEnabled) {
+            lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(),
+                                   plugin.messageManager.sign_pot_items(itemPot.size()),
+                                   plugin.messageManager.sign_pot_spacer() };
+        } else if (moneyPotEnabled) {
+            lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(),
+                                   plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
+        } else if (itemPotEnabled) {
+            lines = new String[] { plugin.messageManager.sign_pot_items(itemPot.size()), plugin.messageManager.sign_pot_spacer(),
+                                   plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
+        }
+        lines = CoinManager.validateLines(lines, 0, 2);
+
+        for (int i = 0; i < lines.length; i++) {
+            sign.setLine(i, lines[i]);
+        }
+        sign.update(true);
     }
 
     public void update() {
@@ -357,32 +364,34 @@ public abstract class SlotMachineBase implements Nameable {
         updateSign();
     }
 
-    protected void insertCoins(Player p) {
-        if (p.getGameMode() != GameMode.CREATIVE) {
-            int a = activationAmount;
-            ItemStack[] c = p.getInventory().getContents();
-            for (int i = 0; i < c.length; i++) {
-                ItemStack s = c[i];
-                if (s != null && plugin.coinManager.isCoin(s)) {
-                    int amount = s.getAmount();
-                    if (amount > a) {
-                        s.setAmount(amount - a);
-                        break;
-                    } else if (amount == a) {
-                        s.setType(Material.AIR);
-                        break;
-                    } else if (a > amount) {
-                        s.setType(Material.AIR);
-                        a -= amount;
-                        if (a == 0)
-                            break;
-                    }
-                    c[i] = s;
-                }
-            }
-            p.getInventory().setContents(c);
-            // p.updateInventory();
+    protected void insertCoins(Player player) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            return;
         }
+
+        int remaining = activationAmount;
+        ItemStack[] invContents = player.getInventory().getContents();
+        for (int i = 0; i < invContents.length; i++) {
+            ItemStack item = invContents[i];
+            if (item != null && plugin.coinManager.isCoin(item)) {
+                int amount = item.getAmount();
+                if (amount > remaining) {
+                    item.setAmount(amount - remaining);
+                    break;
+                } else if (amount == remaining) {
+                    item.setType(Material.AIR);
+                    break;
+                } else if (remaining > amount) {
+                    item.setType(Material.AIR);
+                    remaining -= amount;
+                    if (remaining == 0) {
+                        break;
+                    }
+                }
+                invContents[i] = item;
+            }
+        }
+        player.getInventory().setContents(invContents);
     }
 
     public void setMoneyPot(double moneyPot) {
@@ -480,6 +489,7 @@ public abstract class SlotMachineBase implements Nameable {
         } else if (getItemPotCombosEnabled()) {
             combos = itemPotCombos;
         }
+
         boolean regular = combos == null ? true : RANDOM.nextInt(100) < 80;
         ItemStack[] icons = new ItemStack[3];
         if (regular) {
@@ -506,10 +516,12 @@ public abstract class SlotMachineBase implements Nameable {
             /* Couldn't find a lose combination! */
             return null;
         }
+
         ItemStack[] icons = getRandomIcons();
         if (!isWin(icons)) {
             return icons;
         }
+
         int[] positions = new int[3];
         int size = itemIcons.size();
         if (loops < 3) {
@@ -523,6 +535,7 @@ public abstract class SlotMachineBase implements Nameable {
                 }
             }
         }
+
         for (int k = positions[0]; k < size; k++) {
             for (int l = positions[1]; l < size; l++) {
                 for (int m = positions[2]; m < size; m++) {
@@ -534,57 +547,47 @@ public abstract class SlotMachineBase implements Nameable {
                 }
             }
         }
-        return generateLoseIcons(loops + 1);
+
+        return generateLoseIcons(++loops);
 
     }
 
     protected ItemStack[] generateIcons() {
         if (!predeterminedWinningChanceEnabled) {
             return getRandomIcons();
-        }
-        if (RANDOM.nextInt(predeterminedWinningChanceMax) < predeterminedWinningChanceMin) {
+        } else if (RANDOM.nextInt(predeterminedWinningChanceMax) < predeterminedWinningChanceMin) {
             return generateWinIcons();
+        } else {
+            return generateLoseIcons(0);
         }
-        return generateLoseIcons(0);
     }
 
     protected void executeCommands(String userName, double money, ItemList items) {
         if (commandExecutionEnabled)
             commands.execute(new Placeholder("<user_name>", userName), new Placeholder("<money>", Double.toString(money)),
-                             new Placeholder("<currency_name>",
-                                     money == 1 ? VaultHook.ECONOMY.currencyNameSingular()
-                                                : VaultHook.ECONOMY.currencyNamePlural()),
+                             new Placeholder("<currency_name>", VaultHook.getCurrencyName(money == 1)),
                              new Placeholder("<item_amount>", Integer.toString(items.size())),
                              new Placeholder("<items>", plugin.messageManager.itemsToString(items, "")),
                              new Placeholder("<slot_machine>", name));
     }
 
-    public void teleport(Player p) throws IllegalStateException {
-        boolean flying = p.isFlying();
-        Location l = center.getBukkitLocation();
+    public void teleport(Player player) throws IllegalStateException {
+        boolean flying = player.isFlying();
+        Location centerLoc = center.getBukkitLocation();
+        
         for (int i = 1; i <= 5; i++) {
-            Block b = design.getSlot().clone().add(0, -i, 0).getBukkitBlock(l, initialDirection);
-            if (!b.getType().isSolid() && !b.getRelative(BlockFace.UP).getType().isSolid()) {
-                if (b.getRelative(BlockFace.DOWN).getType().isSolid() || flying) {
-                    Location t = b.getLocation().add(0.5, 0, 0.5);
-                    t.setYaw(initialDirection.getOrdinal() * 90);
-                    p.teleport(t);
+            Block block = design.getSlot().clone().add(0, -i, 0).getBukkitBlock(centerLoc, initialDirection);
+            if (!block.getType().isSolid() && !block.getRelative(BlockFace.UP).getType().isSolid()) {
+                if (block.getRelative(BlockFace.DOWN).getType().isSolid() || flying) {
+                    Location teleportLoc = block.getLocation().add(0.5, 0, 0.5);
+                    teleportLoc.setYaw(initialDirection.getOrdinal() * 90);
+                    player.teleport(teleportLoc);
                     return;
                 }
             }
         }
+        
         throw new IllegalStateException("No suitable teleport location found");
-    }
-
-    public void rebuild() {
-        Location l = center.getBukkitLocation();
-        design.destruct(l, initialDirection);
-        try {
-            design.build(l, initialDirection);
-        } catch (Exception e) {
-            /* do nothing */
-        }
-        updateSign();
     }
 
     public void move(BlockFace b, int amount) throws Exception {

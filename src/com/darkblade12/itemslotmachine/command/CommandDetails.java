@@ -5,13 +5,13 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandDetails {
-    public abstract String name();
+    String name();
 
-    public abstract String params() default "";
+    String params() default "";
 
-    public abstract boolean executableAsConsole() default true;
+    boolean executableAsConsole() default true;
 
-    public abstract String permission() default "None";
+    String permission() default "None";
 
-    public abstract boolean infiniteParams() default false;
+    boolean infiniteParams() default false;
 }

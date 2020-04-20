@@ -19,7 +19,6 @@ public final class ItemBuilder {
     public static ItemStack fromString(String s, boolean amount) throws IllegalArgumentException {
         String[] data = s.split("-");
         Material material = Material.matchMaterial(data[0]);
-
         if (material == null) {
             throw new IllegalArgumentException("contains an invalid item name");
         }
@@ -33,7 +32,6 @@ public final class ItemBuilder {
 
     public static String toString(ItemStack item, boolean amount) {
         StringBuilder builder = new StringBuilder(item.getType().getKey().getKey());
-
         if (amount) {
             builder.append("-" + item.getAmount());
         }
@@ -92,7 +90,6 @@ public final class ItemBuilder {
         }
 
         meta.setUnbreakable(unbreakable);
-
         item.setItemMeta(meta);
         return item;
     }

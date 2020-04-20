@@ -33,9 +33,9 @@ public class ReferenceLocation {
                 return new ReferenceLocation(x - vX, z - vZ, y - vY);
             case WEST:
                 return new ReferenceLocation(z - vZ, vX - x, y - vY);
+            default:
+                return null;
         }
-
-        return null;
     }
 
     public static ReferenceLocation fromBukkitLocation(Player player, Location location) {

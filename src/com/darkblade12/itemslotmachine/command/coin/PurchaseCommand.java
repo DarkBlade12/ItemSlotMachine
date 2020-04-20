@@ -12,7 +12,6 @@ import com.darkblade12.itemslotmachine.util.ItemList;
 
 @CommandDetails(name = "purchase", params = "<amount>", executableAsConsole = false, permission = "ItemSlotMachine.coin.purchase")
 public final class PurchaseCommand implements ICommand {
-    @SuppressWarnings("deprecation")
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
         Player p = (Player) sender;
@@ -42,7 +41,7 @@ public final class PurchaseCommand implements ICommand {
             p.sendMessage(plugin.messageManager.player_not_enough_space());
             return;
         }
-        VaultHook.ECONOMY.withdrawPlayer(p.getName(), price);
+        VaultHook.withdrawPlayer(p, price);
         p.getInventory().addItem(i);
         p.sendMessage(plugin.messageManager.coin_purchase(amount, price));
     }

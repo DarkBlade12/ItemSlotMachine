@@ -23,7 +23,7 @@ public final class ResetCommand implements ICommand {
                 sender.sendMessage(plugin.messageManager.slot_machine_not_existent());
                 return;
             }
-            s.getStatistic().resetValues();
+            s.getStatistic().reset();
             sender.sendMessage(plugin.messageManager.statistic_reset_slot_machine(s.getName()));
         } else if (type.equals("player")) {
             String name = null;
@@ -44,7 +44,7 @@ public final class ResetCommand implements ICommand {
                 sender.sendMessage(plugin.messageManager.statistic_player_not_existent());
                 return;
             }
-            s.resetValues();
+            s.reset();
             sender.sendMessage(plugin.messageManager.statistic_reset_player(name));
         } else
             plugin.statisticCommandHandler.showUsage(sender, label, this);

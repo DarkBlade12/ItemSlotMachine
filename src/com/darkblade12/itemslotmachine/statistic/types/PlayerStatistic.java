@@ -1,40 +1,30 @@
 package com.darkblade12.itemslotmachine.statistic.types;
 
-import com.darkblade12.itemslotmachine.nameable.Nameable;
-import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
-import com.darkblade12.itemslotmachine.statistic.Statistic;
-import com.darkblade12.itemslotmachine.statistic.Type;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-public final class PlayerStatistic extends Statistic implements Nameable {
-    private String name;
-    private CompressedStringReader reader;
+import com.darkblade12.itemslotmachine.statistic.Category;
+import com.darkblade12.itemslotmachine.statistic.Statistic;
+import com.darkblade12.itemslotmachine.util.FileUtils;
+
+public final class PlayerStatistic extends Statistic {
+    public static final File DIRECTORY = new File("plugins/ItemSlotMachine/statistics/player/");
 
     public PlayerStatistic(String name) {
-        super(Type.values());
-        this.name = name;
-        reader = new CompressedStringReader(name + ".statistic", "plugins/ItemSlotMachine/statistics/player/");
+        super(name, Category.values());
     }
 
-    public static PlayerStatistic fromFile(String name) throws Exception {
-        PlayerStatistic p = new PlayerStatistic(name);
-        p.loadStatistic();
-        return p;
+    public static String getPath(String name) {
+        return DIRECTORY.getPath() + "/" + name + ".json";
     }
 
-    public void loadStatistic() throws Exception {
-        loadStatistic(reader.readFromFile());
-    }
-
-    public boolean saveToFile() {
-        return reader.saveToFile(toString());
-    }
-
-    public void deleteFile() {
-        reader.deleteFile();
+    public static PlayerStatistic fromFile(String name) throws FileNotFoundException, IOException {
+        return FileUtils.readJson(getPath(name), PlayerStatistic.class);
     }
 
     @Override
-    public String getName() {
-        return this.name;
+    public String getPath() {
+        return getPath(name);
     }
 }

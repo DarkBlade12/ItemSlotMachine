@@ -4,12 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.darkblade12</groupId>
     <artifactId>ItemSlotMachine</artifactId>
-    <version>1.3.4-SNAPSHOT</version>
+    <version>1.3.4</version>
     <build>
         <sourceDirectory>src</sourceDirectory>
         <resources>
             <resource>
                 <directory>src</directory>
+                <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.java</exclude>
                 </excludes>

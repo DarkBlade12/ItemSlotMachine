@@ -30,6 +30,7 @@ import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
+import com.google.gson.Gson;
 
 public final class DesignManager extends Manager implements NameGenerator {
     private ItemStack wand;
@@ -47,7 +48,7 @@ public final class DesignManager extends Manager implements NameGenerator {
         String wandName = plugin.messageManager.design_wand_name();
         String[] wandLore = plugin.messageManager.design_wand_lore();
         wand = new ItemBuilder().withMaterial(Material.BONE).withName(wandName).withLore(wandLore).build();
-        comparator = new NameableComparator<Design>(Settings.getRawDesignName());
+        comparator = new NameableComparator<Design>();
         loadDesigns();
         selections = new HashMap<String, SafeLocation[]>();
         registerEvents();
@@ -70,31 +71,23 @@ public final class DesignManager extends Manager implements NameGenerator {
                     /* custom ids are ignored */
                 }
         int n = 1;
-        while (used.contains(n))
+        while (used.contains(n)) {
             n++;
+        }
         return Settings.getDefaultDesignName().replace("<num>", Integer.toString(n));
     }
 
     private void sort() {
-        Collections.sort(designs, comparator);
+        designs.sort(comparator);
     }
 
     private Design loadDefaultDesign() {
-        try {
-            InputStream stream = plugin.getResource("defaultDesign.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
-            StringBuilder json = new StringBuilder();
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                json.append(line + "\n");
-            }
-
-            reader.close();
-            return Design.fromString(json.toString());
+        InputStream stream = plugin.getResource("defaultDesign.json");
+        Gson gson = new Gson();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            return gson.fromJson(reader, Design.class);
         } catch (Exception e) {
-            plugin.l.warning("Failed to load default design! Cause: " + e.getMessage());
+            plugin.logWarning("Failed to load default design! Cause: %c", e);
 
             if (Settings.isDebugModeEnabled()) {
                 e.printStackTrace();
@@ -107,30 +100,37 @@ public final class DesignManager extends Manager implements NameGenerator {
     public void loadDesigns() {
         designs = new NameableList<Design>(true);
         Design defDesign = loadDefaultDesign();
-
         if (defDesign != null) {
             designs.add(defDesign);
         }
 
-        for (String name : getNames())
+        for (String name : getNames()) {
             try {
                 designs.add(Design.fromFile(name));
             } catch (Exception e) {
-                plugin.l.warning("Failed to load design '" + name + "'! Cause: " + e.getMessage());
-
+                plugin.logWarning("Failed to load design '" + name + "'! Cause: %c", e);
                 if (Settings.isDebugModeEnabled()) {
                     e.printStackTrace();
                 }
             }
+        }
         sort();
+
         int amount = designs.size();
-        plugin.l.info(amount + " design" + (amount == 1 ? "" : "s") + " loaded.");
+        plugin.logInfo(amount + " design" + (amount == 1 ? "" : "s") + " loaded.");
     }
 
-    public void register(Design d) {
-        designs.add(d);
-        sort();
-        d.saveToFile();
+    public void register(Design design) {
+        try {
+            design.saveToFile();
+            designs.add(design);
+            sort();
+        } catch (Exception e) {
+            plugin.logWarning("Failed to save design '" + design.getName() + "'! Cause: %c", e);
+            if (Settings.isDebugModeEnabled()) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void unregister(Design d) {
@@ -148,12 +148,15 @@ public final class DesignManager extends Manager implements NameGenerator {
     @Override
     public Set<String> getNames() {
         Set<String> names = new HashSet<String>();
-        if (Design.DIRECTORY.exists() && Design.DIRECTORY.isDirectory())
+        if (Design.DIRECTORY.exists() && Design.DIRECTORY.isDirectory()) {
             for (File f : Design.DIRECTORY.listFiles()) {
                 String name = f.getName();
-                if (name.endsWith(".json"))
+                if (name.endsWith(".json")) {
                     names.add(name.replace(".json", ""));
+                }
             }
+        }
+
         return names;
     }
 
@@ -204,26 +207,26 @@ public final class DesignManager extends Manager implements NameGenerator {
             return;
         }
 
-        Player p = event.getPlayer();
+        Player player = event.getPlayer();
 
-        if (p.getInventory().getItemInMainHand().isSimilar(wand)) {
+        if (player.getInventory().getItemInMainHand().isSimilar(wand)) {
             event.setCancelled(true);
 
-            Location l = event.getClickedBlock().getLocation();
+            Location loc = event.getClickedBlock().getLocation();
             boolean first = action == Action.LEFT_CLICK_BLOCK;
-            selectPosition(p, l, first);
+            selectPosition(player, loc, first);
 
             String message;
 
             if (first) {
-                message = plugin.messageManager.design_wand_first_position_selected(l.getBlockX(), l.getBlockY(), l.getBlockZ(),
-                                                                                    l.getWorld().getName());
+                message = plugin.messageManager.design_wand_first_position_selected(loc.getBlockX(), loc.getBlockY(),
+                                                                                    loc.getBlockZ(), loc.getWorld().getName());
             } else {
-                message = plugin.messageManager.design_wand_second_position_selected(l.getBlockX(), l.getBlockY(), l.getBlockZ(),
-                                                                                     l.getWorld().getName());
+                message = plugin.messageManager.design_wand_second_position_selected(loc.getBlockX(), loc.getBlockY(),
+                                                                                     loc.getBlockZ(), loc.getWorld().getName());
             }
 
-            p.sendMessage(message);
+            player.sendMessage(message);
         }
     }
 }

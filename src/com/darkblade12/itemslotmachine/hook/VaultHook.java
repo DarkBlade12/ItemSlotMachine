@@ -6,22 +6,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.economy.EconomyResponse;
 import net.milkbowl.vault.permission.Permission;
 
 public final class VaultHook extends Hook {
-    public static Economy ECONOMY;
-    public static Permission PERMISSION;
+    private static Economy ECONOMY;
+    private static Permission PERMISSION;
 
     @Override
     protected boolean initialize() {
         RegisteredServiceProvider<Economy> economyRsp = Bukkit.getServicesManager().getRegistration(Economy.class);
-
         if (economyRsp != null) {
             ECONOMY = economyRsp.getProvider();
         }
 
         RegisteredServiceProvider<Permission> permissionRsp = Bukkit.getServicesManager().getRegistration(Permission.class);
-
         if (permissionRsp != null) {
             PERMISSION = permissionRsp.getProvider();
         }
@@ -33,8 +32,30 @@ public final class VaultHook extends Hook {
         return ECONOMY == null ? 0 : ECONOMY.getBalance(player);
     }
 
-    public static double getBalance(Player player) {
-        return getBalance(Bukkit.getOfflinePlayer(player.getUniqueId()));
+    public static boolean withdrawPlayer(OfflinePlayer player, double amount) {
+        if (ECONOMY == null) {
+            return false;
+        }
+
+        EconomyResponse resp = ECONOMY.withdrawPlayer(player, amount);
+        return resp.transactionSuccess();
+    }
+
+    public static boolean depositPlayer(OfflinePlayer player, double amount) {
+        if (ECONOMY == null) {
+            return false;
+        }
+
+        EconomyResponse resp = ECONOMY.depositPlayer(player, amount);
+        return resp.transactionSuccess();
+    }
+
+    public static String getCurrencyName(boolean singular) {
+        if (ECONOMY == null) {
+            return "";
+        }
+
+        return singular ? ECONOMY.currencyNameSingular() : ECONOMY.currencyNamePlural();
     }
 
     public static String getGroup(Player player) {

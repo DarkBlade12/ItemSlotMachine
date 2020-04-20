@@ -28,7 +28,6 @@ public final class ReferenceItemFrame extends ReferenceLocation {
     public static ItemFrame findItemFrame(Location location) {
         for (Entity entity : location.getChunk().getEntities()) {
             Location entityLocation = entity.getLocation().getBlock().getLocation();
-
             if (entity instanceof ItemFrame && SafeLocation.noDistance(location, entityLocation)) {
                 return (ItemFrame) entity;
             }

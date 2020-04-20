@@ -9,9 +9,9 @@ General_Settings:
  Debug_Mode_Enabled: false
  
  # This is the ending of the language file name that will be loaded
- # ItemSlotMachine will attempt to load 'lang_<name>.txt'
- # Built-in names are 'EN' for English and 'DE' for German
- Language_Name: EN
+ # ItemSlotMachine will attempt to load 'lang_<tag>.txt'
+ # Built-in language tags are 'en-US' for English and 'de-DE' for German
+ Language_Tag: en-US
 
 # This section contains general slot machine settings
 Slot_Machine_Settings:

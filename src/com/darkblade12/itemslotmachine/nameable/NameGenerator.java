@@ -2,8 +2,8 @@ package com.darkblade12.itemslotmachine.nameable;
 
 import java.util.Set;
 
-public abstract interface NameGenerator {
-    public abstract String generateName();
+public interface NameGenerator {
+    String generateName();
 
-    public abstract Set<String> getNames();
+    Set<String> getNames();
 }

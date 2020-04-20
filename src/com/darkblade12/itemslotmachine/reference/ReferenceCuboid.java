@@ -17,7 +17,6 @@ public final class ReferenceCuboid {
     public static ReferenceCuboid fromCuboid(Location viewPoint, Direction viewDirection, Cuboid cuboid) {
         ReferenceLocation first = ReferenceLocation.fromBukkitLocation(viewPoint, viewDirection, cuboid.getUpperSW());
         ReferenceLocation second = ReferenceLocation.fromBukkitLocation(viewPoint, viewDirection, cuboid.getLowerNE());
-
         return new ReferenceCuboid(first, second);
     }
 
@@ -34,8 +33,9 @@ public final class ReferenceCuboid {
     }
 
     public Cuboid getCuboid(Location viewPoint, Direction viewDirection) throws Exception {
-        return new Cuboid(firstVertice.getBukkitLocation(viewPoint, viewDirection),
-                secondVertice.getBukkitLocation(viewPoint, viewDirection));
+        Location first = firstVertice.getBukkitLocation(viewPoint, viewDirection);
+        Location second = secondVertice.getBukkitLocation(viewPoint, viewDirection);
+        return new Cuboid(first, second);
     }
 
     public Cuboid getCuboid(Player viewer) throws Exception {

@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.message;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,26 +15,26 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.hook.VaultHook;
 import com.darkblade12.itemslotmachine.manager.Manager;
-import com.darkblade12.itemslotmachine.reader.TextReader;
 import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.statistic.Category;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
-import com.darkblade12.itemslotmachine.statistic.StatisticObject;
-import com.darkblade12.itemslotmachine.statistic.Type;
+import com.darkblade12.itemslotmachine.statistic.StatisticRecord;
 import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
 import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
+import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.darkblade12.itemslotmachine.util.ItemList;
+import com.google.common.io.Files;
 
 public final class MessageManager extends Manager implements MessageContainer {
     private static final Random RANDOM = new Random();
-    private static final String[] COLOR_CODE_MODIFIERS = new String[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b",
-                                                                        "c", "d", "e" };
+    private static final String[] DEFAULT_FILES = { "lang_en-US.txt", "lang_de-DE.txt" };
+    private static final String[] COLOR_CODE_MODIFIERS = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e" };
     private static final Map<String, String> EQUAL_COLOR_CODES = new HashMap<String, String>();
     private static final Map<Integer, String> NUMBER_SYMBOLS = new HashMap<Integer, String>();
     private static final String[] DICES = new String[] { "\u2680", "\u2681", "\u2682", "\u2683", "\u2684", "\u2685" };
     public static final String TRUE = "§a\u2714";
     public static final String FALSE = "§c\u2718";
-    private TextReader textReader;
     private Map<String, String> messages;
 
     static {
@@ -61,36 +63,73 @@ public final class MessageManager extends Manager implements MessageContainer {
 
     @Override
     public boolean onInitialize() {
-        String fileName = "lang_" + Settings.getLanguageName() + ".txt";
-        textReader = new TextReader(plugin, fileName, "plugins/ItemSlotMachine/");
-        if (!textReader.readFile()) {
-            plugin.l.warning("Failed to save '" + fileName + "', plugin will disable!");
-            return false;
-        } else if (!loadMessages()) {
-            plugin.l.warning("Failed to read '" + fileName + "', plugin will disable!");
-            return false;
+        File directory = new File("plugins/ItemSlotMachine/");
+        String tag = Settings.getLanguageTag();
+        String fileName = "lang_" + tag + ".txt";
+        File langFile = null;
+        if (directory.exists() && directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                String name = file.getName();
+                if (name.equalsIgnoreCase(fileName)) {
+                    langFile = file;
+                    fileName = name;
+                    break;
+                }
+            }
         }
-        plugin.l.info(fileName + " successfully loaded.");
+
+        List<String> lines = null;
+        if (langFile != null) {
+            try {
+                lines = Files.readLines(langFile, StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                plugin.logWarning("Failed to read '" + fileName + "', messages will default to english! Cause: %c", e);
+
+                if (Settings.isDebugModeEnabled()) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            plugin.logWarning("Language file '" + fileName + "' not found, messages will default to english!");
+
+            for (String defaultName : DEFAULT_FILES) {
+                try {
+                    plugin.saveResource(defaultName, false);
+                } catch (Exception e) {
+                    plugin.logWarning("Failed to save '" + defaultName + "'! Cause: %c", e);
+                }
+            }
+        }
+
+        if (lines == null) {
+            try {
+                lines = FileUtils.readResourceLines(plugin, DEFAULT_FILES[0]);
+            } catch (Exception e) {
+                plugin.logWarning("Failed to read the default language file, plugin will disable! Cause: %c", e);
+                if (Settings.isDebugModeEnabled()) {
+                    e.printStackTrace();
+                }
+                
+                return false;
+            }
+        }
+
+        loadMessages(lines);
+        plugin.logInfo("Language " + tag + " successfully loaded.");
         return true;
     }
 
     @Override
     public void onDisable() {}
 
-    private boolean loadMessages() {
+    private void loadMessages(List<String> lines) {
         messages = new HashMap<String, String>();
-        try {
-            for (String s : textReader.readFromFile()) {
-                String[] p = s.split("=");
-                if (p.length == 2 && !s.startsWith("#"))
-                    messages.put(p[0], ChatColor.translateAlternateColorCodes('&', p[1]));
+        for (String line : lines) {
+            String[] data = line.split("=");
+            if (data.length == 2 && !line.startsWith("#")) {
+                messages.put(data[0], ChatColor.translateAlternateColorCodes('&', data[1]));
             }
-        } catch (Exception e) {
-            if (Settings.isDebugModeEnabled())
-                e.printStackTrace();
-            return false;
         }
-        return true;
     }
 
     public static String randomColorCode() {
@@ -180,32 +219,32 @@ public final class MessageManager extends Manager implements MessageContainer {
 
     private String statisticToString(Statistic statistic) {
         StringBuilder s = new StringBuilder();
-        for (StatisticObject o : statistic.getObjects()) {
+        for (StatisticRecord o : statistic.getRecords()) {
             String c = randomColorCode();
-            s.append("\n§r §7" + randomDice() + " " + c + o.getType().getRealName(plugin) + ": " + equalColorCode(c)
+            s.append("\n§r §7" + randomDice() + " " + c + o.getCategory().getLocalizedName(plugin) + ": " + equalColorCode(c)
                     + o.getValue());
         }
         return s.toString();
     }
 
-    private String slotMachineTopToString(Type category) {
+    private String slotMachineTopToString(Category category) {
         StringBuilder s = new StringBuilder();
         List<SlotMachineStatistic> top = plugin.slotMachineManager.getTop(category);
         int size = top.size();
         for (int i = 0; i < (size > 10 ? 10 : size); i++) {
             SlotMachineStatistic m = top.get(i);
-            s.append("\n§r " + getSymbol(i + 1) + " §a" + m.getName() + " §8(§e" + m.getObject(category).getValue() + "§8)");
+            s.append("\n§r " + getSymbol(i + 1) + " §a" + m.getName() + " §8(§e" + m.getRecord(category).getValue() + "§8)");
         }
         return s.toString();
     }
 
-    private String playerTopToString(Type category) {
+    private String playerTopToString(Category category) {
         StringBuilder s = new StringBuilder();
         List<PlayerStatistic> top = plugin.statisticManager.getTop(category);
         int size = top.size();
         for (int i = 0; i < (size > 10 ? 10 : size); i++) {
             PlayerStatistic p = top.get(i);
-            s.append("\n§r " + getSymbol(i + 1) + " §a" + p.getName() + " §8(§e" + p.getObject(category).getValue() + "§8)");
+            s.append("\n§r " + getSymbol(i + 1) + " §a" + p.getName() + " §8(§e" + p.getRecord(category).getValue() + "§8)");
         }
         return s.toString();
     }
@@ -359,8 +398,14 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     @Override
-    public String design_inversion(String name) {
-        return getMessage("design_inversion", true).replace("<name>", name);
+    public String design_inversion_failure(String name, String cause) {
+        return getMessage("design_inversion_failure", true).replace("<name>", name).replace("<cause>",
+                                                                                            cause == null ? "Unknown" : cause);
+    }
+
+    @Override
+    public String design_inversion_success(String name) {
+        return getMessage("design_inversion_success", true).replace("<name>", name);
     }
 
     @Override
@@ -390,8 +435,7 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     public String coin_purchase_not_enough_money(int coins, double price) {
-        return coin_purchase_not_enough_money(coins, price, price == 1 ? VaultHook.ECONOMY.currencyNameSingular()
-                : VaultHook.ECONOMY.currencyNameSingular());
+        return coin_purchase_not_enough_money(coins, price, VaultHook.getCurrencyName(price == 1));
     }
 
     @Override
@@ -401,8 +445,7 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     public String coin_purchase(int coins, double price) {
-        return coin_purchase(coins, price,
-                             price == 1 ? VaultHook.ECONOMY.currencyNameSingular() : VaultHook.ECONOMY.currencyNamePlural());
+        return coin_purchase(coins, price, VaultHook.getCurrencyName(price == 1));
     }
 
     @Override
@@ -482,10 +525,16 @@ public final class MessageManager extends Manager implements MessageContainer {
         int index = message.indexOf("<items>");
         String currency = "money";
         if (VaultHook.isEnabled()) {
-            currency = money == 1 ? VaultHook.ECONOMY.currencyNameSingular() : VaultHook.ECONOMY.currencyNamePlural();
+            currency = VaultHook.getCurrencyName(money == 1);
         }
-        return slot_machine_won(money, currency, items.size(),
-                                index == -1 ? "" : itemsToString(items, ChatColor.getLastColors(message.substring(0, index))));
+
+        String itemsText = "";
+
+        if (index > -1) {
+            itemsText = itemsToString(items, ChatColor.getLastColors(message.substring(0, index)));
+        }
+
+        return slot_machine_won(money, currency, items.size(), itemsText);
     }
 
     @Override
@@ -543,8 +592,14 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     @Override
-    public String slot_machine_rebuilding(String name) {
-        return getMessage("slot_machine_rebuilding", true).replace("<name>", name);
+    public String slot_machine_rebuilding_failure(String name, String cause) {
+        return getMessage("slot_machine_rebuilding_failure", true).replace("<name>", name).replace("<cause>",
+                                                                                           cause == null ? "Unknown" : cause);
+    }
+
+    @Override
+    public String slot_machine_rebuilding_success(String name) {
+        return getMessage("slot_machine_rebuilding_success", true).replace("<name>", name);
     }
 
     @Override
@@ -584,7 +639,7 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     public String slot_machine_money_pot_deposit(double money, String name, double pot) {
-        return slot_machine_money_pot_deposit(money, VaultHook.ECONOMY.currencyNamePlural(), name, pot);
+        return slot_machine_money_pot_deposit(money, VaultHook.getCurrencyName(false), name, pot);
     }
 
     @Override
@@ -594,7 +649,7 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     public String slot_machine_money_pot_withdraw(double money, String name, double pot) {
-        return slot_machine_money_pot_withdraw(money, VaultHook.ECONOMY.currencyNamePlural(), name, pot);
+        return slot_machine_money_pot_withdraw(money, VaultHook.getCurrencyName(false), name, pot);
     }
 
     @Override
@@ -604,8 +659,7 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     public String slot_machine_money_pot_set(String name, double money) {
-        return slot_machine_money_pot_set(name, money, money == 1 ? VaultHook.ECONOMY.currencyNameSingular()
-                : VaultHook.ECONOMY.currencyNamePlural());
+        return slot_machine_money_pot_set(name, money, VaultHook.getCurrencyName(money == 1));
     }
 
     @Override
@@ -615,8 +669,7 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     public String slot_machine_money_pot_reset(String name, double pot) {
-        return slot_machine_money_pot_reset(name, pot, pot == 1 ? VaultHook.ECONOMY.currencyNameSingular()
-                : VaultHook.ECONOMY.currencyNamePlural());
+        return slot_machine_money_pot_reset(name, pot, VaultHook.getCurrencyName(pot == 1));
     }
 
     @Override
@@ -656,8 +709,13 @@ public final class MessageManager extends Manager implements MessageContainer {
     public String slot_machine_item_pot_deposit_multiple(ItemList items, String name) {
         String message = getMessage("slot_machine_item_pot_deposit_multiple");
         int index = message.indexOf("<items>");
-        return slot_machine_item_pot_deposit_multiple(index == -1 ? ""
-                : itemsToString(items, ChatColor.getLastColors(message.substring(0, index))), name);
+        String itemsText = "";
+
+        if (index > -1) {
+            itemsText = itemsToString(items, ChatColor.getLastColors(message.substring(0, index)));
+        }
+
+        return slot_machine_item_pot_deposit_multiple(itemsText, name);
     }
 
     @Override
@@ -668,8 +726,13 @@ public final class MessageManager extends Manager implements MessageContainer {
     public String slot_machine_item_pot_set(String name, ItemList items) {
         String message = getMessage("slot_machine_item_pot_set");
         int index = message.indexOf("<items>");
-        return slot_machine_item_pot_set(name, index == -1 ? ""
-                : itemsToString(items, ChatColor.getLastColors(message.substring(0, index))));
+        String itemsText = "";
+
+        if (index > -1) {
+            itemsText = itemsToString(items, ChatColor.getLastColors(message.substring(0, index)));
+        }
+
+        return slot_machine_item_pot_set(name, itemsText);
     }
 
     @Override
@@ -680,8 +743,13 @@ public final class MessageManager extends Manager implements MessageContainer {
     public String slot_machine_item_pot_reset(String name, ItemList items) {
         String message = getMessage("slot_machine_item_pot_reset");
         int index = message.indexOf("<items>");
-        return slot_machine_item_pot_reset(name, index == -1 ? ""
-                : itemsToString(items, ChatColor.getLastColors(message.substring(0, index))));
+        String itemsText = "";
+
+        if (index > -1) {
+            itemsText = itemsToString(items, ChatColor.getLastColors(message.substring(0, index)));
+        }
+
+        return slot_machine_item_pot_reset(name, itemsText);
     }
 
     @Override
@@ -741,8 +809,8 @@ public final class MessageManager extends Manager implements MessageContainer {
         return getMessage("statistic_top_slot_machine", true).replace("<category>", category).replace("<top>", top);
     }
 
-    public String statistic_top_slot_machine(Type category) {
-        return statistic_top_slot_machine(category.getRealName(plugin), slotMachineTopToString(category));
+    public String statistic_top_slot_machine(Category category) {
+        return statistic_top_slot_machine(category.getLocalizedName(plugin), slotMachineTopToString(category));
     }
 
     @Override
@@ -755,8 +823,8 @@ public final class MessageManager extends Manager implements MessageContainer {
         return getMessage("statistic_top_player", true).replace("<category>", category).replace("<top>", top);
     }
 
-    public String statistic_top_player(Type category) {
-        return statistic_top_player(category.getRealName(plugin), playerTopToString(category));
+    public String statistic_top_player(Category category) {
+        return statistic_top_player(category.getLocalizedName(plugin), playerTopToString(category));
     }
 
     @Override
@@ -791,6 +859,19 @@ public final class MessageManager extends Manager implements MessageContainer {
 
     @Override
     public String sign_pot_money(double money) {
+        //        String moneyText;
+        //        if (money > 9999999.99) {
+        //            Locale locale = Locale.forLanguageTag(Settings.getLanguageName());
+        //            if (locale == null) {
+        //                locale = Locale.US;
+        //            }
+        //
+        //            NumberFormat format = NumberFormat.getCompactNumberInstance(locale, NumberFormat.Style.SHORT);
+        //            moneyText = format.format(money);
+        //        } else {
+        //            moneyText = Double.toString(money);
+        //        }
+
         return getMessage("sign_pot_money").replace("<money>", Double.toString(money));
     }
 

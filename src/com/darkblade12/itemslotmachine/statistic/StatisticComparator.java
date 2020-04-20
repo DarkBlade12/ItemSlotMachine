@@ -3,23 +3,25 @@ package com.darkblade12.itemslotmachine.statistic;
 import java.util.Comparator;
 
 public final class StatisticComparator implements Comparator<Statistic> {
-    private Type type;
+    private Category category;
 
-    public StatisticComparator(Type type) {
-        this.type = type;
+    public StatisticComparator(Category type) {
+        this.category = type;
     }
 
     @Override
     public int compare(Statistic s1, Statistic s2) {
-        StatisticObject o1 = s1.getObject(type);
-        StatisticObject o2 = s2.getObject(type);
-        if (o1 == null && o2 != null)
+        StatisticRecord r1 = s1.getRecord(category);
+        StatisticRecord r2 = s2.getRecord(category);
+
+        if (r1 == null && r2 != null) {
             return 1;
-        else if (o1 != null && o2 == null)
+        } else if (r1 != null && r2 == null) {
             return -1;
-        else if (o1 == null && o2 == null)
+        } else if (r1 == null && r2 == null) {
             return 0;
-        else
-            return o2.compareTo(o1);
+        } else {
+            return r2.compareTo(r1);
+        }
     }
 }

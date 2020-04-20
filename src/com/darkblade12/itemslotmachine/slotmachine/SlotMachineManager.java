@@ -36,7 +36,7 @@ import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
 import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.statistic.StatisticComparator;
-import com.darkblade12.itemslotmachine.statistic.Type;
+import com.darkblade12.itemslotmachine.statistic.Category;
 import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
 
 public final class SlotMachineManager extends Manager implements NameGenerator {
@@ -51,7 +51,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 
     @Override
     public boolean onInitialize() {
-        comparator = new NameableComparator<SlotMachine>(Settings.getRawSlotMachineName());
+        comparator = new NameableComparator<SlotMachine>();
         loadSlotMachines();
         registerEvents();
         return true;
@@ -81,7 +81,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
     }
 
     private void sort() {
-        Collections.sort(slotMachines, comparator);
+        slotMachines.sort(comparator);
     }
 
     public void loadSlotMachines() {
@@ -90,13 +90,13 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
             try {
                 slotMachines.add(SlotMachine.load(plugin, name));
             } catch (Exception e) {
-                plugin.l.warning("Failed to load slot machine '" + name + "'! Cause: " + e.getMessage());
+                plugin.logWarning("Failed to load slot machine '" + name + "'! Cause: %c", e);
                 if (Settings.isDebugModeEnabled())
                     e.printStackTrace();
             }
         sort();
         int amount = slotMachines.size();
-        plugin.l.info(amount + " slot machine" + (amount == 1 ? "" : "s") + " loaded.");
+        plugin.logInfo(amount + " slot machine" + (amount == 1 ? "" : "s") + " loaded.");
     }
 
     public void register(SlotMachine s) {
@@ -187,7 +187,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
         return a;
     }
 
-    public List<SlotMachineStatistic> getTop(Type t) {
+    public List<SlotMachineStatistic> getTop(Category t) {
         List<SlotMachineStatistic> top = new ArrayList<SlotMachineStatistic>();
         for (int i = 0; i < slotMachines.size(); i++)
             top.add(slotMachines.get(i).getStatistic());

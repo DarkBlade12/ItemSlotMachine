@@ -103,7 +103,7 @@ General_Settings:
    # This is the list of sounds which will be played upon lose
    # Sound format: <sound_name>-<volume>-<pitch>
    # Format: <sound>(, <sound>...)
-   Sounds: BLOCK_NOTE_BLOCK_GUITAR-2-2, BLOCK_NOTE_BLOCK_BASS-2-2
+   Sounds: BLOCK_NOTE_BLOCK_PLING-2-2, BLOCK_NOTE_BLOCK_BASS-2-2
   
  # This section contains settings for the player lock of this slot machine
  # A player lock will prevent other players from using a slot machine right after the spin of the recent user is over for a specified time
@@ -164,8 +164,8 @@ Money_Pot_Settings:
   # This is a list of combos which will are if 'Enabled' is set to true
   # An item id will match everything if it's set to 0
   # Item format: <item_name>
-  # Valid action names: MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDANT_MONEY
-  # The amount value can either be a point number or a normal number and is only necessary for the actions MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDANT_MONEY
+  # Valid action names: MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDENT_MONEY
+  # The amount value can either be a point number or a normal number and is only necessary for the actions MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDENT_MONEY
   # Combo format: <item>@<item>@<item>#<action> OR <item>@<item>@<item>#<action>#<amount>
   # Format: <combo>(;<combo>...)
   Combos: diamond_axe@diamond_axe@diamond_axe#MULTIPLY_POT_AND_DISTRIBUTE#2.0
@@ -207,8 +207,8 @@ Item_Pot_Settings:
   # This is a list of combos which are active if 'Enabled' is set to true
   # An item id will match everything if it's set to 0
   # Item format: <item_name> (OR <item_name>-<amount> for the items value)
-  # Valid action names: DOUBLE_POT_ITEMS_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDANT_ITEMS
-  # The items value can either be a point number or a normal number and is only necessary for the actions ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDANT_ITEMS
+  # Valid action names: DOUBLE_POT_ITEMS_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDENT_ITEMS
+  # The items value can either be a point number or a normal number and is only necessary for the actions ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDENT_ITEMS
   # Combo format: <item>@<item>@<item>#<action> OR <item>@<item>@<item>#<action>#<items>
   # Format: <combo>(;<combo>...)
   Combos: diamond_axe@diamond_axe@diamond_axe#ADD_TO_POT_AND_DISTRIBUTE#diamond-3, iron_sword-1, sponge-20

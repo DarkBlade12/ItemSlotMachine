@@ -47,11 +47,10 @@ public enum Direction {
 
     public static Direction getViewDirection(Player player) {
         float yaw = player.getLocation().getYaw();
-
         if (yaw < 0.0F) {
             yaw += 360.0F;
         }
-
+        
         return yaw > 45 && yaw < 135 ? WEST : yaw > 135 && yaw < 225 ? NORTH : yaw > 225 && yaw < 315 ? EAST : SOUTH;
     }
 
@@ -62,7 +61,6 @@ public enum Direction {
 
         int faceIndex = ArrayUtils.indexOf(FACE_ORDER, face);
         Direction current = initial;
-
         while (current != target) {
             faceIndex = (faceIndex + 4) % FACE_ORDER.length;
             current = current.next();
