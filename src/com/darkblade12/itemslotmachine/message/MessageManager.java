@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
@@ -109,7 +110,7 @@ public final class MessageManager extends Manager implements MessageContainer {
                 if (Settings.isDebugModeEnabled()) {
                     e.printStackTrace();
                 }
-                
+
                 return false;
             }
         }
@@ -127,7 +128,8 @@ public final class MessageManager extends Manager implements MessageContainer {
         for (String line : lines) {
             String[] data = line.split("=");
             if (data.length == 2 && !line.startsWith("#")) {
-                messages.put(data[0], ChatColor.translateAlternateColorCodes('&', data[1]));
+                String text = StringEscapeUtils.unescapeJava(data[1]);
+                messages.put(data[0], ChatColor.translateAlternateColorCodes('&', text));
             }
         }
     }
@@ -593,8 +595,8 @@ public final class MessageManager extends Manager implements MessageContainer {
 
     @Override
     public String slot_machine_rebuilding_failure(String name, String cause) {
-        return getMessage("slot_machine_rebuilding_failure", true).replace("<name>", name).replace("<cause>",
-                                                                                           cause == null ? "Unknown" : cause);
+        return getMessage("slot_machine_rebuilding_failure", true).replace("<name>", name)
+                .replace("<cause>", cause == null ? "Unknown" : cause);
     }
 
     @Override

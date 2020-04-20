@@ -48,7 +48,7 @@ public final class DesignManager extends Manager implements NameGenerator {
         String wandName = plugin.messageManager.design_wand_name();
         String[] wandLore = plugin.messageManager.design_wand_lore();
         wand = new ItemBuilder().withMaterial(Material.BONE).withName(wandName).withLore(wandLore).build();
-        comparator = new NameableComparator<Design>();
+        comparator = new NameableComparator<Design>(Settings.getRawDesignName());
         loadDesigns();
         selections = new HashMap<String, SafeLocation[]>();
         registerEvents();

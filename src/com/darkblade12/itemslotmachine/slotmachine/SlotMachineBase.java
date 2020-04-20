@@ -111,39 +111,47 @@ public abstract class SlotMachineBase implements Nameable {
         this.plugin = plugin;
         this.name = name;
         instanceReader = new CompressedStringReader(name + ".instance", "plugins/ItemSlotMachine/slot machines/");
-        String s;
+
+        String serialized;
         try {
-            s = instanceReader.readFromFile();
+            serialized = instanceReader.readFromFile();
         } catch (Exception e) {
             throw new Exception("Failed to read " + instanceReader.getOuputFileName());
         }
-        String[] p = s.split("#");
-        design = plugin.designManager.getDesign(p[0]);
-        if (design == null)
+
+        String[] data = serialized.split("#");
+        design = plugin.designManager.getDesign(data[0]);
+        if (design == null) {
             throw new Exception("The design of this slot machine does no longer exist");
-        center = SafeLocation.fromString(p[1]);
-        initialDirection = Direction.valueOf(p[2]);
+        }
+        center = SafeLocation.fromString(data[1]);
+        initialDirection = Direction.valueOf(data[2]);
         Location l = center.getBukkitLocation();
         sign = design.getSign().getSafeLocation(l, initialDirection);
         slot = design.getSlot().getSafeLocation(l, initialDirection);
         region = design.getRegion().getCuboid(l, initialDirection);
-        statistic = SlotMachineStatistic.fromFile(name);
-        if (statistic == null) {
+        
+        try {
+            statistic = SlotMachineStatistic.fromFile(name);
+        } catch (Exception e) {
             statistic = new SlotMachineStatistic(name);
         }
+        
         configReader = new ConfigReader(plugin, plugin.template, name + ".yml", "plugins/ItemSlotMachine/slot machines/");
-        if (!configReader.readConfig())
+        if (!configReader.readConfig()) {
             throw new Exception("Failed to read " + configReader.getOuputFileName());
+        }
         loadSettings();
-        if (p.length == 3) {
+        
+        if (data.length == 3) {
             moneyPot = moneyPotDefaultSize;
             if (itemPotEnabled) {
                 itemPot = itemPotDefaultItems.clone();
             }
             saveInstance();
         } else {
-            moneyPot = Double.parseDouble(p[3]);
-            itemPot = p.length == 5 ? ItemList.fromString(p[4]) : new ItemList();
+            moneyPot = Double.parseDouble(data[3]);
+            itemPot = data.length == 5 ? ItemList.fromString(data[4]) : new ItemList();
         }
         updateSign();
     }
@@ -574,7 +582,7 @@ public abstract class SlotMachineBase implements Nameable {
     public void teleport(Player player) throws IllegalStateException {
         boolean flying = player.isFlying();
         Location centerLoc = center.getBukkitLocation();
-        
+
         for (int i = 1; i <= 5; i++) {
             Block block = design.getSlot().clone().add(0, -i, 0).getBukkitBlock(centerLoc, initialDirection);
             if (!block.getType().isSolid() && !block.getRelative(BlockFace.UP).getType().isSolid()) {
@@ -586,7 +594,7 @@ public abstract class SlotMachineBase implements Nameable {
                 }
             }
         }
-        
+
         throw new IllegalStateException("No suitable teleport location found");
     }
 

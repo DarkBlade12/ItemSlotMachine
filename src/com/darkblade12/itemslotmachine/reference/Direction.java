@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Rail.Shape;
 import org.bukkit.entity.Player;
 
 public enum Direction {
@@ -50,7 +51,7 @@ public enum Direction {
         if (yaw < 0.0F) {
             yaw += 360.0F;
         }
-        
+
         return yaw > 45 && yaw < 135 ? WEST : yaw > 135 && yaw < 225 ? NORTH : yaw > 225 && yaw < 315 ? EAST : SOUTH;
     }
 
@@ -67,6 +68,44 @@ public enum Direction {
         }
 
         return FACE_ORDER[faceIndex];
+    }
+
+    public static Shape rotate(Shape shape, Direction initial, Direction target) {
+        Shape newShape = shape;
+        Direction current = initial;
+        while (current != target) {
+            newShape = rotate(newShape);
+            current = current.next();
+        }
+
+        return newShape;
+    }
+
+    private static Shape rotate(Shape shape) {
+        switch (shape) {
+            case ASCENDING_EAST:
+                return Shape.ASCENDING_SOUTH;
+            case ASCENDING_NORTH:
+                return Shape.ASCENDING_EAST;
+            case ASCENDING_SOUTH:
+                return Shape.ASCENDING_WEST;
+            case ASCENDING_WEST:
+                return Shape.ASCENDING_NORTH;
+            case EAST_WEST:
+                return Shape.NORTH_SOUTH;
+            case NORTH_EAST:
+                return Shape.SOUTH_EAST;
+            case NORTH_SOUTH:
+                return Shape.EAST_WEST;
+            case NORTH_WEST:
+                return Shape.NORTH_EAST;
+            case SOUTH_EAST:
+                return Shape.SOUTH_WEST;
+            case SOUTH_WEST:
+                return Shape.NORTH_WEST;
+            default:
+                return shape;
+        }
     }
 
     public Direction next() {

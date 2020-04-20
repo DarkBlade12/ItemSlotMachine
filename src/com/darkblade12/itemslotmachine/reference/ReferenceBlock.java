@@ -1,11 +1,17 @@
 package com.darkblade12.itemslotmachine.reference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.Rail;
+import org.bukkit.block.data.Rail.Shape;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Player;
 
@@ -46,6 +52,20 @@ public class ReferenceBlock extends ReferenceLocation {
             Rotatable rotatable = (Rotatable) blockData;
             BlockFace newRotation = Direction.rotate(rotatable.getRotation(), initialDirection, viewDirection);
             rotatable.setRotation(newRotation);
+        } else if (blockData instanceof MultipleFacing) {
+            MultipleFacing multiple = (MultipleFacing) blockData;
+            List<BlockFace> faces = new ArrayList<BlockFace>(multiple.getFaces());
+            for (int i = 0; i < faces.size(); i++) {
+                faces.set(i, Direction.rotate(faces.get(i), initialDirection, viewDirection));
+            }
+
+            for (BlockFace face : multiple.getAllowedFaces()) {
+                multiple.setFace(face, faces.contains(face));
+            }
+        } else if (blockData instanceof Rail) {
+            Rail rail = (Rail) blockData;
+            Shape newShape = Direction.rotate(rail.getShape(), initialDirection, viewDirection);
+            rail.setShape(newShape);
         }
 
         return blockData;

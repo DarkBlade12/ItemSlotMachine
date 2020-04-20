@@ -51,7 +51,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
 
     @Override
     public boolean onInitialize() {
-        comparator = new NameableComparator<SlotMachine>();
+        comparator = new NameableComparator<SlotMachine>(Settings.getRawSlotMachineName());
         loadSlotMachines();
         registerEvents();
         return true;
