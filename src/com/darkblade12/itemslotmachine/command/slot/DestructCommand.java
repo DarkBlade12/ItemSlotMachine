@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -11,12 +13,18 @@ import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 public final class DestructCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-        SlotMachine s = plugin.slotMachineManager.getSlotMachine(params[0]);
-        if (s == null) {
+        SlotMachine slot = plugin.slotMachineManager.getSlotMachine(params[0]);
+        if (slot == null) {
             sender.sendMessage(plugin.messageManager.slot_machine_not_existent());
             return;
         }
-        plugin.slotMachineManager.unregister(s);
-        sender.sendMessage(plugin.messageManager.slot_machine_destruction(s.getName()));
+
+        plugin.slotMachineManager.unregister(slot);
+        sender.sendMessage(plugin.messageManager.slot_machine_destruction(slot.getName()));
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return params.length == 1 ? plugin.slotMachineManager.getSlotMachines().getNames() : null;
     }
 }

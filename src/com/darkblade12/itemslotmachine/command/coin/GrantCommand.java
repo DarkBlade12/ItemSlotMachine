@@ -1,5 +1,9 @@
 package com.darkblade12.itemslotmachine.command.coin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,11 +18,12 @@ import com.darkblade12.itemslotmachine.util.ItemList;
 public final class GrantCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-        Player p = Bukkit.getPlayer(params[0]);
-        if (p == null) {
+        Player player = Bukkit.getPlayer(params[0]);
+        if (player == null) {
             sender.sendMessage(plugin.messageManager.player_not_existent());
             return;
         }
+
         String input = params[1];
         int amount;
         try {
@@ -27,24 +32,46 @@ public final class GrantCommand implements ICommand {
             sender.sendMessage(plugin.messageManager.input_not_numeric(input));
             return;
         }
+
         if (amount < 1) {
             sender.sendMessage(plugin.messageManager.invalid_amount(plugin.messageManager.lower_than_number(1)));
             return;
         }
+
         String name = sender.getName();
-        boolean self = p.getName().equals(name);
-        ItemStack i = plugin.coinManager.getCoin(amount);
-        if (!ItemList.hasEnoughSpace(p, i)) {
-            sender.sendMessage(self ? plugin.messageManager.player_not_enough_space()
-                                    : plugin.messageManager.player_not_enough_space_other());
+        boolean self = player.getName().equals(name);
+        ItemStack coin = plugin.coinManager.getCoin(amount);
+        if (!ItemList.hasEnoughSpace(player, coin)) {
+            if (self) {
+                sender.sendMessage(plugin.messageManager.player_not_enough_space());
+            } else {
+                sender.sendMessage(plugin.messageManager.player_not_enough_space_other());
+            }
             return;
         }
-        p.getInventory().addItem(i);
+        
+        player.getInventory().addItem(coin);
         if (self) {
             sender.sendMessage(plugin.messageManager.coin_grant_self(amount));
         } else {
-            p.sendMessage(plugin.messageManager.coin_grant_receiver(amount, name));
-            sender.sendMessage(plugin.messageManager.coin_grant_sender(p.getName(), amount));
+            player.sendMessage(plugin.messageManager.coin_grant_receiver(amount, name));
+            sender.sendMessage(plugin.messageManager.coin_grant_sender(player.getName(), amount));
+        }
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        switch (params.length) {
+            case 1:
+                List<String> completions = new ArrayList<String>();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    completions.add(player.getName());
+                }
+                return completions;
+            case 2:
+                return Arrays.asList(new String[] { "1", "10", "25", "50" });
+            default:
+                return null;
         }
     }
 }

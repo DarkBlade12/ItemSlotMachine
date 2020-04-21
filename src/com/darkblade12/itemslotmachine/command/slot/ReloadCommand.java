@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -17,20 +19,27 @@ public final class ReloadCommand implements ICommand {
             plugin.onReload();
             sender.sendMessage(plugin.messageManager.plugin_reloaded(System.currentTimeMillis() - check));
         } else {
-            SlotMachine s = plugin.slotMachineManager.getSlotMachine(params[0]);
-            if (s == null) {
+            SlotMachine slot = plugin.slotMachineManager.getSlotMachine(params[0]);
+            if (slot == null) {
                 sender.sendMessage(plugin.messageManager.slot_machine_not_existent());
                 return;
             }
+
             try {
-                plugin.slotMachineManager.reload(s);
+                plugin.slotMachineManager.reload(slot);
             } catch (Exception e) {
                 sender.sendMessage(plugin.messageManager.slot_machine_reload_failure(e.getMessage()));
-                if (Settings.isDebugModeEnabled())
+                if (Settings.isDebugModeEnabled()) {
                     e.printStackTrace();
+                }
                 return;
             }
-            sender.sendMessage(plugin.messageManager.slot_machine_reload(s.getName()));
+            sender.sendMessage(plugin.messageManager.slot_machine_reload(slot.getName()));
         }
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return params.length == 1 ? plugin.slotMachineManager.getSlotMachines().getNames() : null;
     }
 }

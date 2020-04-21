@@ -90,8 +90,8 @@ public final class StatisticManager extends Manager {
         return names;
     }
 
-    public List<PlayerStatistic> getStatistics() {
-        return Collections.unmodifiableList(statistics);
+    public NameableList<PlayerStatistic> getStatistics() {
+        return new NameableList<PlayerStatistic>(statistics);
     }
 
     public PlayerStatistic getStatistic(String name, boolean create) {

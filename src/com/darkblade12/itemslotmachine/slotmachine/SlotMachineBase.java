@@ -130,19 +130,19 @@ public abstract class SlotMachineBase implements Nameable {
         sign = design.getSign().getSafeLocation(l, initialDirection);
         slot = design.getSlot().getSafeLocation(l, initialDirection);
         region = design.getRegion().getCuboid(l, initialDirection);
-        
+
         try {
             statistic = SlotMachineStatistic.fromFile(name);
         } catch (Exception e) {
             statistic = new SlotMachineStatistic(name);
         }
-        
+
         configReader = new ConfigReader(plugin, plugin.template, name + ".yml", "plugins/ItemSlotMachine/slot machines/");
         if (!configReader.readConfig()) {
             throw new Exception("Failed to read " + configReader.getOuputFileName());
         }
         loadSettings();
-        
+
         if (data.length == 3) {
             moneyPot = moneyPotDefaultSize;
             if (itemPotEnabled) {
@@ -158,148 +158,189 @@ public abstract class SlotMachineBase implements Nameable {
 
     private void loadSettings() throws InvalidValueException {
         activationAmount = GENERAL_SETTINGS.getInt(configReader.config, "Activation_Amount");
-        if (activationAmount < 0)
+        if (activationAmount < 0) {
             throw new InvalidValueException("Activation_Amount", GENERAL_SETTINGS, "is invalid (lower than 0)");
+        }
+
         String itemIconsString = GENERAL_SETTINGS.getString(configReader.config, "Item_Icons");
-        if (itemIconsString == null)
+        if (itemIconsString == null) {
             throw new InvalidValueException("Item_Icons", GENERAL_SETTINGS, "is null (empty)");
+        }
         try {
             itemIcons = ItemList.fromString(itemIconsString, false);
         } catch (Exception e) {
             throw new InvalidValueException("Item_Icons", GENERAL_SETTINGS, e.getMessage());
         }
+
         creativeUsageEnabled = GENERAL_SETTINGS.getBoolean(configReader.config, "Creative_Usage_Enabled");
         fireworksEnabled = GENERAL_SETTINGS.getBoolean(configReader.config, "Fireworks_Enabled");
+
         individualPermissionEnabled = INDIVIDUAL_PERMISSION.getBoolean(configReader.config, "Enabled");
         if (individualPermissionEnabled) {
             individualPermission = INDIVIDUAL_PERMISSION.getString(configReader.config, "Permission");
-            if (individualPermission == null)
+            if (individualPermission == null) {
                 throw new InvalidValueException("Permission", INDIVIDUAL_PERMISSION, "is null");
+            }
             individualPermission = individualPermission.replace("<name>", name);
         }
+
         haltTickDelay = new int[3];
         String haltTickDelayString = HALT_SETTINGS.getString(configReader.config, "Tick_Delay");
-        if (haltTickDelayString == null)
+        if (haltTickDelayString == null) {
             throw new InvalidValueException("Tick_Delay", HALT_SETTINGS, "is null");
+        }
         int index = 0;
         for (String tickDelay : haltTickDelayString.split("-")) {
-            if (index == 3)
+            if (index == 3) {
                 break;
+            }
+
             try {
                 haltTickDelay[index] = Integer.parseInt(tickDelay);
             } catch (Exception e) {
                 throw new InvalidValueException("Tick_Delay", HALT_SETTINGS, "contains invalid number");
             }
+
             index++;
         }
+
         automaticHaltEnabled = AUTOMATIC_HALT.getBoolean(configReader.config, "Enabled");
         if (automaticHaltEnabled) {
             automaticHaltTicks = AUTOMATIC_HALT.getInt(configReader.config, "Ticks");
-            if (automaticHaltTicks < 1)
+            if (automaticHaltTicks < 1) {
                 throw new InvalidValueException("Ticks", AUTOMATIC_HALT, "is invalid (lower than 1)");
+            }
         }
+
         predeterminedWinningChanceEnabled = PREDETERMINED_WINNING_CHANCE.getBoolean(configReader.config, "Enabled");
         if (predeterminedWinningChanceEnabled) {
             String valueString = PREDETERMINED_WINNING_CHANCE.getString(configReader.config, "Value");
-            if (valueString == null)
+            if (valueString == null) {
                 throw new InvalidValueException("Value", PREDETERMINED_WINNING_CHANCE, "is null");
+            }
+
             try {
-                String[] v = valueString.split("/");
-                predeterminedWinningChanceMin = Integer.parseInt(v[0]);
-                predeterminedWinningChanceMax = Integer.parseInt(v[1]);
-                if (predeterminedWinningChanceMin > predeterminedWinningChanceMax)
+                String[] valueData = valueString.split("/");
+                predeterminedWinningChanceMin = Integer.parseInt(valueData[0]);
+                predeterminedWinningChanceMax = Integer.parseInt(valueData[1]);
+                if (predeterminedWinningChanceMin > predeterminedWinningChanceMax) {
                     throw new InvalidValueException("Value", PREDETERMINED_WINNING_CHANCE,
                             "is invalid (min chance greater than max chance)");
-                else if (predeterminedWinningChanceMin < 0)
+                } else if (predeterminedWinningChanceMin < 0) {
                     throw new InvalidValueException("Value", PREDETERMINED_WINNING_CHANCE,
                             "is invalid (min chance lower than 0)");
-                else if (predeterminedWinningChanceMax < 0)
+                } else if (predeterminedWinningChanceMax < 0) {
                     throw new InvalidValueException("Value", PREDETERMINED_WINNING_CHANCE,
                             "is invalid (max chance lower than 0)");
+                }
             } catch (Exception e) {
                 throw new InvalidValueException("Value", PREDETERMINED_WINNING_CHANCE, "has an invalid format");
             }
         }
+
         tickingSoundsEnabled = TICKING_SOUNDS.getBoolean(configReader.config, "Enabled");
         if (tickingSoundsEnabled) {
             tickingSoundsBroadcast = TICKING_SOUNDS.getBoolean(configReader.config, "Broadcast");
             String tickingSoundsString = TICKING_SOUNDS.getString(configReader.config, "Sounds");
-            if (tickingSoundsString == null)
+            if (tickingSoundsString == null) {
                 throw new InvalidValueException("Sounds", TICKING_SOUNDS, "is null (empty)");
+            }
+
             try {
                 tickingSounds = SoundList.fromString(tickingSoundsString);
             } catch (Exception e) {
                 throw new InvalidValueException("Sounds", TICKING_SOUNDS, e.getMessage());
             }
         }
+
         winSoundsEnabled = WIN_SOUNDS.getBoolean(configReader.config, "Enabled");
         if (winSoundsEnabled) {
             winSoundsBroadcast = WIN_SOUNDS.getBoolean(configReader.config, "Broadcast");
             String winSoundsString = WIN_SOUNDS.getString(configReader.config, "Sounds");
-            if (winSoundsString == null)
+            if (winSoundsString == null) {
                 throw new InvalidValueException("Sounds", WIN_SOUNDS, "is null (empty)");
+            }
+
             try {
                 winSounds = SoundList.fromString(winSoundsString);
             } catch (Exception e) {
                 throw new InvalidValueException("Sounds", WIN_SOUNDS, e.getMessage());
             }
         }
+
         loseSoundsEnabled = LOSE_SOUNDS.getBoolean(configReader.config, "Enabled");
         if (loseSoundsEnabled) {
             loseSoundsBroadcast = LOSE_SOUNDS.getBoolean(configReader.config, "Broadcast");
             String loseSoundsString = LOSE_SOUNDS.getString(configReader.config, "Sounds");
-            if (loseSoundsString == null)
+            if (loseSoundsString == null) {
                 throw new InvalidValueException("Sounds", LOSE_SOUNDS, "is null (empty)");
+            }
+
             try {
                 loseSounds = SoundList.fromString(loseSoundsString);
             } catch (Exception e) {
                 throw new InvalidValueException("Sounds", LOSE_SOUNDS, e.getMessage());
             }
         }
+
         playerLockEnabled = PLAYER_LOCK.getBoolean(configReader.config, "Enabled");
         if (playerLockEnabled) {
             playerLockTime = PLAYER_LOCK.getInt(configReader.config, "Time");
-            if (playerLockTime < 1)
+            if (playerLockTime < 1) {
                 throw new InvalidValueException("Time", PLAYER_LOCK, "is invalid (lower than 1)");
+            }
         }
+
         commandExecutionEnabled = COMMAND_EXECUTION.getBoolean(configReader.config, "Enabled");
         if (commandExecutionEnabled) {
             String commandsString = COMMAND_EXECUTION.getString(configReader.config, "Commands");
-            if (commandsString == null)
+            if (commandsString == null) {
                 throw new InvalidValueException("Commands", COMMAND_EXECUTION, "is null (empty)");
+            }
+
             try {
                 commands = CommandList.fromString(commandsString);
             } catch (Exception e) {
                 throw new InvalidValueException("Commands", COMMAND_EXECUTION, e.getMessage());
             }
         }
+
         moneyPotEnabled = MONEY_POT_SETTINGS.getBoolean(configReader.config, "Enabled");
         if (moneyPotEnabled) {
             moneyPotDefaultSize = MONEY_POT_SETTINGS.getDouble(configReader.config, "Default_Size");
-            if (moneyPotDefaultSize < 0)
+            if (moneyPotDefaultSize < 0) {
                 throw new InvalidValueException("Default_Size", MONEY_POT_SETTINGS, "is invalid (lower than 0)");
+            }
+
             moneyPotRaise = MONEY_POT_SETTINGS.getDouble(configReader.config, "Pot_Raise");
-            if (moneyPotRaise < 0)
+            if (moneyPotRaise < 0) {
                 throw new InvalidValueException("Pot_Raise", MONEY_POT_SETTINGS, "is invalid (lower than 0)");
+            }
+
             moneyPotHouseCutEnabled = MONEY_POT_HOUSE_CUT.getBoolean(configReader.config, "Enabled");
             if (moneyPotHouseCutEnabled) {
                 moneyPotHouseCutPercentage = MONEY_POT_HOUSE_CUT.getBoolean(configReader.config, "Percentage");
                 moneyPotHouseCutAmount = MONEY_POT_HOUSE_CUT.getDouble(configReader.config, "Amount");
-                if (moneyPotHouseCutAmount < 1)
+                if (moneyPotHouseCutAmount < 1) {
                     throw new InvalidValueException("Amount", MONEY_POT_HOUSE_CUT, "is invalid (lower than 1)");
+                }
             }
         }
+
         moneyPotCombosEnabled = MONEY_POT_COMBO_SETTINGS.getBoolean(configReader.config, "Enabled");
         if (moneyPotCombosEnabled) {
             String moneyPotCombosString = MONEY_POT_COMBO_SETTINGS.getString(configReader.config, "Combos");
-            if (moneyPotCombosString == null)
+            if (moneyPotCombosString == null) {
                 throw new InvalidValueException("Combos", MONEY_POT_COMBO_SETTINGS, "is null (empty)");
+            }
+
             try {
                 moneyPotCombos = ComboList.fromString1(moneyPotCombosString);
             } catch (Exception e) {
                 throw new InvalidValueException("Combos", MONEY_POT_COMBO_SETTINGS, e.getMessage());
             }
         }
+
         itemPotEnabled = ITEM_POT_SETTINGS.getBoolean(configReader.config, "Enabled");
         if (itemPotEnabled) {
             String defaultItemsString = ITEM_POT_SETTINGS.getString(configReader.config, "Default_Items");
@@ -308,32 +349,40 @@ public abstract class SlotMachineBase implements Nameable {
             } catch (Exception e) {
                 throw new InvalidValueException("Default_Items", ITEM_POT_SETTINGS, e.getMessage());
             }
+
             String potRaiseString = ITEM_POT_SETTINGS.getString(configReader.config, "Pot_Raise");
             try {
                 itemPotRaise = potRaiseString == null ? new ItemList() : ItemList.fromString(potRaiseString);
             } catch (Exception e) {
                 throw new InvalidValueException("Pot_Raise", ITEM_POT_SETTINGS, e.getMessage());
             }
+
             itemPotHouseCutEnabled = ITEM_POT_HOUSE_CUT.getBoolean(configReader.config, "Enabled");
             if (itemPotHouseCutEnabled) {
                 itemPotHouseCutAmount = ITEM_POT_HOUSE_CUT.getInt(configReader.config, "Amount");
-                if (itemPotHouseCutAmount < 1)
+                if (itemPotHouseCutAmount < 1) {
                     throw new InvalidValueException("Amount", ITEM_POT_HOUSE_CUT, "is invalid (lower than 1)");
+                }
             }
         }
+
         itemPotCombosEnabled = ITEM_POT_COMBO_SETTINGS.getBoolean(configReader.config, "Enabled");
         if (itemPotCombosEnabled) {
             String itemPotCombosString = ITEM_POT_COMBO_SETTINGS.getString(configReader.config, "Combos");
-            if (itemPotCombosString == null)
+            if (itemPotCombosString == null) {
                 throw new InvalidValueException("Combos", ITEM_POT_COMBO_SETTINGS, "is null (empty)");
+            }
+
             try {
                 itemPotCombos = ComboList.fromString2(itemPotCombosString);
             } catch (Exception e) {
                 throw new InvalidValueException("Combos", ITEM_POT_COMBO_SETTINGS, e.getMessage());
             }
         }
-        if (!moneyPotEnabled && !itemPotEnabled)
+
+        if (!moneyPotEnabled && !itemPotEnabled) {
             throw new IllegalArgumentException("Money and item pot are disabled");
+        }
     }
 
     public void saveInstance() {
@@ -639,14 +688,17 @@ public abstract class SlotMachineBase implements Nameable {
 
     public ItemFrame[] getItemFrameInstances() {
         ItemFrame[] frames = new ItemFrame[3];
-        Location l = center.getBukkitLocation();
+        Location centerLoc = center.getBukkitLocation();
+
         for (int i = 0; i < 3; i++) {
-            ItemFrame f = design.getItemFrames()[i].getBukkitItemFrame(l, initialDirection);
-            if (f == null)
+            ItemFrame frame = design.getItemFrames()[i].getBukkitItemFrame(centerLoc, initialDirection);
+            if (frame == null) {
                 return null;
-            else
-                frames[i] = f;
+            } else {
+                frames[i] = frame;
+            }
         }
+
         return frames;
     }
 
@@ -666,34 +718,37 @@ public abstract class SlotMachineBase implements Nameable {
         return slot.clone();
     }
 
-    public boolean hasInteracted(Location l) {
-        return slot.noDistance(l);
+    public boolean hasInteracted(Location location) {
+        return slot.noDistance(location);
     }
 
     public Cuboid getRegion() {
         return this.region;
     }
 
-    public boolean isInsideRegion(Location l) {
-        return region.isInside(l);
+    public boolean isInsideRegion(Location location) {
+        return region.isInside(location);
     }
 
     public int getActivationAmount() {
         return this.activationAmount;
     }
 
-    public boolean hasEnoughCoins(Player p) {
-        if (p.getGameMode() == GameMode.CREATIVE)
+    public boolean hasEnoughCoins(Player player) {
+        if (player.getGameMode() == GameMode.CREATIVE) {
             return true;
-        int a = activationAmount;
-        for (ItemStack i : p.getInventory().getContents())
-            if (i != null && plugin.coinManager.isCoin(i))
-                if (a == 0)
+        }
+
+        int remaining = activationAmount;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && plugin.coinManager.isCoin(item)) {
+                if (remaining == 0 || item.getAmount() >= remaining) {
                     return true;
-                else if (i.getAmount() >= a)
-                    return true;
-                else
-                    a -= i.getAmount();
+                }
+                remaining -= item.getAmount();
+            }
+        }
+
         return false;
     }
 
@@ -805,14 +860,25 @@ public abstract class SlotMachineBase implements Nameable {
         return itemPotCombosEnabled && itemPotEnabled;
     }
 
-    public boolean isPermittedToModify(Player p) {
-        return p.hasPermission("ItemSlotMachine.slot.modify." + name) || p.hasPermission("ItemSlotMachine.slot.modify.*")
-                || p.hasPermission("ItemSlotMachine.slot.*") || p.hasPermission("ItemSlotMachine.*");
+    private boolean hasAnyPermission(Player player, String... permissions) {
+        for (String permission : permissions) {
+            if (player.hasPermission(permission)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public boolean isPermittedToUse(Player p) {
-        String permission = individualPermissionEnabled ? individualPermission : "ItemSlotMachine.slot.use";
-        return p.hasPermission(permission) || p.hasPermission("ItemSlotMachine.slot.use.*")
-                || p.hasPermission("ItemSlotMachine.slot.*") || p.hasPermission("ItemSlotMachine.*");
+    public boolean hasModifyPermission(Player player) {
+        String[] permissions = { "ItemSlotMachine.slot.modify." + name, "ItemSlotMachine.slot.modify.*", "ItemSlotMachine.slot.*",
+                                 "ItemSlotMachine.*" };
+        return hasAnyPermission(player, permissions);
+    }
+
+    public boolean hasUsePermission(Player player) {
+        String[] permissions = { individualPermissionEnabled ? individualPermission : "ItemSlotMachine.slot.use",
+                                 "ItemSlotMachine.slot.use.*", "ItemSlotMachine.slot.*", "ItemSlotMachine.*" };
+        return hasAnyPermission(player, permissions);
     }
 }

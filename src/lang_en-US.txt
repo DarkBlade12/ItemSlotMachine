@@ -165,8 +165,10 @@ statistic_top_slot_machine_not_existent=&cThere's no top ten for this category f
 statistic_top_slot_machine=&aTop &2ten &aslot machines for category &6<category>&a: <top>
 statistic_top_player_not_existent=&cThere's no top ten for this category for players yet!
 statistic_top_player=&aTop &2ten &aplayers for category &6<category>&a: <top>
-statistic_reset_slot_machine=&aThe statistic of slot machine &6<name> &awas reset.
-statistic_reset_player=&aThe statistic of player &6<name> &awas reset.
+statistic_reset_slot_machine_failure=&cThe statistic of slot machine &6<name> &ccouldn't be reset. Cause: &6<cause>
+statistic_reset_slot_machine_success=&aThe statistic of slot machine &6<name> &awas successfully reset.
+statistic_reset_player_failure=&cThe statistic of player &6<name> &ccouldn't be reset. Cause: &6<cause>
+statistic_reset_player_success=&aThe statistic of player &6<name> &awas successfully reset.
 
 #=#=#=#=#=#=#=#=#=#
 # Sign lettering  #

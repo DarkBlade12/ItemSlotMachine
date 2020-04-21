@@ -1,6 +1,8 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -18,14 +20,15 @@ import com.darkblade12.itemslotmachine.util.ItemList;
 public final class ItemCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-        SlotMachine s = plugin.slotMachineManager.getSlotMachine(params[0]);
-        if (s == null) {
+        SlotMachine slot = plugin.slotMachineManager.getSlotMachine(params[0]);
+        if (slot == null) {
             sender.sendMessage(plugin.messageManager.slot_machine_not_existent());
             return;
-        } else if (!s.isItemPotEnabled()) {
+        } else if (!slot.isItemPotEnabled()) {
             sender.sendMessage(plugin.messageManager.slot_machine_item_pot_not_enabled());
             return;
         }
+
         String source = params[2];
         ItemList list = new ItemList();
         if (source.equalsIgnoreCase("hand")) {
@@ -33,30 +36,65 @@ public final class ItemCommand implements ICommand {
                 sender.sendMessage(plugin.messageManager.command_no_console_executor());
                 return;
             }
-            ItemStack i = ((Player) sender).getInventory().getItemInMainHand();
-            if (i.getType() == Material.AIR) {
+
+            ItemStack item = ((Player) sender).getInventory().getItemInMainHand();
+            if (item.getType() == Material.AIR) {
                 sender.sendMessage(plugin.messageManager.player_no_item_in_hand());
                 return;
             }
-            list.add(i);
-        } else
+            list.add(item);
+        } else {
             try {
                 list = ItemList.fromString(StringUtils.join(Arrays.copyOfRange(params, 2, params.length), " "));
             } catch (Exception e) {
                 sender.sendMessage(plugin.messageManager.slot_machine_item_pot_invalid_item_list(e.getMessage()));
                 return;
             }
+        }
+
         String operation = params[1].toLowerCase();
-        if (operation.equals("deposit")) {
-            s.depositPotItems(list);
-            if (list.size() == 1)
-                sender.sendMessage(plugin.messageManager.slot_machine_item_pot_deposit(list.get(0), s.getName()));
-            else
-                sender.sendMessage(plugin.messageManager.slot_machine_item_pot_deposit_multiple(list, s.getName()));
-        } else if (operation.equals("set")) {
-            s.setItemPot(list);
-            sender.sendMessage(plugin.messageManager.slot_machine_item_pot_set(s.getName(), list));
-        } else
-            plugin.slotCommandHandler.showUsage(sender, label, this);
+        switch (operation) {
+            case "deposit":
+                slot.depositPotItems(list);
+                if (list.size() == 1) {
+                    sender.sendMessage(plugin.messageManager.slot_machine_item_pot_deposit(list.get(0), slot.getName()));
+                } else {
+                    sender.sendMessage(plugin.messageManager.slot_machine_item_pot_deposit_multiple(list, slot.getName()));
+                }
+                break;
+            case "set":
+                slot.setItemPot(list);
+                sender.sendMessage(plugin.messageManager.slot_machine_item_pot_set(slot.getName(), list));
+                break;
+            default:
+                plugin.slotCommandHandler.showUsage(sender, label, this);
+                return;
+        }
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        switch (params.length) {
+            case 1:
+                return plugin.slotMachineManager.getSlotMachines().getNames();
+            case 2:
+                return Arrays.asList(new String[] { "deposit", "set" });
+            case 3:
+                List<String> completions = new ArrayList<String>(getItemNames());
+                completions.add("hand");
+                return completions;
+            default:
+                return params.length > 3 ? getItemNames() : null;
+        }
+    }
+
+    private static List<String> getItemNames() {
+        List<String> names = new ArrayList<String>();
+        for (Material material : Material.values()) {
+            if (material.isItem()) {
+                names.add(material.getKey().getKey());
+            }
+        }
+        return names;
     }
 }

@@ -164,8 +164,10 @@ statistic_top_slot_machine_not_existent=&cEs gibt noch keine Top Zehn für diese
 statistic_top_slot_machine=&aTop &2Zehn &aSpielautomaten für Kategorie &6<category>&a: <top>
 statistic_top_player_not_existent=&cEs gibt noch keine Top Zehn für diese Kategorie für Spieler!
 statistic_top_player=&aTop &2Zehn &aSpieler für Kategorie &6<category>&a: <top>
-statistic_reset_slot_machine=&aDie Statistik des Spielautomaten &6<name> &awurde zurückgesetzt.
-statistic_reset_player=&aDie Statistik des Spielers &6<name> &awurde zurückgesetzt.
+statistic_reset_slot_machine_failure=&cDie Statistik des Spielautomaten &6<name> &ckonnte nicht zurückgesetzt werden. Ursache: &6<cause>
+statistic_reset_slot_machine_success=&aDie Statistik des Spielautomaten &6<name> &awurde zurückgesetzt.
+statistic_reset_player_failure=&cDie Statistik des Spielers &6<name> &ckonnte nicht zurückgesetzt werden. Ursache: &6<cause>
+statistic_reset_player_success=&aDie Statistik des Spielers &6<name> &awurde erfolgreich zurückgesetzt.
 
 #=#=#=#=#=#=#=#=#=#
 # Sign lettering  #

@@ -94,6 +94,11 @@ public final class MessageManager extends Manager implements MessageContainer {
             plugin.logWarning("Language file '" + fileName + "' not found, messages will default to english!");
 
             for (String defaultName : DEFAULT_FILES) {
+                File defaultFile = new File(directory, defaultName);
+                if (defaultFile.exists()) {
+                    continue;
+                }
+
                 try {
                     plugin.saveResource(defaultName, false);
                 } catch (Exception e) {
@@ -830,13 +835,25 @@ public final class MessageManager extends Manager implements MessageContainer {
     }
 
     @Override
-    public String statistic_reset_slot_machine(String name) {
-        return getMessage("statistic_reset_slot_machine", true).replace("<name>", name);
+    public String statistic_reset_slot_machine_failure(String name, String cause) {
+        return getMessage("statistic_reset_slot_machine_failure", true).replace("<name>", name)
+                .replace("<cause>", cause == null ? "Unknown" : cause);
     }
 
     @Override
-    public String statistic_reset_player(String name) {
-        return getMessage("statistic_reset_player", true).replace("<name>", name);
+    public String statistic_reset_slot_machine_success(String name) {
+        return getMessage("statistic_reset_slot_machine_success", true).replace("<name>", name);
+    }
+
+    @Override
+    public String statistic_reset_player_failure(String name, String cause) {
+        return getMessage("statistic_reset_player_failure", true).replace("<name>", name)
+                .replace("<cause>", cause == null ? "Unknown" : cause);
+    }
+
+    @Override
+    public String statistic_reset_player_success(String name) {
+        return getMessage("statistic_reset_player_success", true).replace("<name>", name);
     }
 
     @Override

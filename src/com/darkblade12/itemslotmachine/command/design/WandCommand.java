@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.design;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,13 +15,19 @@ import com.darkblade12.itemslotmachine.util.ItemList;
 public final class WandCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-        Player p = (Player) sender;
+        Player player = (Player) sender;
         ItemStack wand = plugin.designManager.getWand();
-        if (!ItemList.hasEnoughSpace(p, wand)) {
-            p.sendMessage(plugin.messageManager.player_not_enough_space());
+        if (!ItemList.hasEnoughSpace(player, wand)) {
+            player.sendMessage(plugin.messageManager.player_not_enough_space());
             return;
         }
-        p.getInventory().addItem(wand);
-        p.sendMessage(plugin.messageManager.design_wand_got());
+        
+        player.getInventory().addItem(wand);
+        player.sendMessage(plugin.messageManager.design_wand_got());
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return null;
     }
 }

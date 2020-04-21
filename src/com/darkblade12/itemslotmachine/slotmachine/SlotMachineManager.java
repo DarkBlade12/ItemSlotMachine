@@ -143,8 +143,8 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
         return false;
     }
 
-    public List<SlotMachine> getSlotMachines() {
-        return Collections.unmodifiableList(slotMachines);
+    public NameableList<SlotMachine> getSlotMachines() {
+        return new NameableList<SlotMachine>(slotMachines);
     }
 
     public SlotMachine getSlotMachine(String name) {
@@ -199,7 +199,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
     public void onHangingPlace(HangingPlaceEvent event) {
         Player p = event.getPlayer();
         SlotMachine s = getSlotMachine(event.getBlock().getLocation());
-        if (s != null && !s.isPermittedToModify(p)) {
+        if (s != null && !s.hasModifyPermission(p)) {
             event.setCancelled(true);
             p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
         }
@@ -213,7 +213,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
                 Entity e = ((HangingBreakByEntityEvent) event).getRemover();
                 if (e instanceof Player) {
                     Player p = (Player) e;
-                    if (!s.isPermittedToModify(p)) {
+                    if (!s.hasModifyPermission(p)) {
                         event.setCancelled(true);
                         p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
                     }
@@ -227,7 +227,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
     public void onBlockBreak(BlockBreakEvent event) {
         Player p = event.getPlayer();
         SlotMachine s = getSlotMachine(event.getBlock().getLocation());
-        if (s != null && !s.isPermittedToModify(p)) {
+        if (s != null && !s.hasModifyPermission(p)) {
             event.setCancelled(true);
             p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
         }
@@ -239,7 +239,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
         SlotMachine s = getSlotMachine(event.getBlock().getLocation());
         if (s == null)
             s = getSlotMachine(event.getBlockAgainst().getLocation());
-        if (s != null && !s.isPermittedToModify(p)) {
+        if (s != null && !s.hasModifyPermission(p)) {
             event.setCancelled(true);
             p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
         }
@@ -251,7 +251,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
         Entity e = event.getRightClicked();
         if (e instanceof Hanging) {
             SlotMachine s = getSlotMachine(e.getLocation());
-            if (s != null && !s.isPermittedToModify(p)) {
+            if (s != null && !s.hasModifyPermission(p)) {
                 event.setCancelled(true);
                 p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
             }
@@ -268,7 +268,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
                     Entity d = ((EntityDamageByEntityEvent) event).getDamager();
                     if (d instanceof Player) {
                         Player p = (Player) d;
-                        if (!s.isPermittedToModify(p)) {
+                        if (!s.hasModifyPermission(p)) {
                             event.setCancelled(true);
                             p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
                         }
@@ -291,7 +291,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
             Location l = event.getClickedBlock().getLocation();
             SlotMachine s = getSlotMachine(l);
             if (h.getType() == Material.WATER_BUCKET || h.getType() == Material.LAVA_BUCKET) {
-                if (s != null && !s.isPermittedToModify(p)) {
+                if (s != null && !s.hasModifyPermission(p)) {
                     event.setCancelled(true);
                     p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
                     return;
@@ -306,7 +306,7 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
                             p.sendMessage(plugin.messageManager.slot_machine_clicked(s.getName()));
                 } else if (s.hasInteracted(l)) {
                     event.setCancelled(true);
-                    if (!s.isPermittedToUse(p)) {
+                    if (!s.hasUsePermission(p)) {
                         p.sendMessage(plugin.messageManager.slot_machine_usage_not_allowed());
                     } else {
                         if (s.isBroken())

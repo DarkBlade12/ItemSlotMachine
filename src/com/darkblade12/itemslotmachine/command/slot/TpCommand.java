@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,18 +14,24 @@ import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 public final class TpCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-        Player p = (Player) sender;
-        SlotMachine s = plugin.slotMachineManager.getSlotMachine(params[0]);
-        if (s == null) {
-            p.sendMessage(plugin.messageManager.slot_machine_not_existent());
+        Player player = (Player) sender;
+        SlotMachine slot = plugin.slotMachineManager.getSlotMachine(params[0]);
+        if (slot == null) {
+            player.sendMessage(plugin.messageManager.slot_machine_not_existent());
             return;
         }
+
         try {
-            s.teleport(p);
+            slot.teleport(player);
         } catch (Exception e) {
-            p.sendMessage(plugin.messageManager.slot_machine_teleportation_failure(s.getName(), e.getMessage()));
+            player.sendMessage(plugin.messageManager.slot_machine_teleportation_failure(slot.getName(), e.getMessage()));
             return;
         }
-        p.sendMessage(plugin.messageManager.slot_machine_teleportation_success(s.getName()));
+        player.sendMessage(plugin.messageManager.slot_machine_teleportation_success(slot.getName()));
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return params.length == 1 ? plugin.slotMachineManager.getSlotMachines().getNames() : null;
     }
 }

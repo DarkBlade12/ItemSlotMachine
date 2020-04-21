@@ -39,18 +39,18 @@ public final class CoinManager extends Manager {
         onInitialize();
     }
 
-    public static String[] validateLines(String[] lines, int... splittable) {
+    public static String[] validateLines(String[] lines, int... splitLines) {
         if (lines.length > 4) {
             throw new IllegalArgumentException("There cannot be more than 4 lines on a sign");
         }
 
-        for (int s : splittable) {
-            if (s >= 0 && s < lines.length - 1) {
-                String a = lines[s];
-                if (a.length() > 15) {
-                    String[] p = a.split(" ");
-                    lines[s] = p[0];
-                    lines[s + 1] = p[1];
+        for (int index : splitLines) {
+            if (index >= 0 && index < lines.length - 1) {
+                String line = lines[index];
+                if (line.length() > 15) {
+                    String[] split = line.split(" ");
+                    lines[index] = split[0];
+                    lines[index + 1] = split[1];
                 }
             }
         }

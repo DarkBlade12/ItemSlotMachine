@@ -1,5 +1,8 @@
 package com.darkblade12.itemslotmachine.command.design;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,26 +15,34 @@ import com.darkblade12.itemslotmachine.design.Design;
 public final class CreateCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
-        Player p = (Player) sender;
-        if (!plugin.designManager.hasValidSelection(p)) {
-            p.sendMessage(plugin.messageManager.design_invalid_selection());
+        Player player = (Player) sender;
+        if (!plugin.designManager.hasValidSelection(player)) {
+            player.sendMessage(plugin.messageManager.design_invalid_selection());
             return;
         }
+
         String name;
         if (params.length == 1) {
             name = params[0];
             if (plugin.designManager.hasDesign(name)) {
-                p.sendMessage(plugin.messageManager.design_already_existent());
+                player.sendMessage(plugin.messageManager.design_already_existent());
                 return;
             }
-        } else
+        } else {
             name = plugin.designManager.generateName();
+        }
+
         try {
-            plugin.designManager.register(Design.create(p, plugin.designManager.getValidSelection(p), name));
+            plugin.designManager.register(Design.create(player, plugin.designManager.getValidSelection(player), name));
         } catch (Exception e) {
-            p.sendMessage(plugin.messageManager.design_creation_failure(e.getMessage()));
+            player.sendMessage(plugin.messageManager.design_creation_failure(e.getMessage()));
             return;
         }
-        p.sendMessage(plugin.messageManager.design_creation_success(name));
+        player.sendMessage(plugin.messageManager.design_creation_success(name));
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return params.length == 1 ? Arrays.asList(new String[] { "[name]" }) : null;
     }
 }

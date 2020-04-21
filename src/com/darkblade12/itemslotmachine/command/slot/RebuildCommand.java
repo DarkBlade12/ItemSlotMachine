@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -26,7 +28,16 @@ public final class RebuildCommand implements ICommand {
                 e.printStackTrace();
             }
         }
-
         sender.sendMessage(plugin.messageManager.slot_machine_rebuilding_success(slot.getName()));
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        switch (params.length) {
+            case 1:
+                return plugin.slotMachineManager.getSlotMachines().getNames();
+            default:
+                return null;
+        }
     }
 }

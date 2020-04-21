@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.design;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -11,5 +13,10 @@ public final class ListCommand implements ICommand {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] params) {
         sender.sendMessage(plugin.messageManager.design_list());
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return null;
     }
 }

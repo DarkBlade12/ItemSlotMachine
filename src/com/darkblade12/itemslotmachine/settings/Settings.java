@@ -37,59 +37,75 @@ public final class Settings {
     }
 
     public void load() throws InvalidValueException {
-        Configuration c = plugin.loadConfig();
-        debugModeEnabled = GENERAL_SETTINGS.getBoolean(c, "Debug_Mode_Enabled");
-        languageTag = GENERAL_SETTINGS.getString(c, "Language_Tag");
-        if (languageTag == null)
+        Configuration config = plugin.loadConfig();
+        debugModeEnabled = GENERAL_SETTINGS.getBoolean(config, "Debug_Mode_Enabled");
+        languageTag = GENERAL_SETTINGS.getString(config, "Language_Tag");
+        if (languageTag == null) {
             throw new InvalidValueException("Language_Tag", GENERAL_SETTINGS, "is null");
-        defaultSlotMachineName = SLOT_MACHINE_SETTINGS.getString(c, "Default_Name");
-        if (defaultSlotMachineName == null)
+        }
+
+        defaultSlotMachineName = SLOT_MACHINE_SETTINGS.getString(config, "Default_Name");
+        if (defaultSlotMachineName == null) {
             throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "is null");
-        else if (defaultSlotMachineName.matches(".+<num>.+"))
+        } else if (defaultSlotMachineName.matches(".+<num>.+")) {
             throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "has <num> at an invalid position (middle)");
-        else if (!defaultSlotMachineName.contains("<num>"))
+        } else if (!defaultSlotMachineName.contains("<num>")) {
             defaultSlotMachineName += "<num>";
+        }
+
         rawSlotMachineName = defaultSlotMachineName.replace("<num>", "");
-        spaceCheckEnabled = SPACE_CHECK.getBoolean(c, "Enabled");
+        spaceCheckEnabled = SPACE_CHECK.getBoolean(config, "Enabled");
         if (spaceCheckEnabled) {
             spaceCheckIgnoredBlocks = new HashSet<Material>();
-            String ignoredBlocksString = SPACE_CHECK.getString(c, "Ignored_Blocks");
+            String ignoredBlocksString = SPACE_CHECK.getString(config, "Ignored_Blocks");
             if (ignoredBlocksString != null) {
-                if (!ignoredBlocksString.matches(BLOCK_LIST_FORMAT))
+                if (!ignoredBlocksString.matches(BLOCK_LIST_FORMAT)) {
                     throw new InvalidValueException("Ignored_Blocks", SPACE_CHECK, "has an invalid format");
-                for (String b : ignoredBlocksString.split(", ")) {
-                    Material m = Material.matchMaterial(b);
-                    if (m == null || !m.isBlock())
+                }
+
+                for (String blockMaterial : ignoredBlocksString.split(", ")) {
+                    Material material = Material.matchMaterial(blockMaterial);
+                    if (material == null || !material.isBlock()) {
                         throw new InvalidValueException("Ignored_Blocks", SPACE_CHECK, "contains an invalid block name");
-                    spaceCheckIgnoredBlocks.add(m);
+                    }
+
+                    spaceCheckIgnoredBlocks.add(material);
                 }
             }
         }
-        String coinString = COIN_SETTINGS.getString(c, "Item");
-        if (coinString == null)
+
+        String coinString = COIN_SETTINGS.getString(config, "Item");
+        if (coinString == null) {
             throw new InvalidValueException("Item", COIN_SETTINGS, "is null");
+        }
         try {
             coinMaterial = Material.matchMaterial(coinString);
         } catch (Exception e) {
             throw new InvalidValueException("Item", COIN_SETTINGS, e.getMessage());
         }
-        coinCommonItemEnabled = COIN_SETTINGS.getBoolean(c, "Common_Item_Enabled");
-        coinPrice = COIN_SETTINGS.getDouble(c, "Price");
-        if (coinPrice < 0)
+
+        coinCommonItemEnabled = COIN_SETTINGS.getBoolean(config, "Common_Item_Enabled");
+        coinPrice = COIN_SETTINGS.getDouble(config, "Price");
+        if (coinPrice < 0) {
             throw new InvalidValueException("Price", COIN_SETTINGS, "is invalid (lower than 0)");
-        limitedUsageEnabled = LIMITED_USAGE.getBoolean(c, "Enabled");
-        if (limitedUsageEnabled) {
-            limitedUsageAmount = LIMITED_USAGE.getInt(c, "Amount");
-            if (limitedUsageAmount < 1)
-                throw new InvalidValueException("Amount", LIMITED_USAGE, "is invalid (lower than 1)");
         }
-        defaultDesignName = DESIGN_SETTINGS.getString(c, "Default_Name");
-        if (defaultDesignName == null)
+
+        limitedUsageEnabled = LIMITED_USAGE.getBoolean(config, "Enabled");
+        if (limitedUsageEnabled) {
+            limitedUsageAmount = LIMITED_USAGE.getInt(config, "Amount");
+            if (limitedUsageAmount < 1) {
+                throw new InvalidValueException("Amount", LIMITED_USAGE, "is invalid (lower than 1)");
+            }
+        }
+
+        defaultDesignName = DESIGN_SETTINGS.getString(config, "Default_Name");
+        if (defaultDesignName == null) {
             throw new InvalidValueException("Default_Name", DESIGN_SETTINGS, "is null");
-        else if (defaultDesignName.matches(".+<num>.+"))
+        } else if (defaultDesignName.matches(".+<num>.+")) {
             throw new InvalidValueException("Default_Name", DESIGN_SETTINGS, "has <num> at an invalid position (middle)");
-        else if (!defaultDesignName.contains("<num>"))
+        } else if (!defaultDesignName.contains("<num>")) {
             defaultDesignName += "<num>";
+        }
         rawDesignName = defaultDesignName.replace("<num>", "");
     }
 
@@ -114,8 +130,8 @@ public final class Settings {
         return Collections.unmodifiableSet(spaceCheckIgnoredBlocks);
     }
 
-    public static boolean isBlockIgnored(Material m) {
-        return spaceCheckIgnoredBlocks.contains(m);
+    public static boolean isBlockIgnored(Material material) {
+        return spaceCheckIgnoredBlocks.contains(material);
     }
 
     public static Material getCoinMaterial() {

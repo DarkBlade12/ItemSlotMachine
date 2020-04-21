@@ -182,9 +182,13 @@ interface MessageContainer {
 
     String statistic_top_player(String category, String top);
 
-    String statistic_reset_slot_machine(String name);
+    String statistic_reset_slot_machine_failure(String name, String cause);
+    
+    String statistic_reset_slot_machine_success(String name);
 
-    String statistic_reset_player(String name);
+    String statistic_reset_player_failure(String name, String cause);
+    
+    String statistic_reset_player_success(String name);
 
     String sign_coin_shop_header();
 

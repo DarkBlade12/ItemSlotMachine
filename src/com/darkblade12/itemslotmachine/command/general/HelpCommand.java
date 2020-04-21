@@ -1,5 +1,8 @@
 package com.darkblade12.itemslotmachine.command.general;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -32,5 +35,19 @@ public final class HelpCommand implements ICommand {
             }
         }
         helpPage.showPage(sender, label, page);
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        if (params.length != 1) {
+            return null;
+        }
+        
+        int pages = helpPage.getPages(sender);
+        List<String> completions = new ArrayList<String>(pages);
+        for (int i = 1; i <= pages; i++) {
+            completions.add(String.valueOf(i));
+        }
+        return completions;
     }
 }

@@ -1,5 +1,7 @@
 package com.darkblade12.itemslotmachine.command.design;
 
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
@@ -29,7 +31,11 @@ public final class InvertCommand implements ICommand {
                 e.printStackTrace();
             }
         }
-
         sender.sendMessage(plugin.messageManager.design_inversion_success(design.getName()));
+    }
+
+    @Override
+    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] params) {
+        return params.length == 1 ? plugin.designManager.getDesigns().getNames() : null;
     }
 }

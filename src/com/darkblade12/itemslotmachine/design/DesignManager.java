@@ -4,10 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -164,8 +162,8 @@ public final class DesignManager extends Manager implements NameGenerator {
         return wand.clone();
     }
 
-    public List<Design> getDesigns() {
-        return Collections.unmodifiableList(designs);
+    public NameableList<Design> getDesigns() {
+        return new NameableList<Design>(designs);
     }
 
     public Design getDesign(String name) {

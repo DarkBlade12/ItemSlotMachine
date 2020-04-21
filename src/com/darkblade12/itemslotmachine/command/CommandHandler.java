@@ -1,5 +1,6 @@
 package com.darkblade12.itemslotmachine.command;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -7,12 +8,14 @@ import java.util.List;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.command.general.HelpCommand;
 
-public abstract class CommandHandler implements CommandExecutor {
+public abstract class CommandHandler implements CommandExecutor, TabCompleter {
     private ItemSlotMachine plugin;
     private String defaultLabel;
     private CommandList commands;
@@ -23,7 +26,9 @@ public abstract class CommandHandler implements CommandExecutor {
     public CommandHandler(ItemSlotMachine plugin, String defaultLabel, int commandsPerPage, String... masterPermissions) {
         this.plugin = plugin;
         this.defaultLabel = defaultLabel;
-        plugin.getCommand(defaultLabel).setExecutor(this);
+        PluginCommand command = plugin.getCommand(defaultLabel);
+        command.setExecutor(this);
+        command.setTabCompleter(this);
         commands = new CommandList();
         registerCommands();
         helpPage = new CommandHelpPage(plugin, this, commandsPerPage);
@@ -37,23 +42,60 @@ public abstract class CommandHandler implements CommandExecutor {
         if (args.length == 0) {
             showUsage(sender, label, helpCommand);
         } else {
-            ICommand i = commands.get(args[0]);
-            if (i == null) {
+            ICommand command = commands.get(args[0]);
+            if (command == null) {
                 showUsage(sender, label, helpCommand);
             } else {
-                CommandDetails c = CommandList.getDetails(i);
+                CommandDetails c = CommandList.getDetails(command);
                 String[] params = trimParams(args);
-                if (!(sender instanceof Player) && !c.executableAsConsole())
+                if (!(sender instanceof Player) && !c.executableAsConsole()) {
                     sender.sendMessage(plugin.messageManager.command_no_console_executor());
-                else if (!c.permission().equals("None") && !sender.hasPermission(c.permission()) && !hasMasterPermission(sender))
+                } else if (!c.permission().equals("None") && !sender.hasPermission(c.permission())
+                        && !hasMasterPermission(sender)) {
                     sender.sendMessage(plugin.messageManager.command_no_permission());
-                else if (!checkUsage(i, params))
-                    showUsage(sender, label, i);
-                else
-                    i.execute(plugin, sender, label, params);
+                } else if (!checkUsage(command, params)) {
+                    showUsage(sender, label, command);
+                } else {
+                    command.execute(plugin, sender, label, params);
+                }
             }
         }
+
         return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args) {
+        if (args.length < 1) {
+            return null;
+        }
+
+        List<String> completions;
+        if (args.length == 1) {
+            completions = new ArrayList<String>();
+            for (ICommand icmd : commands) {
+                String name = icmd.getClass().getAnnotation(CommandDetails.class).name().toLowerCase();
+                completions.add(name);
+            }
+        } else {
+            ICommand command = getCommand(args[0]);
+            if (command == null) {
+                return null;
+            }
+
+            completions = command.getCompletions(plugin, sender, trimParams(args));
+        }
+
+        String filter = args[args.length - 1].toLowerCase();
+        if (filter.length() > 0) {
+            for (int i = 0; i < completions.size(); i++) {
+                if (!completions.get(i).toLowerCase().startsWith(filter)) {
+                    completions.remove(i--);
+                }
+            }
+        }
+
+        return completions;
     }
 
     protected void register(Class<? extends ICommand> clazz) {
