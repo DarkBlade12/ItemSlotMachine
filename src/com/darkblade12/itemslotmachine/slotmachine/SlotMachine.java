@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.slotmachine;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
@@ -13,24 +14,27 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.core.Message;
+import com.darkblade12.itemslotmachine.core.hook.VaultHook;
 import com.darkblade12.itemslotmachine.design.Design;
-import com.darkblade12.itemslotmachine.hook.VaultHook;
+import com.darkblade12.itemslotmachine.design.DesignBuildException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
 import com.darkblade12.itemslotmachine.reference.Direction;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.ItemPotCombo;
 import com.darkblade12.itemslotmachine.slotmachine.combo.types.MoneyPotCombo;
 import com.darkblade12.itemslotmachine.slotmachine.sound.SoundList;
 import com.darkblade12.itemslotmachine.statistic.Category;
-import com.darkblade12.itemslotmachine.statistic.Statistic;
-import com.darkblade12.itemslotmachine.statistic.types.PlayerStatistic;
+import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
+import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
 import com.darkblade12.itemslotmachine.util.ItemList;
+import com.darkblade12.itemslotmachine.util.MessageUtils;
 import com.darkblade12.itemslotmachine.util.Rocket;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public final class SlotMachine extends SlotMachineBase implements Nameable {
+    public static final String FILE_EXTENSION = ".instance";
     private boolean broken;
     private String userName;
     private UUID userId;
@@ -47,7 +51,8 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
         design.build(viewer);
         SafeLocation viewerLoc = SafeLocation.fromBukkitLocation(viewer.getLocation());
         String data = design.getName() + "#" + viewerLoc + "#" + Direction.getViewDirection(viewer).name();
-        new CompressedStringReader(name + ".instance", "plugins/ItemSlotMachine/slot machines/").saveToFile(data);
+        String directoryPath = plugin.slotMachineManager.getDataDirectory().getPath();
+        new CompressedStringReader(name + ".instance", directoryPath).saveToFile(data);
         return load(plugin, name);
     }
 
@@ -88,45 +93,33 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
             Rocket.randomize().displayEffects(plugin, slot.getBukkitLocation().add(0.5, 2, 0.5));
     }
 
-    private boolean trySaveStatistic(Statistic statistic) {
-        try {
-            statistic.saveToFile();
-            return true;
-        } catch (Exception e) {
-            String type = statistic instanceof PlayerStatistic ? "player" : "slot machine";
-            plugin.logWarning("Failed to save " + type + " statistic '" + statistic.getName() + "'!");
-            if (Settings.isDebugModeEnabled()) {
-                e.printStackTrace();
-            }
-
-            return false;
-        }
-    }
-
     public void activate(final Player user) {
         final ItemFrame[] frames = getItemFrameInstances();
         broken = !(getSign() != null && frames != null);
         if (broken) {
-            user.sendMessage(plugin.messageManager.slot_machine_broken());
+            plugin.sendMessage(user, Message.SLOT_MACHINE_BROKEN, name);
             return;
         }
 
         final ItemStack[] icons = generateIcons();
         if (icons == null) {
-            user.sendMessage(plugin.messageManager.slot_machine_broken());
+            plugin.sendMessage(user, Message.SLOT_MACHINE_BROKEN, name);
             return;
         }
 
         insertCoins(user);
-        PlayerStatistic userStat = plugin.statisticManager.getStatistic(user, true);
+        PlayerStatistic userStat = plugin.statisticManager.getPlayerStatistic(user, true);
         userStat.getRecord(Category.TOTAL_SPINS).increaseValue(1);
         if (user.getGameMode() != GameMode.CREATIVE) {
-            userStat.getRecord(Category.COINS_SPENT).increaseValue(activationAmount);
+            userStat.getRecord(Category.SPENT_COINS).increaseValue(activationAmount);
         }
-        trySaveStatistic(userStat);
+        plugin.statisticManager.trySave(userStat);
 
-        statistic.getRecord(Category.TOTAL_SPINS).increaseValue(1);
-        trySaveStatistic(statistic);
+        SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(this, true);
+        if (slotStat != null) {
+            slotStat.getRecord(Category.TOTAL_SPINS).increaseValue(1);
+            plugin.statisticManager.trySave(slotStat);
+        }
 
         raisePot();
         userName = user.getName();
@@ -144,7 +137,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
                 }
 
                 for (int i = 0; i < 3; i++) {
-                    if (halted ? delayTicks[i] != haltTickDelay[i] : true) {
+                    if (!halted || delayTicks[i] != haltTickDelay[i]) {
                         if (delayTicks[i] == haltTickDelay[i] - 1 || automaticHaltEnabled && !halted && haltTickDelay[i] == 0
                                 && ticks[i] == automaticHaltTicks - 1) {
                             frames[i].setItem(icons[i]);
@@ -208,38 +201,61 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
     private void handleWin(double moneyPrize, ItemList itemPrize, boolean executeCommands) {
         playWinEffect();
 
-        statistic.getRecord(Category.WON_SPINS).increaseValue(1);
-        trySaveStatistic(statistic);
+        SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(this, true);
+        if (slotStat != null) {
+            slotStat.getRecord(Category.WON_SPINS).increaseValue(1);
+            plugin.statisticManager.trySave(slotStat);
+        }
 
         Player user = getUser();
-        PlayerStatistic userStat = plugin.statisticManager.getStatistic(user, true);
-        userStat.getRecord(Category.WON_SPINS).increaseValue(1);
+        PlayerStatistic userStat = plugin.statisticManager.getPlayerStatistic(user, true);
+        if (userStat != null) {
+            userStat.getRecord(Category.WON_SPINS).increaseValue(1);
+        }
+
+        StringBuilder prizeText = new StringBuilder();
         if (moneyPrize > 0) {
             moneyPrize = applyHouseCut(moneyPrize);
-            userStat.getRecord(Category.WON_MONEY).increaseValue(moneyPrize);
-            VaultHook.depositPlayer(Bukkit.getOfflinePlayer(userId), moneyPrize);
+
+            if (userStat != null) {
+                userStat.getRecord(Category.WON_MONEY).increaseValue(moneyPrize);
+            }
+
+            VaultHook vault = plugin.getVaultHook();
+            vault.depositPlayer(Bukkit.getOfflinePlayer(userId), moneyPrize);
+            prizeText.append(ChatColor.YELLOW).append(moneyPrize).append(vault.getCurrencyName(moneyPrize, true));
         }
         if (itemPrize.size() > 0) {
             itemPrize = applyHouseCut(itemPrize);
-            userStat.getRecord(Category.WON_ITEMS).increaseValue(itemPrize.size());
             itemPrize.distribute(user);
+
+            if (userStat != null) {
+                userStat.getRecord(Category.WON_ITEMS).increaseValue(itemPrize.size());
+            }
+
+            if (prizeText.length() > 0) {
+                prizeText.append(" ").append(ChatColor.GOLD).append(plugin.formatMessage(Message.WORD_AND)).append(" ");
+            }
+            prizeText.append(MessageUtils.toString(itemPrize));
         }
-        trySaveStatistic(userStat);
+
+        if (userStat != null) {
+            plugin.statisticManager.trySave(userStat);
+        }
 
         if (executeCommands) {
             executeCommands(userName, moneyPrize, itemPrize);
         }
-
-        user.sendMessage(plugin.messageManager.slot_machine_won(moneyPrize, itemPrize));
+        plugin.sendMessage(user, Message.SLOT_MACHINE_WON, prizeText.toString());
     }
 
-    private void distribute(ItemStack... display) {
-        MoneyPotCombo moneyCombo = getMoneyPotCombosEnabled() ? moneyPotCombos.getActivated(display) : null;
-        ItemPotCombo itemCombo = getItemPotCombosEnabled() ? itemPotCombos.getActivated(display) : null;
+    private void distribute(ItemStack... icons) {
+        MoneyPotCombo moneyCombo = getMoneyPotCombosEnabled() ? moneyPotCombos.getActivated(icons) : null;
+        ItemPotCombo itemCombo = getItemPotCombosEnabled() ? itemPotCombos.getActivated(icons) : null;
 
-        if (display[0].isSimilar(display[1]) && display[1].isSimilar(display[2])) {
+        if (icons[0].isSimilar(icons[1]) && icons[1].isSimilar(icons[2])) {
             double moneyPrize = 0;
-            if (moneyPotEnabled && VaultHook.isEnabled()) {
+            if (moneyPotEnabled && plugin.getVaultHook().isEnabled()) {
                 moneyPrize = moneyPot;
 
                 if (moneyCombo != null) {
@@ -320,44 +336,50 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 
             handleWin(0, itemPrize, false);
         } else {
-            statistic.getRecord(Category.LOST_SPINS).increaseValue(1);
-            trySaveStatistic(statistic);
+            SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(this, true);
+            if (slotStat != null) {
+                slotStat.getRecord(Category.LOST_SPINS).increaseValue(1);
+                plugin.statisticManager.trySave(slotStat);
+            }
 
             Player user = getUser();
-            PlayerStatistic userStat = plugin.statisticManager.getStatistic(user, true);
-            userStat.getRecord(Category.LOST_SPINS).increaseValue(1);
-            trySaveStatistic(userStat);
+            PlayerStatistic userStat = plugin.statisticManager.getPlayerStatistic(user, true);
+            if (userStat != null) {
+                userStat.getRecord(Category.LOST_SPINS).increaseValue(1);
+                plugin.statisticManager.trySave(userStat);
+            }
 
             playLoseSounds();
-            user.sendMessage(plugin.messageManager.slot_machine_lost());
+            plugin.sendMessage(user, Message.SLOT_MACHINE_LOST);
         }
 
         deactivate(false);
     }
 
-    public void destruct() {
+    public void delete() throws SecurityException {
+        // TODO: Rollback on failure
         deactivate();
-        design.destruct(center.getBukkitLocation(), initialDirection);
+        design.dismantle(center.getBukkitLocation(), initialDirection);
         instanceReader.deleteFile();
-        statistic.deleteFile();
+        plugin.statisticManager.deleteSlotMachineStatistic(this);
         configReader.deleteConfig();
     }
 
-    public void rebuild() throws Exception {
+    public void rebuild() throws DesignBuildException {
         deactivate();
-        
-        Location l = center.getBukkitLocation();
-        design.destruct(l, initialDirection);
-        design.build(l, initialDirection);
-        
+
+        Location centerLoc = center.getBukkitLocation();
+        design.dismantle(centerLoc, initialDirection);
+        design.build(centerLoc, initialDirection);
+
         updateSign();
         broken = false;
     }
 
     @Override
-    public void move(BlockFace face, int amount) throws Exception {
+    public void move(BlockFace direction, int amount) throws DesignBuildException {
         deactivate();
-        super.move(face, amount);
+        super.move(direction, amount);
     }
 
     public boolean isBroken() {

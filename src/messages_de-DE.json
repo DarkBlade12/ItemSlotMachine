@@ -1,0 +1,6 @@
+{
+    "message-missing": "&cDie Nachricht &6{0} &cist nicht verfügbar. Bitte überprüfe die Nachrichtendatei!",
+
+    "plugin.prefix": "&7[&2Item&eSlotMachine&7]",
+    "plugin.reloaded": "&7Plugin version {0} wurde neu geladen. ({1} ms)"
+}

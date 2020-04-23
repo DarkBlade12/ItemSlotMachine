@@ -1,11 +1,7 @@
 package com.darkblade12.itemslotmachine.slotmachine;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -15,7 +11,6 @@ import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -30,253 +25,259 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.manager.Manager;
-import com.darkblade12.itemslotmachine.nameable.NameGenerator;
+import com.darkblade12.itemslotmachine.core.Manager;
+import com.darkblade12.itemslotmachine.core.Message;
+import com.darkblade12.itemslotmachine.core.Permission;
+import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
 import com.darkblade12.itemslotmachine.settings.Settings;
-import com.darkblade12.itemslotmachine.statistic.StatisticComparator;
-import com.darkblade12.itemslotmachine.statistic.Category;
-import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
+import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
 
-public final class SlotMachineManager extends Manager implements NameGenerator {
-    private static final File DIRECTORY = new File("plugins/ItemSlotMachine/slot machines/");
-    private NameableComparator<SlotMachine> comparator;
-    private NameableList<SlotMachine> slotMachines;
+public final class SlotMachineManager extends Manager<ItemSlotMachine> {
+    private final NameableList<SlotMachine> slots;
 
     public SlotMachineManager(ItemSlotMachine plugin) {
-        super(plugin);
-        onInitialize();
+        super(plugin, new File(plugin.getDataFolder(), "slot machines"));
+        slots = new NameableList<SlotMachine>();
     }
 
     @Override
-    public boolean onInitialize() {
-        comparator = new NameableComparator<SlotMachine>(Settings.getRawSlotMachineName());
+    public void onEnable() {
         loadSlotMachines();
         registerEvents();
-        return true;
     }
 
     @Override
     public void onDisable() {
-        unregisterAll();
-        for (int i = 0; i < slotMachines.size(); i++)
-            slotMachines.get(i).deactivate();
-    }
-
-    @Override
-    public String generateName() {
-        Set<Integer> used = new HashSet<Integer>();
-        for (String name : getNames())
-            if (name.contains(Settings.getRawSlotMachineName()))
-                try {
-                    used.add(Integer.parseInt(name.replace(Settings.getRawSlotMachineName(), "")));
-                } catch (Exception e) {
-                    /* custom ids are ignored */
-                }
-        int n = 1;
-        while (used.contains(n))
-            n++;
-        return Settings.getDefaultSlotMachineName().replace("<num>", Integer.toString(n));
-    }
-
-    private void sort() {
-        slotMachines.sort(comparator);
-    }
-
-    public void loadSlotMachines() {
-        slotMachines = new NameableList<SlotMachine>(true);
-        for (String name : getNames())
-            try {
-                slotMachines.add(SlotMachine.load(plugin, name));
-            } catch (Exception e) {
-                plugin.logWarning("Failed to load slot machine '" + name + "'! Cause: %c", e);
-                if (Settings.isDebugModeEnabled())
-                    e.printStackTrace();
-            }
-        sort();
-        int amount = slotMachines.size();
-        plugin.logInfo(amount + " slot machine" + (amount == 1 ? "" : "s") + " loaded.");
-    }
-
-    public void register(SlotMachine s) {
-        slotMachines.add(s);
-        sort();
-    }
-
-    public void unregister(SlotMachine s) {
-        slotMachines.remove(s.getName());
-        sort();
-        s.destruct();
-    }
-
-    public void reload(SlotMachine s) throws Exception {
-        s.deactivate();
-        slotMachines.remove(s.name);
-        slotMachines.add(SlotMachine.load(plugin, s.name));
-    }
-
-    private void deactivateUsed(Player p) {
-        for (int i = 0; i < slotMachines.size(); i++) {
-            SlotMachine s = slotMachines.get(i);
-            if (s.isUser(p))
-                s.deactivate();
+        unregisterEvents();
+        for (int i = 0; i < slots.size(); i++) {
+            slots.get(i).deactivate();
         }
     }
 
-    @Override
-    public Set<String> getNames() {
-        Set<String> names = new HashSet<String>();
-        if (DIRECTORY.exists() && DIRECTORY.isDirectory())
-            for (File f : DIRECTORY.listFiles()) {
-                String name = f.getName();
-                if (name.endsWith(".yml"))
-                    names.add(name.replace(".yml", ""));
+    public void loadSlotMachines() {
+        slots.clear();
+        for (String name : getFileNames(true)) {
+            try {
+                slots.add(SlotMachine.load(plugin, name));
+            } catch (Exception ex) {
+                plugin.logException("Failed to load slot machine '" + name + "': %c", ex);
             }
-        return names;
+        }
+        int count = slots.size();
+        plugin.logInfo(count + " slot machine" + (count == 1 ? "" : "s") + " loaded.");
     }
 
-    public boolean hasName(String name) {
-        for (String n : getNames())
-            if (n.equalsIgnoreCase(name))
+    public void register(SlotMachine slot) {
+        slots.add(slot);
+    }
+
+    public void unregister(SlotMachine slot) {
+        slots.remove(slot.getName());
+        slot.delete();
+    }
+
+    public void reload(SlotMachine slot) throws Exception {
+        slot.deactivate();
+        slots.remove(slot.name);
+        slots.add(SlotMachine.load(plugin, slot.name));
+    }
+
+    private void deactivateUsed(Player player) {
+        for (int i = 0; i < slots.size(); i++) {
+            SlotMachine slot = slots.get(i);
+            if (slot.isUser(player)) {
+                slot.deactivate();
+            }
+        }
+    }
+
+    public boolean hasFile(String name) {
+        for (String fileName : getFileNames(true)) {
+            if (fileName.equalsIgnoreCase(name)) {
                 return true;
+            }
+        }
         return false;
     }
 
+    public String generateName() {
+        return Nameable.generateName(getFileNames(true), Settings.getSlotMachineNamePattern());
+    }
+
+    public List<String> getFileNames(boolean stripExtension) {
+        return FileUtils.getFileNames(dataDirectory, stripExtension, SlotMachine.FILE_EXTENSION);
+    }
+
+    public List<String> getFileNames() {
+        return getFileNames(false);
+    }
+
+    public List<String> getNames() {
+        return getSlotMachines().getNames();
+    }
+
     public NameableList<SlotMachine> getSlotMachines() {
-        return new NameableList<SlotMachine>(slotMachines);
+        NameableList<SlotMachine> clone = new NameableList<SlotMachine>(slots);
+        clone.sort(new NameableComparator<SlotMachine>(Settings.getSlotMachineNamePattern()));
+        return clone;
     }
 
     public SlotMachine getSlotMachine(String name) {
-        return slotMachines.get(name);
+        return slots.get(name);
     }
 
-    public SlotMachine getSlotMachine(Location l) {
-        for (int i = 0; i < slotMachines.size(); i++) {
-            SlotMachine s = slotMachines.get(i);
-            if (s.isInsideRegion(l))
-                return s;
+    public SlotMachine getSlotMachine(Location location) {
+        for (int i = 0; i < slots.size(); i++) {
+            SlotMachine slot = slots.get(i);
+            if (slot.isInsideRegion(location)) {
+                return slot;
+            }
         }
         return null;
     }
 
-    private SlotMachine getInteractedSlotMachine(Location l) {
-        for (int i = 0; i < slotMachines.size(); i++) {
-            SlotMachine s = slotMachines.get(i);
-            if (s.hasInteracted(l))
-                return s;
+    private SlotMachine getInteractedSlotMachine(Location location) {
+        for (int i = 0; i < slots.size(); i++) {
+            SlotMachine slot = slots.get(i);
+            if (slot.hasInteracted(location)) {
+                return slot;
+            }
         }
         return null;
     }
 
     public boolean hasSlotMachine(String name) {
-        return slotMachines.contains(name);
+        return slots.containsName(name);
     }
 
-    public int getSlotMachineAmount() {
-        return slotMachines.size();
+    public int getSlotMachineCount() {
+        return slots.size();
     }
 
-    private int getActivatedAmount(Player p) {
-        int a = 0;
-        for (int i = 0; i < slotMachines.size(); i++) {
-            SlotMachine s = slotMachines.get(i);
-            if (s.isUser(p) && s.isActive())
-                a++;
+    private int getActivatedCount(Player player) {
+        int count = 0;
+        for (int i = 0; i < slots.size(); i++) {
+            SlotMachine slot = slots.get(i);
+            if (slot.isUser(player) && slot.isActive()) {
+                count++;
+            }
         }
-        return a;
-    }
-
-    public List<SlotMachineStatistic> getTop(Category t) {
-        List<SlotMachineStatistic> top = new ArrayList<SlotMachineStatistic>();
-        for (int i = 0; i < slotMachines.size(); i++)
-            top.add(slotMachines.get(i).getStatistic());
-        Collections.sort(top, new StatisticComparator(t));
-        return top;
+        return count;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onHangingPlace(HangingPlaceEvent event) {
-        Player p = event.getPlayer();
-        SlotMachine s = getSlotMachine(event.getBlock().getLocation());
-        if (s != null && !s.hasModifyPermission(p)) {
-            event.setCancelled(true);
-            p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
+        Player player = event.getPlayer();
+        SlotMachine slot = getSlotMachine(event.getBlock().getLocation());
+        if (slot == null || slot.hasModifyPermission(player)) {
+            return;
         }
+
+        event.setCancelled(true);
+        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, slot.getName());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onHangingBreak(HangingBreakEvent event) {
-        SlotMachine s = getSlotMachine(event.getEntity().getLocation());
-        if (s != null)
-            if (event instanceof HangingBreakByEntityEvent) {
-                Entity e = ((HangingBreakByEntityEvent) event).getRemover();
-                if (e instanceof Player) {
-                    Player p = (Player) e;
-                    if (!s.hasModifyPermission(p)) {
-                        event.setCancelled(true);
-                        p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
-                    }
-                } else
-                    event.setCancelled(true);
-            } else
-                event.setCancelled(true);
+        SlotMachine slot = getSlotMachine(event.getEntity().getLocation());
+        if (slot == null) {
+            return;
+        } else if (!(event instanceof HangingBreakByEntityEvent)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Entity remover = ((HangingBreakByEntityEvent) event).getRemover();
+        if (!(remover instanceof Player)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Player player = (Player) remover;
+        if (slot.hasModifyPermission(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, slot.getName());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
-        Player p = event.getPlayer();
-        SlotMachine s = getSlotMachine(event.getBlock().getLocation());
-        if (s != null && !s.hasModifyPermission(p)) {
-            event.setCancelled(true);
-            p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
+        Player player = event.getPlayer();
+        SlotMachine slot = getSlotMachine(event.getBlock().getLocation());
+        if (slot == null || slot.hasModifyPermission(player)) {
+            return;
         }
+
+        event.setCancelled(true);
+        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, slot.getName());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player p = event.getPlayer();
-        SlotMachine s = getSlotMachine(event.getBlock().getLocation());
-        if (s == null)
-            s = getSlotMachine(event.getBlockAgainst().getLocation());
-        if (s != null && !s.hasModifyPermission(p)) {
-            event.setCancelled(true);
-            p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
+        Player player = event.getPlayer();
+        SlotMachine slot = getSlotMachine(event.getBlock().getLocation());
+        if (slot == null) {
+            slot = getSlotMachine(event.getBlockAgainst().getLocation());
         }
+
+        if (slot == null || slot.hasModifyPermission(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, slot.getName());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player p = event.getPlayer();
-        Entity e = event.getRightClicked();
-        if (e instanceof Hanging) {
-            SlotMachine s = getSlotMachine(e.getLocation());
-            if (s != null && !s.hasModifyPermission(p)) {
-                event.setCancelled(true);
-                p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
-            }
+        Player player = event.getPlayer();
+        Entity entity = event.getRightClicked();
+        if (!(entity instanceof Hanging)) {
+            return;
         }
+
+        SlotMachine slot = getSlotMachine(entity.getLocation());
+        if (slot == null || slot.hasModifyPermission(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, slot.getName());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageEvent event) {
-        Entity e = event.getEntity();
-        if (e instanceof Hanging) {
-            SlotMachine s = getSlotMachine(e.getLocation());
-            if (s != null)
-                if (event instanceof EntityDamageByEntityEvent) {
-                    Entity d = ((EntityDamageByEntityEvent) event).getDamager();
-                    if (d instanceof Player) {
-                        Player p = (Player) d;
-                        if (!s.hasModifyPermission(p)) {
-                            event.setCancelled(true);
-                            p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
-                        }
-                    } else
-                        event.setCancelled(true);
-                } else
-                    event.setCancelled(true);
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Hanging)) {
+            return;
         }
+
+        SlotMachine slot = getSlotMachine(entity.getLocation());
+        if (slot == null) {
+            return;
+        } else if (!(event instanceof EntityDamageByEntityEvent)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
+        if (!(damager instanceof Player)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Player player = (Player) damager;
+        if (slot.hasModifyPermission(player)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, slot.getName());
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -285,53 +286,94 @@ public final class SlotMachineManager extends Manager implements NameGenerator {
             return;
         }
 
-        Player p = event.getPlayer();
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            ItemStack h = p.getInventory().getItemInMainHand();
-            Location l = event.getClickedBlock().getLocation();
-            SlotMachine s = getSlotMachine(l);
-            if (h.getType() == Material.WATER_BUCKET || h.getType() == Material.LAVA_BUCKET) {
-                if (s != null && !s.hasModifyPermission(p)) {
-                    event.setCancelled(true);
-                    p.sendMessage(plugin.messageManager.slot_machine_modifying_not_allowed());
+        Player player = event.getPlayer();
+        Location clickedLoc;
+        SlotMachine slot;
+        switch (event.getAction()) {
+            case LEFT_CLICK_BLOCK:
+                clickedLoc = event.getClickedBlock().getLocation();
+                slot = getInteractedSlotMachine(clickedLoc);
+                if (slot == null || !slot.isPermittedToHalt(player)) {
                     return;
                 }
-                return;
-            }
-            if (s != null) {
-                if (!plugin.coinManager.isCoin(h)) {
-                    if (!h.getType().isBlock() || h.getType() == Material.AIR)
-                        if (p.hasPermission("ItemSlotMachine.slot.check") || p.hasPermission("ItemSlotMachine.slot.*")
-                                || p.hasPermission("ItemSlotMachine.*"))
-                            p.sendMessage(plugin.messageManager.slot_machine_clicked(s.getName()));
-                } else if (s.hasInteracted(l)) {
-                    event.setCancelled(true);
-                    if (!s.hasUsePermission(p)) {
-                        p.sendMessage(plugin.messageManager.slot_machine_usage_not_allowed());
-                    } else {
-                        if (s.isBroken())
-                            p.sendMessage(plugin.messageManager.slot_machine_broken());
-                        else if (s.isActive())
-                            p.sendMessage(plugin.messageManager.slot_machine_still_active());
-                        else if (s.isPlayerLockEnabled() && !s.isLockExpired() && !s.isUser(p))
-                            p.sendMessage(plugin.messageManager.slot_machine_locked(s.getUserName(), s.getRemainingLockTime()));
-                        else if (p.getGameMode() == GameMode.CREATIVE && !s.isCreativeUsageEnabled())
-                            p.sendMessage(plugin.messageManager.slot_machine_creative_not_allowed());
-                        else if (!s.hasEnoughCoins(p))
-                            p.sendMessage(plugin.messageManager.slot_machine_not_enough_coins(s.getActivationAmount()));
-                        else if (Settings.isLimitedUsageEnabled() && getActivatedAmount(p) + 1 > Settings.getLimitedUsageAmount())
-                            p.sendMessage(plugin.messageManager.slot_machine_limited_usage());
-                        else
-                            s.activate(p);
-                    }
-                }
-            }
-        } else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-            SlotMachine s = getInteractedSlotMachine(event.getClickedBlock().getLocation());
-            if (s != null && s.isPermittedToHalt(p)) {
+
                 event.setCancelled(true);
-                s.halt();
-            }
+                slot.halt();
+                break;
+            case RIGHT_CLICK_BLOCK:
+                clickedLoc = event.getClickedBlock().getLocation();
+                ItemStack hand = player.getInventory().getItemInMainHand();
+                slot = getSlotMachine(clickedLoc);
+                if (slot == null) {
+                    return;
+                }
+                String name = slot.getName();
+
+                if (hand.getType() == Material.WATER_BUCKET || hand.getType() == Material.LAVA_BUCKET) {
+                    if (!slot.hasModifyPermission(player)) {
+                        event.setCancelled(true);
+                        plugin.sendMessage(player, Message.SLOT_MACHINE_MODIFY_NOT_ALLOWED, name);
+                    }
+                    return;
+                }
+
+                boolean holdingUseItem = !hand.getType().isBlock() || hand.getType() == Material.AIR;
+                if (!plugin.coinManager.isCoin(hand) && holdingUseItem && Permission.SLOT_INSPECT.has(player)) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_INSPECTED, name);
+                    return;
+                } else if (!slot.hasInteracted(clickedLoc)) {
+                    return;
+                }
+
+                event.setCancelled(true);
+                if (!slot.hasUsePermission(player)) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_USE_NOT_ALLOWED, name);
+                    return;
+                }
+
+                if (slot.isBroken()) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_BROKEN, name);
+                    return;
+                }
+
+                if (slot.isActive()) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_STILL_ACTIVE);
+                    return;
+                }
+
+                if (slot.isPlayerLockEnabled() && !slot.isLockExpired() && !slot.isUser(player)) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_LOCKED, slot.getUserName(), slot.getRemainingLockTime());
+                    return;
+                }
+
+                if (player.getGameMode() == GameMode.CREATIVE && !slot.isCreativeUsageEnabled()) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_NO_CREATIVE);
+                    return;
+                }
+
+                if (!slot.hasEnoughCoins(player)) {
+                    // TODO: Improve singular/plural handling
+                    String singular = plugin.formatMessage(Message.WORD_COIN_SINGULAR);
+                    String plural = plugin.formatMessage(Message.WORD_COIN_PLURAL);
+                    int required = slot.getActivationAmount();
+                    String requiredCoins = required == 1 ? singular : plural;
+                    int current = ItemUtils.getTotalAmount(player, plugin.coinManager.getCoin());
+                    String currentCoins = current == 1 ? singular : plural;
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_NOT_ENOUGH_COINS, required, requiredCoins, current,
+                                       currentCoins);
+                    return;
+                }
+
+                int useLimit = Settings.getLimitedUsageAmount();
+                if (Settings.isLimitedUsageEnabled() && getActivatedCount(player) + 1 > useLimit) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_USE_LIMITED, useLimit);
+                    return;
+                }
+
+                slot.activate(player);
+                break;
+            default:
+                return;
         }
     }
 

@@ -14,11 +14,11 @@ public final class Cuboid implements Iterable<Block> {
 
     public Cuboid(Location l1, Location l2) {
         if (l1 == null || l2 == null) {
-            throw new NullPointerException("Location can not be null");
+            throw new NullPointerException("Location cannot be null");
         } else if (l1.getWorld() == null) {
-            throw new IllegalStateException("Can not create a Cuboid for an unloaded world");
+            throw new IllegalArgumentException("Cannot create a cuboid for an unloaded world");
         } else if (!l1.getWorld().getName().equals(l2.getWorld().getName())) {
-            throw new IllegalStateException("Can not create a Cuboid between two different worlds");
+            throw new IllegalArgumentException("Cannot create a cuboid between two different worlds");
         }
 
         worldName = l1.getWorld().getName();
@@ -28,6 +28,10 @@ public final class Cuboid implements Iterable<Block> {
         x2 = Math.max(l1.getBlockX(), l2.getBlockX());
         y2 = Math.max(l1.getBlockY(), l2.getBlockY());
         z2 = Math.max(l1.getBlockZ(), l2.getBlockZ());
+    }
+
+    public Cuboid(SafeLocation l1, SafeLocation l2) {
+        this(l1.getBukkitLocation(), l2.getBukkitLocation());
     }
 
     public boolean isInside(Location l) {
@@ -69,7 +73,7 @@ public final class Cuboid implements Iterable<Block> {
         if (material.isBlock()) {
             throw new IllegalArgumentException("'" + material.name() + "' is not a valid block material");
         }
-        
+
         for (Block block : this) {
             block.setType(material);
         }
@@ -104,7 +108,7 @@ public final class Cuboid implements Iterable<Block> {
         if (world == null) {
             throw new IllegalStateException("World '" + worldName + "' is not loaded");
         }
-        
+
         return world;
     }
 
@@ -145,7 +149,7 @@ public final class Cuboid implements Iterable<Block> {
                     ++z;
                 }
             }
-            
+
             return b;
         }
 

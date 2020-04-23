@@ -16,10 +16,9 @@ General_Settings:
 # This section contains general slot machine settings
 Slot_Machine_Settings:
 
- # This is the default name for slot machines that will be used for generating ids
- # This string has to contain <num> otherwise it'll automatically add this to the end of this name
- # Please note: <num> can't be in the middle of the name
- Default_Name: slot<num>
+ # This is the name pattern for slot machines that will be used for generating names
+ # This string has to contain '{0}' as a placeholder for the generated id
+ Name_Pattern: slot{0}
  
  # This section contains settings for the space check upon attempting to build a slot machine
  # The space check will deny building of the slot machine if it finds any block in the area of the slot machine that is not air and not on the ignored blocks list
@@ -60,7 +59,6 @@ Slot_Machine_Settings:
 # This section contains general design settings
 Design_Settings:
 
- # This is the default name for designs that will be used for generating ids
- # This string has to contain <num> otherwise it'll automatically add this to the end of this name
- # Please note: <num> can't be in the middle of the name
- Default_Name: design<num>
+ # This is the name pattern for designs that will be used for generating names
+ # This string has to contain '{0}' as a placeholder for the generated id
+ Name_Pattern: design{0}

@@ -10,16 +10,16 @@ commands:
   design:
     description: Commands related to designs
     usage: /<command> help
-    aliases: [sdesign, slotdesign]
+    aliases: [slotdesign, sd]
   coin:
     description: Commands related to coins
     usage: /<command> help
-    aliases: [scoin, slotcoin]
+    aliases: [slotcoin, sc]
   slot:
     description: Commands related to slot machines
     usage: /<command> help
-    aliases: [smachine, slotmachine, sm]
+    aliases: [slotmachine, sm]
   statistic:
     description: Commands related to statistics
     usage: /<command> help
-    aliases: [sstatistic, slotstatistic, slotstat, stat]
+    aliases: [slotstatistic, stat, stats]

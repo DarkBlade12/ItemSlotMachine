@@ -32,7 +32,7 @@ public final class ReferenceCuboid {
         return this.secondVertice;
     }
 
-    public Cuboid getCuboid(Location viewPoint, Direction viewDirection) throws Exception {
+    public Cuboid getCuboid(Location viewPoint, Direction viewDirection) {
         Location first = firstVertice.getBukkitLocation(viewPoint, viewDirection);
         Location second = secondVertice.getBukkitLocation(viewPoint, viewDirection);
         return new Cuboid(first, second);

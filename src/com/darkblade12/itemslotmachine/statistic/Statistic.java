@@ -2,9 +2,9 @@ package com.darkblade12.itemslotmachine.statistic;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import com.darkblade12.itemslotmachine.nameable.Nameable;
@@ -12,24 +12,25 @@ import com.darkblade12.itemslotmachine.nameable.NameableList;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 
 public abstract class Statistic implements Nameable {
-    private NameableList<StatisticRecord> records;
+    public static final String FILE_EXTENSION = ".json";
+    protected NameableList<Record> records;
     protected String name;
 
-    public Statistic(String name) {
+    protected Statistic(String name) {
         this.name = name;
-        this.records = new NameableList<StatisticRecord>();
+        this.records = new NameableList<Record>();
     }
 
-    public Statistic(String name, Collection<StatisticRecord> records) {
+    protected Statistic(String name, Collection<Record> records) {
         this.name = name;
-        this.records = new NameableList<StatisticRecord>(records);
+        this.records = new NameableList<Record>(records);
     }
 
-    public Statistic(String name, StatisticRecord... records) {
+    protected Statistic(String name, Record... records) {
         this(name, Arrays.asList(records));
     }
 
-    public Statistic(String name, Category... categories) {
+    protected Statistic(String name, Category... categories) {
         this(name);
 
         for (Category type : categories) {
@@ -42,40 +43,42 @@ public abstract class Statistic implements Nameable {
             records.get(i).resetValue();
         }
     }
-    
-    public void saveToFile() throws IOException {
-        FileUtils.saveJson(getPath(), this);
+
+    public void saveFile(File directory) throws IOException {
+        FileUtils.saveJson(new File(getSubDirectory(directory), getFileName()), this);
     }
 
-    public void deleteFile() {
-        File file = new File(getPath());
-
+    public void deleteFile(File directory) throws SecurityException {
+        File file = new File(getSubDirectory(directory), getFileName());
         if (file.exists()) {
             file.delete();
         }
     }
-    
+
     @Override
     public String getName() {
-        return this.name;
-    }
-    
-    public abstract String getPath();
-
-    public List<StatisticRecord> getRecords() {
-        return Collections.unmodifiableList(records);
+        return name;
     }
 
-    public StatisticRecord getRecord(String name) {
+    public String getFileName() {
+        return name + FILE_EXTENSION;
+    }
+
+    public abstract String getSubDirectoryName();
+
+    public File getSubDirectory(File directory) {
+        return new File(directory, getSubDirectoryName());
+    }
+
+    public List<Record> getRecords() {
+        return new ArrayList<Record>(records);
+    }
+
+    public Record getRecord(String name) {
         return records.get(name);
     }
 
-    public StatisticRecord getRecord(Category category) {
+    public Record getRecord(Category category) {
         return getRecord(category.name());
-    }
-
-    @Override
-    public String toString() {
-        return records.toString("#");
     }
 }

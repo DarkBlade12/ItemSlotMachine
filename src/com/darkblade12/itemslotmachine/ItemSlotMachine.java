@@ -1,88 +1,96 @@
 package com.darkblade12.itemslotmachine;
 
-import java.io.File;
-import java.util.logging.Logger;
-
-import org.bukkit.configuration.Configuration;
-import org.bukkit.plugin.java.JavaPlugin;
+import java.util.Locale;
 
 import com.darkblade12.itemslotmachine.coin.CoinManager;
-import com.darkblade12.itemslotmachine.command.coin.CoinCommandHandler;
-import com.darkblade12.itemslotmachine.command.design.DesignCommandHandler;
-import com.darkblade12.itemslotmachine.command.slot.SlotCommandHandler;
-import com.darkblade12.itemslotmachine.command.statistic.StatisticCommandHandler;
+import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.core.command.CommandRegistrationException;
+import com.darkblade12.itemslotmachine.core.command.coin.CoinCommandHandler;
+import com.darkblade12.itemslotmachine.core.command.design.DesignCommandHandler;
+import com.darkblade12.itemslotmachine.core.command.slot.SlotCommandHandler;
+import com.darkblade12.itemslotmachine.core.command.statistic.StatisticCommandHandler;
+import com.darkblade12.itemslotmachine.core.hook.VaultHook;
 import com.darkblade12.itemslotmachine.design.DesignManager;
-import com.darkblade12.itemslotmachine.hook.VaultHook;
-import com.darkblade12.itemslotmachine.message.MessageManager;
-import com.darkblade12.itemslotmachine.metrics.MetricsLite;
 import com.darkblade12.itemslotmachine.reader.TemplateReader;
 import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 
-public final class ItemSlotMachine extends JavaPlugin {
-    public static final String MASTER_PERMISSION = "ItemSlotMachine.*";
-    private Logger logger;
-    private Settings settings;
-    private VaultHook vaultHook;
+public final class ItemSlotMachine extends PluginBase {
+    private final Settings settings;
+    private final VaultHook vaultHook;
     public TemplateReader template;
-    public MessageManager messageManager;
-    public DesignManager designManager;
-    public CoinManager coinManager;
-    public SlotMachineManager slotMachineManager;
-    public StatisticManager statisticManager;
-    public DesignCommandHandler designCommandHandler;
-    public CoinCommandHandler coinCommandHandler;
-    public SlotCommandHandler slotCommandHandler;
-    public StatisticCommandHandler statisticCommandHandler;
+    public final DesignCommandHandler designCommandHandler;
+    public final CoinCommandHandler coinCommandHandler;
+    public final SlotCommandHandler slotCommandHandler;
+    public final StatisticCommandHandler statisticCommandHandler;
+    public final DesignManager designManager;
+    public final CoinManager coinManager;
+    public final SlotMachineManager slotMachineManager;
+    public final StatisticManager statisticManager;
+
+    public ItemSlotMachine() {
+        super(49751, Locale.US, Locale.GERMANY);
+        settings = new Settings(this);
+        vaultHook = new VaultHook(this);
+
+        designCommandHandler = new DesignCommandHandler(this);
+        coinCommandHandler = new CoinCommandHandler(this);
+        slotCommandHandler = new SlotCommandHandler(this);
+        statisticCommandHandler = new StatisticCommandHandler(this);
+
+        designManager = new DesignManager(this);
+        coinManager = new CoinManager(this);
+        slotMachineManager = new SlotMachineManager(this);
+        statisticManager = new StatisticManager(this);
+    }
 
     @Override
     public void onEnable() {
-        long check = System.currentTimeMillis();
-        logger = getLogger();
+        long startTime = System.currentTimeMillis();
 
-        settings = new Settings(this);
         try {
             settings.load();
         } catch (Exception e) {
-            logWarning("An error occurred while loading the settings from config.yml, plugin will disable! Cause: %c", e);
-
-            if (Settings.isDebugModeEnabled()) {
-                e.printStackTrace();
-            }
-
+            logException("An error occurred while loading the settings from config.yml: %c", e);
             disable();
             return;
         }
 
         template = new TemplateReader(this, "template.yml", "plugins/ItemSlotMachine/");
         if (!template.readTemplate()) {
-            logWarning("Failed to read template.yml, plugin will disable!");
+            logWarning("Failed to read template.yml!");
             disable();
             return;
         }
 
-        vaultHook = new VaultHook();
         if (vaultHook.enable()) {
-            logger.info("Vault hooked, money distribution is active.");
+            logInfo("Vault hooked, money distribution is active.");
         }
 
-        messageManager = new MessageManager(this);
-        if (!messageManager.onInitialize()) {
-            return;
+        try {
+            designCommandHandler.enable();
+            coinCommandHandler.enable();
+            slotCommandHandler.enable();
+            statisticCommandHandler.enable();
+        } catch (CommandRegistrationException ex) {
+            logException("Failed to register commands: %c", ex);
         }
-        designManager = new DesignManager(this);
-        coinManager = new CoinManager(this);
-        slotMachineManager = new SlotMachineManager(this);
-        statisticManager = new StatisticManager(this);
-        designCommandHandler = new DesignCommandHandler(this);
-        coinCommandHandler = new CoinCommandHandler(this);
-        slotCommandHandler = new SlotCommandHandler(this);
-        statisticCommandHandler = new StatisticCommandHandler(this);
+
+        try {
+            messageManager.onEnable();
+            designManager.onEnable();
+            coinManager.onEnable();
+            slotMachineManager.onEnable();
+            statisticManager.onEnable();
+        } catch (Exception ex) {
+            logException("Failed to enable managers: %c", ex);
+        }
 
         enableMetrics();
-        check = System.currentTimeMillis() - check;
-        logInfo("Gambling system version " + getDescription().getVersion() + " activated! Have fun ;D (" + check + " ms)");
+        long duration = System.currentTimeMillis() - startTime;
+        logInfo("Version " + getDescription().getVersion() + " loaded. (" + duration + " ms)");
+        checkForUpdates();
     }
 
     @Override
@@ -91,77 +99,44 @@ public final class ItemSlotMachine extends JavaPlugin {
             slotMachineManager.onDisable();
         }
 
-        logger.info("Gambling system deactivated!");
+        logInfo("Version " + getDescription().getVersion() + " disabled.");
     }
 
-    public void onReload() {
+    @Override
+    public boolean onReload() {
         try {
             settings.reload();
-        } catch (Exception e) {
-            logWarning("An error occurred while loading the settings from config.yml, plugin will disable! Cause: <cause>", e);
-
-            if (Settings.isDebugModeEnabled()) {
-                e.printStackTrace();
-            }
-
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+        } catch (Exception ex) {
+            logException("An error occurred while loading the settings from config.yml: %c", ex);
+            disable();
+            return false;
         }
 
-        if (!messageManager.onReload()) {
-            return;
-        }
-        designManager.onReload();
-        coinManager.onReload();
-        slotMachineManager.onReload();
-    }
-
-    public Configuration loadConfig() {
-        if (new File("plugins/" + getName() + "/config.yml").exists()) {
-            logInfo("config.yml successfully loaded.");
-        } else {
-            saveDefaultConfig();
-        }
-        
-        return getConfig();
-    }
-
-    public void enableMetrics() {
         try {
-            MetricsLite metrics = new MetricsLite(this);
-            if (!metrics.isEnabled()) {
-                logWarning("Metrics is disabled!");
-            } else {
-                logInfo("This plugin is using Metrics by BtoBastian!");
-            }
-        } catch (Exception e) {
-            logWarning("An error occurred while enabling Metrics! Cause: %c", e);
-            
-            if (Settings.isDebugModeEnabled()) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void logWarning(String message, Exception exception) {
-        String cause = "Unknown";
-
-        if (exception != null && exception.getMessage() != null) {
-            cause = exception.getMessage();
+            messageManager.onReload();
+            designManager.onReload();
+            coinManager.onReload();
+            slotMachineManager.onReload();
+        } catch (Exception ex) {
+            logException("Failed to reload managers: %c", ex);
+            disable();
+            return false;
         }
 
-        logger.warning(message.replace("%c", cause));
+        return true;
     }
 
-    public void logWarning(String message) {
-        logWarning(message, null);
+    @Override
+    public boolean isDebugEnabled() {
+        return Settings.isDebugModeEnabled();
     }
 
-    public void logInfo(String message) {
-        logger.info(message);
+    @Override
+    public Locale getCurrentLanguage() {
+        return Locale.forLanguageTag(Settings.getLanguageTag());
     }
 
-    private void disable() {
-        getServer().getPluginManager().disablePlugin(this);
+    public VaultHook getVaultHook() {
+        return vaultHook;
     }
 }

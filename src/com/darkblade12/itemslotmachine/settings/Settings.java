@@ -20,8 +20,7 @@ public final class Settings {
     private ItemSlotMachine plugin;
     private static boolean debugModeEnabled;
     private static String languageTag;
-    private static String defaultSlotMachineName;
-    private static String rawSlotMachineName;
+    private static String slotMachineNamePattern;
     private static boolean spaceCheckEnabled;
     private static Set<Material> spaceCheckIgnoredBlocks;
     private static Material coinMaterial;
@@ -29,31 +28,27 @@ public final class Settings {
     private static double coinPrice;
     private static boolean limitedUsageEnabled;
     private static int limitedUsageAmount;
-    private static String defaultDesignName;
-    private static String rawDesignName;
+    private static String designNamePattern;
 
     public Settings(ItemSlotMachine plugin) {
         this.plugin = plugin;
     }
 
     public void load() throws InvalidValueException {
-        Configuration config = plugin.loadConfig();
+        Configuration config = plugin.getConfig();
         debugModeEnabled = GENERAL_SETTINGS.getBoolean(config, "Debug_Mode_Enabled");
         languageTag = GENERAL_SETTINGS.getString(config, "Language_Tag");
         if (languageTag == null) {
             throw new InvalidValueException("Language_Tag", GENERAL_SETTINGS, "is null");
         }
 
-        defaultSlotMachineName = SLOT_MACHINE_SETTINGS.getString(config, "Default_Name");
-        if (defaultSlotMachineName == null) {
-            throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "is null");
-        } else if (defaultSlotMachineName.matches(".+<num>.+")) {
-            throw new InvalidValueException("Default_Name", SLOT_MACHINE_SETTINGS, "has <num> at an invalid position (middle)");
-        } else if (!defaultSlotMachineName.contains("<num>")) {
-            defaultSlotMachineName += "<num>";
+        slotMachineNamePattern = SLOT_MACHINE_SETTINGS.getString(config, "Name_Pattern");
+        if (slotMachineNamePattern == null) {
+            throw new InvalidValueException("Name_Pattern", SLOT_MACHINE_SETTINGS, "is null");
+        } else if (!slotMachineNamePattern.contains("{0}")) {
+            throw new InvalidValueException("Name_Pattern", SLOT_MACHINE_SETTINGS, "does not contain id placeholder '{0}'");
         }
 
-        rawSlotMachineName = defaultSlotMachineName.replace("<num>", "");
         spaceCheckEnabled = SPACE_CHECK.getBoolean(config, "Enabled");
         if (spaceCheckEnabled) {
             spaceCheckIgnoredBlocks = new HashSet<Material>();
@@ -98,15 +93,12 @@ public final class Settings {
             }
         }
 
-        defaultDesignName = DESIGN_SETTINGS.getString(config, "Default_Name");
-        if (defaultDesignName == null) {
-            throw new InvalidValueException("Default_Name", DESIGN_SETTINGS, "is null");
-        } else if (defaultDesignName.matches(".+<num>.+")) {
-            throw new InvalidValueException("Default_Name", DESIGN_SETTINGS, "has <num> at an invalid position (middle)");
-        } else if (!defaultDesignName.contains("<num>")) {
-            defaultDesignName += "<num>";
+        designNamePattern = DESIGN_SETTINGS.getString(config, "Name_Pattern");
+        if (designNamePattern == null) {
+            throw new InvalidValueException("Name_Pattern", DESIGN_SETTINGS, "is null");
+        } else if (!designNamePattern.contains("{0}")) {
+            throw new InvalidValueException("Name_Pattern", DESIGN_SETTINGS, "does not contain id placeholder '{0}'");
         }
-        rawDesignName = defaultDesignName.replace("<num>", "");
     }
 
     public void reload() throws InvalidValueException {
@@ -138,12 +130,8 @@ public final class Settings {
         return coinMaterial;
     }
 
-    public static String getDefaultSlotMachineName() {
-        return defaultSlotMachineName;
-    }
-
-    public static String getRawSlotMachineName() {
-        return rawSlotMachineName;
+    public static String getSlotMachineNamePattern() {
+        return slotMachineNamePattern;
     }
 
     public static boolean isCommonCoinItemEnabled() {
@@ -162,11 +150,7 @@ public final class Settings {
         return limitedUsageAmount;
     }
 
-    public static String getDefaultDesignName() {
-        return defaultDesignName;
-    }
-
-    public static String getRawDesignName() {
-        return rawDesignName;
+    public static String getDesignNamePattern() {
+        return designNamePattern;
     }
 }

@@ -1,6 +1,7 @@
 package com.darkblade12.itemslotmachine.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
@@ -18,8 +19,12 @@ public final class ItemList extends ArrayList<ItemStack> implements Cloneable {
         super();
     }
 
-    public ItemList(Collection<ItemStack> c) {
-        super(c);
+    public ItemList(Collection<ItemStack> items) {
+        super(items);
+    }
+
+    public ItemList(ItemStack... items) {
+        this(Arrays.asList(items));
     }
 
     public static ItemList fromString(String s, boolean amount) throws IllegalArgumentException {
@@ -33,16 +38,6 @@ public final class ItemList extends ArrayList<ItemStack> implements Cloneable {
 
     public static ItemList fromString(String s) throws IllegalArgumentException {
         return fromString(s, true);
-    }
-
-    public static boolean hasEnoughSpace(Player p, ItemStack i) {
-        int s = 0;
-        for (ItemStack is : p.getInventory().getContents())
-            if (is == null)
-                s += 64;
-            else if (is.isSimilar(i))
-                s += 64 - is.getAmount();
-        return s >= i.getAmount();
     }
 
     public boolean add(ItemStack e, boolean stack) {
@@ -95,7 +90,7 @@ public final class ItemList extends ArrayList<ItemStack> implements Cloneable {
         World w = loc.getWorld();
         for (int i = 0; i < size(); i++) {
             ItemStack c = get(i).clone();
-            if (hasEnoughSpace(p, c))
+            if (ItemUtils.hasEnoughSpace(p, c))
                 p.getInventory().addItem(c);
             else
                 w.dropItemNaturally(loc, c);

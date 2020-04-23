@@ -1,5 +1,6 @@
 package com.darkblade12.itemslotmachine.slotmachine;
 
+import java.io.File;
 import java.util.Random;
 
 import org.bukkit.GameMode;
@@ -13,9 +14,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.coin.CoinManager;
+import com.darkblade12.itemslotmachine.core.Message;
+import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
-import com.darkblade12.itemslotmachine.hook.VaultHook;
+import com.darkblade12.itemslotmachine.design.DesignBuildException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reader.CompressedStringReader;
 import com.darkblade12.itemslotmachine.reader.ConfigReader;
@@ -29,9 +31,9 @@ import com.darkblade12.itemslotmachine.slotmachine.combo.types.MoneyPotCombo;
 import com.darkblade12.itemslotmachine.slotmachine.command.CommandList;
 import com.darkblade12.itemslotmachine.slotmachine.command.Placeholder;
 import com.darkblade12.itemslotmachine.slotmachine.sound.SoundList;
-import com.darkblade12.itemslotmachine.statistic.types.SlotMachineStatistic;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.ItemList;
+import com.darkblade12.itemslotmachine.util.MessageUtils;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public abstract class SlotMachineBase implements Nameable {
@@ -57,7 +59,6 @@ public abstract class SlotMachineBase implements Nameable {
     protected ItemSlotMachine plugin;
     protected String name;
     protected CompressedStringReader instanceReader;
-    protected SlotMachineStatistic statistic;
     protected ConfigReader configReader;
     protected Design design;
     protected SafeLocation center;
@@ -110,7 +111,8 @@ public abstract class SlotMachineBase implements Nameable {
     public SlotMachineBase(ItemSlotMachine plugin, String name) throws Exception {
         this.plugin = plugin;
         this.name = name;
-        instanceReader = new CompressedStringReader(name + ".instance", "plugins/ItemSlotMachine/slot machines/");
+        File directory = plugin.slotMachineManager.getDataDirectory();
+        instanceReader = new CompressedStringReader(name + ".instance", directory.getPath());
 
         String serialized;
         try {
@@ -131,13 +133,7 @@ public abstract class SlotMachineBase implements Nameable {
         slot = design.getSlot().getSafeLocation(l, initialDirection);
         region = design.getRegion().getCuboid(l, initialDirection);
 
-        try {
-            statistic = SlotMachineStatistic.fromFile(name);
-        } catch (Exception e) {
-            statistic = new SlotMachineStatistic(name);
-        }
-
-        configReader = new ConfigReader(plugin, plugin.template, name + ".yml", "plugins/ItemSlotMachine/slot machines/");
+        configReader = new ConfigReader(plugin, plugin.template, name + ".yml", directory.getPath());
         if (!configReader.readConfig()) {
             throw new Exception("Failed to read " + configReader.getOuputFileName());
         }
@@ -390,26 +386,30 @@ public abstract class SlotMachineBase implements Nameable {
                 + (itemPotEnabled && itemPot.size() > 0 ? "#" + itemPot : ""));
     }
 
+    private String getSpacer() {
+        return plugin.formatMessage(Message.SIGN_POT_SPACER, MessageUtils.randomColorCode());
+    }
+
     public void updateSign() {
         Sign sign = getSignInstance();
         if (sign == null) {
             return;
         }
 
-        String[] lines = null;
-        if (moneyPotEnabled && itemPotEnabled) {
-            lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(),
-                                   plugin.messageManager.sign_pot_items(itemPot.size()),
-                                   plugin.messageManager.sign_pot_spacer() };
-        } else if (moneyPotEnabled) {
-            lines = new String[] { plugin.messageManager.sign_pot_money(moneyPot), plugin.messageManager.sign_pot_spacer(),
-                                   plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
-        } else if (itemPotEnabled) {
-            lines = new String[] { plugin.messageManager.sign_pot_items(itemPot.size()), plugin.messageManager.sign_pot_spacer(),
-                                   plugin.messageManager.sign_pot_spacer(), plugin.messageManager.sign_pot_spacer() };
+        String[] lines;
+        if (moneyPotEnabled ^ itemPotEnabled) {
+            lines = new String[] { "", getSpacer(), getSpacer(), getSpacer() };
+            if (moneyPotEnabled) {
+                lines[0] = plugin.formatMessage(Message.SIGN_POT_MONEY, moneyPot);
+            } else {
+                lines[0] = plugin.formatMessage(Message.SIGN_POT_ITEMS, itemPot.size());
+            }
+        } else {
+            String moneyText = plugin.formatMessage(Message.SIGN_POT_MONEY, moneyPot);
+            String itemsText = plugin.formatMessage(Message.SIGN_POT_ITEMS, itemPot.size());
+            lines = new String[] { moneyText, getSpacer(), itemsText, getSpacer() };
         }
-        lines = CoinManager.validateLines(lines, 0, 2);
-
+        lines = MessageUtils.prepareSignLines(lines, 0, 2);
         for (int i = 0; i < lines.length; i++) {
             sign.setLine(i, lines[i]);
         }
@@ -484,23 +484,21 @@ public abstract class SlotMachineBase implements Nameable {
             depositPotItems(itemPotRaise);
     }
 
-    public double resetMoneyPot() {
-        setMoneyPot(moneyPotDefaultSize);
-        return moneyPot;
-    }
-
     public void clearMoneyPot() {
         setMoneyPot(0);
     }
 
-    public ItemList resetItemPot() {
-        setItemPot(itemPotDefaultItems);
-        return itemPot.clone();
+    public void resetMoneyPot() {
+        setMoneyPot(moneyPotDefaultSize);
     }
 
     public void clearItemPot() {
         itemPot.clear();
         update();
+    }
+
+    public void resetItemPot() {
+        setItemPot(itemPotDefaultItems);
     }
 
     private boolean isRegularWin(ItemStack[] icons) {
@@ -620,15 +618,16 @@ public abstract class SlotMachineBase implements Nameable {
     }
 
     protected void executeCommands(String userName, double money, ItemList items) {
-        if (commandExecutionEnabled)
-            commands.execute(new Placeholder("<user_name>", userName), new Placeholder("<money>", Double.toString(money)),
-                             new Placeholder("<currency_name>", VaultHook.getCurrencyName(money == 1)),
-                             new Placeholder("<item_amount>", Integer.toString(items.size())),
-                             new Placeholder("<items>", plugin.messageManager.itemsToString(items, "")),
-                             new Placeholder("<slot_machine>", name));
+        if (!commandExecutionEnabled) {
+            return;
+        }
+        commands.execute(new Placeholder("<user_name>", userName), new Placeholder("<money>", Double.toString(money)),
+                         new Placeholder("<currency_name>", plugin.getVaultHook().getCurrencyName(money == 1)),
+                         new Placeholder("<item_amount>", Integer.toString(items.size())),
+                         new Placeholder("<items>", MessageUtils.toString(items)), new Placeholder("<slot_machine>", name));
     }
 
-    public void teleport(Player player) throws IllegalStateException {
+    public void teleport(Player player) throws SlotMachineException {
         boolean flying = player.isFlying();
         Location centerLoc = center.getBukkitLocation();
 
@@ -644,34 +643,31 @@ public abstract class SlotMachineBase implements Nameable {
             }
         }
 
-        throw new IllegalStateException("No suitable teleport location found");
+        throw new SlotMachineException("No suitable teleport location found");
     }
 
-    public void move(BlockFace b, int amount) throws Exception {
-        Location l = center.getBukkitLocation();
-        Location n = l.clone().add(b.getModX() * amount, b.getModY() * amount, b.getModZ() * amount);
-        design.destruct(l, initialDirection);
+    public void move(BlockFace direction, int amount) throws DesignBuildException {
+        Location centerLoc = center.getBukkitLocation();
+        Location newCenter = centerLoc.clone().add(direction.getModX() * amount, direction.getModY() * amount,
+                                                   direction.getModZ() * amount);
+        design.dismantle(centerLoc, initialDirection);
         try {
-            design.build(n, initialDirection);
-            center = SafeLocation.fromBukkitLocation(n);
-            sign = design.getSign().getSafeLocation(n, initialDirection);
-            slot = design.getSlot().getSafeLocation(n, initialDirection);
-            region = design.getRegion().getCuboid(n, initialDirection);
+            design.build(newCenter, initialDirection);
+            center = SafeLocation.fromBukkitLocation(newCenter);
+            sign = design.getSign().getSafeLocation(newCenter, initialDirection);
+            slot = design.getSlot().getSafeLocation(newCenter, initialDirection);
+            region = design.getRegion().getCuboid(newCenter, initialDirection);
             update();
-        } catch (Exception e) {
-            design.build(l, initialDirection);
+        } catch (DesignBuildException ex) {
+            design.build(centerLoc, initialDirection);
             updateSign();
-            throw e;
+            throw ex;
         }
     }
 
     @Override
     public String getName() {
         return this.name;
-    }
-
-    public SlotMachineStatistic getStatistic() {
-        return this.statistic;
     }
 
     public Design getDesign() {
@@ -845,7 +841,7 @@ public abstract class SlotMachineBase implements Nameable {
     }
 
     protected boolean getMoneyPotCombosEnabled() {
-        return moneyPotCombosEnabled && moneyPotEnabled && VaultHook.isEnabled();
+        return moneyPotCombosEnabled && moneyPotEnabled && plugin.getVaultHook().isEnabled();
     }
 
     public ItemList getItemPot() {
@@ -860,25 +856,12 @@ public abstract class SlotMachineBase implements Nameable {
         return itemPotCombosEnabled && itemPotEnabled;
     }
 
-    private boolean hasAnyPermission(Player player, String... permissions) {
-        for (String permission : permissions) {
-            if (player.hasPermission(permission)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public boolean hasModifyPermission(Player player) {
-        String[] permissions = { "ItemSlotMachine.slot.modify." + name, "ItemSlotMachine.slot.modify.*", "ItemSlotMachine.slot.*",
-                                 "ItemSlotMachine.*" };
-        return hasAnyPermission(player, permissions);
+        return player.hasPermission("itemslotmachine.slot.modify." + name) || Permission.SLOT_MODIFY_ALL.has(player);
     }
 
     public boolean hasUsePermission(Player player) {
-        String[] permissions = { individualPermissionEnabled ? individualPermission : "ItemSlotMachine.slot.use",
-                                 "ItemSlotMachine.slot.use.*", "ItemSlotMachine.slot.*", "ItemSlotMachine.*" };
-        return hasAnyPermission(player, permissions);
+        String permission = individualPermissionEnabled ? individualPermission : Permission.SLOT_USE.getNode();
+        return player.hasPermission(permission) || Permission.SLOT_USE_ALL.has(player);
     }
 }

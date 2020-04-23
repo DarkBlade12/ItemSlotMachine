@@ -2,79 +2,77 @@ package com.darkblade12.itemslotmachine.nameable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public final class NameableList<T extends Nameable> extends ArrayList<T> {
     private static final long serialVersionUID = 2132464611329949798L;
-    private boolean ignoreCase;
-
-    public NameableList(boolean ignoreCase) {
-        super();
-        this.ignoreCase = ignoreCase;
-    }
 
     public NameableList() {
-        this(false);
+        super();
     }
 
-    public NameableList(Collection<T> c) {
-        super(c);
-        ignoreCase = false;
+    public NameableList(Collection<T> collection) {
+        super(collection);
     }
 
-    public NameableList(Collection<T> c, boolean ignoreCase) {
-        super(c);
-        this.ignoreCase = ignoreCase;
-    }
-
-    public void remove(String name) {
+    public T remove(String name, boolean caseInsensitive) {
         for (int i = 0; i < size(); i++) {
-            String n = get(i).getName();
-            if (ignoreCase ? name.equalsIgnoreCase(n) : name.equals(n))
-                remove(i);
-        }
-    }
-
-    public T get(String name) {
-        for (int i = 0; i < size(); i++) {
-            T e = get(i);
-            String n = e.getName();
-            if (ignoreCase ? name.equalsIgnoreCase(n) : name.equals(n))
-                return e;
+            String elemName = get(i).getName();
+            if (caseInsensitive ? name.equalsIgnoreCase(elemName) : name.equals(elemName)) {
+                return remove(i);
+            }
         }
         return null;
     }
 
-    public boolean contains(String name) {
-        return get(name) != null;
+    public T remove(String name) {
+        return remove(name, true);
     }
 
-    public boolean ignoreCase() {
-        return this.ignoreCase;
+    public T get(String name, boolean caseInsensitive) {
+        for (int i = 0; i < size(); i++) {
+            T element = get(i);
+            String elemName = element.getName();
+            if (caseInsensitive ? name.equalsIgnoreCase(elemName) : name.equals(elemName)) {
+                return element;
+            }
+        }
+        return null;
+    }
+
+    public T get(String name) {
+        return get(name, true);
+    }
+
+    public boolean containsName(String name, boolean caseInsensitive) {
+        return get(name, caseInsensitive) != null;
+    }
+
+    public boolean containsName(String name) {
+        return containsName(name, true);
     }
 
     public List<String> getNames() {
-        List<String> list = new ArrayList<String>();
-        for (int i = 0; i < size(); i++)
-            list.add(get(i).getName());
-        return list;
+        List<String> names = new ArrayList<String>(size());
+        for (int i = 0; i < size(); i++) {
+            names.add(get(i).getName());
+        }
+        return names;
     }
 
-    public List<String> getNames(Comparator<String> c) {
-        List<String> list = getNames();
-        Collections.sort(list, c);
-        return list;
+    public String toString(String separator, boolean useName) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < size(); i++) {
+            if (builder.length() > 0) {
+                builder.append(separator);
+            }
+            T element = get(i);
+            builder.append(useName ? element.getName() : element.toString());
+        }
+        return builder.toString();
     }
 
     public String toString(String separator) {
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < size(); i++) {
-            if (s.length() > 0)
-                s.append(separator);
-            s.append(get(i).toString());
-        }
-        return s.toString();
+        return toString(separator, true);
     }
 }

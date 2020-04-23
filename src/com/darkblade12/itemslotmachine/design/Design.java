@@ -20,10 +20,13 @@ import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
 import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 public final class Design implements Nameable {
-    public static final File DIRECTORY = new File("plugins/ItemSlotMachine/designs/");
     public static final String DEFAULT_NAME = "default";
+    public static final String DEFAULT_FILE = "design_default.json";
+    public static final String FILE_EXTENSION = ".json";
     private String name;
     private Set<ReferenceBlock> blocks;
     private ReferenceItemFrame[] itemFrames;
@@ -42,7 +45,7 @@ public final class Design implements Nameable {
         this.initialDirection = initialDirection;
     }
 
-    public static Design create(Player player, Cuboid cuboid, String name) throws Exception {
+    public static Design create(Player player, Cuboid cuboid, String name) throws DesignIncompleteException {
         Set<ReferenceBlock> blocks = new HashSet<ReferenceBlock>();
         ReferenceItemFrame[] itemFrames = new ReferenceItemFrame[3];
         ReferenceBlock sign = null, slot = null;
@@ -68,44 +71,41 @@ public final class Design implements Nameable {
             }
         }
 
-        
         if (frameIndex < 3) {
             int missingFrames = 3 - frameIndex;
-            throw new Exception(missingFrames + " item frame" + (missingFrames == 1 ? " is" : "s are") + " missing");
+            String message = "The design is missing " + missingFrames + " item frame" + (missingFrames == 1 ? "" : "s");
+            throw new DesignIncompleteException(message);
         } else if (sign == null) {
-            throw new Exception("The sign is missing");
+            throw new DesignIncompleteException("The design is missing a pot sign");
         } else if (slot == null) {
-            throw new Exception("The slot is missing (Jukebox block)");
+            throw new DesignIncompleteException("The design is missing a slot (jukebox)");
         }
 
         return new Design(name, blocks, itemFrames, sign, slot, region, direction);
     }
 
-    public static String getPath(String name) {
-        return DIRECTORY.getPath() + "/" + name + ".json";
+    public static Design fromFile(File file) throws IOException, JsonIOException, JsonSyntaxException {
+        return FileUtils.readJson(file, Design.class);
     }
 
-    public static Design fromFile(String name) throws Exception {
-        return FileUtils.readJson(getPath(name), Design.class);
+    public static Design fromFile(String path) throws IOException, JsonIOException, JsonSyntaxException {
+        return FileUtils.readJson(new File(path), Design.class);
     }
 
-    public void invertItemFrames() throws IOException {
+    public void invertItemFrames() {
         ReferenceItemFrame temp = itemFrames[0];
         itemFrames[0] = itemFrames[2];
         itemFrames[2] = temp;
-        
-        saveToFile();
     }
 
-    public void build(Location viewPoint, Direction viewDirection) throws Exception {
+    public void build(Location viewPoint, Direction viewDirection) throws DesignBuildException {
         Cuboid cuboid = region.getCuboid(viewPoint, viewDirection);
-
         if (Settings.isSpaceCheckEnabled()) {
             for (Block block : cuboid) {
                 Material material = block.getType();
 
                 if (material != Material.AIR && !Settings.isBlockIgnored(material)) {
-                    throw new Exception("There is not enough space for this design");
+                    throw new DesignBuildException("There is not enough space for the design '%n'", this);
                 }
             }
         }
@@ -122,8 +122,7 @@ public final class Design implements Nameable {
                 refFrame.place(viewPoint, viewDirection);
             }
         } catch (Exception e) {
-            destruct(viewPoint, viewDirection);
-
+            dismantle(viewPoint, viewDirection);
             throw e;
         }
     }
@@ -132,7 +131,7 @@ public final class Design implements Nameable {
         build(player.getLocation(), Direction.getViewDirection(player));
     }
 
-    public void destruct(Location viewPoint, Direction viewDirection) {
+    public void dismantle(Location viewPoint, Direction viewDirection) {
         for (ReferenceItemFrame refFrame : itemFrames) {
             ItemFrame frame = refFrame.getBukkitItemFrame(viewPoint, viewDirection);
 
@@ -150,51 +149,61 @@ public final class Design implements Nameable {
     }
 
     public void destruct(Player player) {
-        destruct(player.getLocation(), Direction.getViewDirection(player));
+        dismantle(player.getLocation(), Direction.getViewDirection(player));
     }
 
-    public void saveToFile() throws IOException {
-        FileUtils.saveJson(getPath(), this);
+    public void saveFile(File directory) throws IOException {
+        FileUtils.saveJson(new File(directory, getFileName()), this);
     }
 
-    public void deleteFile() {
-        File file = new File(getPath());
-
+    public void deleteFile(File directory) throws SecurityException {
+        File file = new File(directory, getFileName());
         if (file.exists()) {
             file.delete();
         }
     }
 
-    @Override
-    public String getName() {
-        return this.name;
+    public void reloadFile(File directory) throws IOException, JsonIOException, JsonSyntaxException {
+        Design design = fromFile(new File(directory, getFileName()));
+        name = design.name;
+        blocks = design.blocks;
+        itemFrames = design.itemFrames;
+        sign = design.sign;
+        slot = design.slot;
+        region = design.region;
+        initialDirection = design.initialDirection;
     }
 
-    public String getPath() {
-        return getPath(name);
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public String getFileName() {
+        return name + FILE_EXTENSION;
     }
 
     public Set<ReferenceBlock> getBlocks() {
-        return this.blocks;
+        return blocks;
     }
 
     public ReferenceItemFrame[] getItemFrames() {
-        return this.itemFrames;
+        return itemFrames;
     }
 
     public ReferenceBlock getSign() {
-        return this.sign;
+        return sign;
     }
 
     public ReferenceBlock getSlot() {
-        return this.slot;
+        return slot;
     }
 
     public ReferenceCuboid getRegion() {
-        return this.region;
+        return region;
     }
 
     public Direction getInitialDirection() {
-        return this.initialDirection;
+        return initialDirection;
     }
 }

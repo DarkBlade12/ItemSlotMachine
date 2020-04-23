@@ -55,6 +55,17 @@ public enum Direction {
         return yaw > 45 && yaw < 135 ? WEST : yaw > 135 && yaw < 225 ? NORTH : yaw > 225 && yaw < 315 ? EAST : SOUTH;
     }
 
+    public static BlockFace getViewFace(Player player) {
+        float pitch = player.getLocation().getPitch();
+        if (pitch <= -67.5) {
+            return BlockFace.UP;
+        } else if (pitch >= 67.5) {
+            return BlockFace.DOWN;
+        }
+        
+        return getViewDirection(player).toBlockFace();
+    }
+
     public static BlockFace rotate(BlockFace face, Direction initial, Direction target) {
         if (face == BlockFace.UP || face == BlockFace.DOWN || face == BlockFace.SELF) {
             return face;
