@@ -31,12 +31,12 @@ import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.darkblade12.itemslotmachine.util.ItemUtils;
 
 public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     private final NameableList<SlotMachine> slots;
+    private NameableComparator<SlotMachine> defaultComparator;
 
     public SlotMachineManager(ItemSlotMachine plugin) {
         super(plugin, new File(plugin.getDataFolder(), "slot machines"));
@@ -45,6 +45,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
 
     @Override
     public void onEnable() {
+        defaultComparator = new NameableComparator<SlotMachine>(plugin.getSettings().getSlotMachineNamePattern());
         loadSlotMachines();
         registerEvents();
     }
@@ -104,7 +105,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     }
 
     public String generateName() {
-        return Nameable.generateName(getFileNames(true), Settings.getSlotMachineNamePattern());
+        return Nameable.generateName(getFileNames(true), plugin.getSettings().getSlotMachineNamePattern());
     }
 
     public List<String> getFileNames(boolean stripExtension) {
@@ -121,7 +122,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
 
     public NameableList<SlotMachine> getSlotMachines() {
         NameableList<SlotMachine> clone = new NameableList<SlotMachine>(slots);
-        clone.sort(new NameableComparator<SlotMachine>(Settings.getSlotMachineNamePattern()));
+        clone.sort(defaultComparator);
         return clone;
     }
 
@@ -364,8 +365,8 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                     return;
                 }
 
-                int useLimit = Settings.getLimitedUsageAmount();
-                if (Settings.isLimitedUsageEnabled() && getActivatedCount(player) + 1 > useLimit) {
+                int useLimit = plugin.getSettings().getSlotMachineUseLimit();
+                if (useLimit > 0 && getActivatedCount(player) + 1 > useLimit) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_USE_LIMITED, useLimit);
                     return;
                 }

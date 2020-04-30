@@ -23,7 +23,6 @@ import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
@@ -45,7 +44,7 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
 
     @Override
     public void onEnable() {
-        defaultComparator = new NameableComparator<Design>(Settings.getDesignNamePattern());
+        defaultComparator = new NameableComparator<Design>(plugin.getSettings().getDesignNamePattern());
         String wandName = plugin.formatMessage(Message.DESIGN_WAND_NAME);
         String[] wandLore = plugin.formatMessage(Message.DESIGN_WAND_LORE).split("\n");
         wand = new ItemBuilder().withMaterial(Material.BONE).withName(wandName).withLore(wandLore).build();
@@ -114,7 +113,7 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
     }
 
     public String generateName() {
-        return Nameable.generateName(getFileNames(true), Settings.getDesignNamePattern());
+        return Nameable.generateName(getFileNames(true), plugin.getSettings().getDesignNamePattern());
     }
 
     public List<String> getFileNames(boolean stripExtension) {

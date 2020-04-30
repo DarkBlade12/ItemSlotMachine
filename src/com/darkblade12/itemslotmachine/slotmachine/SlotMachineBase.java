@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Settings;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
@@ -651,15 +652,16 @@ public abstract class SlotMachineBase implements Nameable {
         Location newCenter = centerLoc.clone().add(direction.getModX() * amount, direction.getModY() * amount,
                                                    direction.getModZ() * amount);
         design.dismantle(centerLoc, initialDirection);
+        Settings settings = plugin.getSettings();
         try {
-            design.build(newCenter, initialDirection);
+            design.build(newCenter, initialDirection, settings);
             center = SafeLocation.fromBukkitLocation(newCenter);
             sign = design.getSign().getSafeLocation(newCenter, initialDirection);
             slot = design.getSlot().getSafeLocation(newCenter, initialDirection);
             region = design.getRegion().getCuboid(newCenter, initialDirection);
             update();
         } catch (DesignBuildException ex) {
-            design.build(centerLoc, initialDirection);
+            design.build(centerLoc, initialDirection, settings);
             updateSign();
             throw ex;
         }

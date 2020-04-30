@@ -12,7 +12,6 @@ import com.darkblade12.itemslotmachine.core.command.statistic.StatisticCommandHa
 import com.darkblade12.itemslotmachine.core.hook.VaultHook;
 import com.darkblade12.itemslotmachine.design.DesignManager;
 import com.darkblade12.itemslotmachine.reader.TemplateReader;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 
@@ -51,8 +50,8 @@ public final class ItemSlotMachine extends PluginBase {
 
         try {
             settings.load();
-        } catch (Exception e) {
-            logException("An error occurred while loading the settings from config.yml: %c", e);
+        } catch (Exception ex) {
+            logException("An error occurred while loading the settings from config.yml: %c", ex);
             disable();
             return;
         }
@@ -128,12 +127,16 @@ public final class ItemSlotMachine extends PluginBase {
 
     @Override
     public boolean isDebugEnabled() {
-        return Settings.isDebugModeEnabled();
+        return settings.isDebugModeEnabled();
     }
 
     @Override
     public Locale getCurrentLanguage() {
-        return Locale.forLanguageTag(Settings.getLanguageTag());
+        return Locale.forLanguageTag(settings.getLanguageTag());
+    }
+    
+    public Settings getSettings() {
+        return settings;
     }
 
     public VaultHook getVaultHook() {

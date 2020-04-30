@@ -48,7 +48,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
     }
 
     public static SlotMachine create(ItemSlotMachine plugin, String name, Design design, Player viewer) throws Exception {
-        design.build(viewer);
+        design.build(viewer, plugin.getSettings());
         SafeLocation viewerLoc = SafeLocation.fromBukkitLocation(viewer.getLocation());
         String data = design.getName() + "#" + viewerLoc + "#" + Direction.getViewDirection(viewer).name();
         String directoryPath = plugin.slotMachineManager.getDataDirectory().getPath();
@@ -370,7 +370,7 @@ public final class SlotMachine extends SlotMachineBase implements Nameable {
 
         Location centerLoc = center.getBukkitLocation();
         design.dismantle(centerLoc, initialDirection);
-        design.build(centerLoc, initialDirection);
+        design.build(centerLoc, initialDirection, plugin.getSettings());
 
         updateSign();
         broken = false;

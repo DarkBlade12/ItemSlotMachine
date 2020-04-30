@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +48,10 @@ public abstract class PluginBase extends JavaPlugin {
 
     public void logInfo(String message) {
         logger.info(message);
+    }
+    
+    public void logInfo(String message, Object... args) {
+        logInfo(MessageFormat.format(message, args));
     }
 
     public void logWarning(String message) {

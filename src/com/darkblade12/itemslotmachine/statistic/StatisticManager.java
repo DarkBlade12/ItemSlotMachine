@@ -14,7 +14,6 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Manager;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.google.gson.JsonIOException;
@@ -37,7 +36,7 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
 
     @Override
     public void onEnable() {
-        defaultComparator = new NameableComparator<SlotMachineStatistic>(Settings.getSlotMachineNamePattern());
+        defaultComparator = new NameableComparator<SlotMachineStatistic>(plugin.getSettings().getSlotMachineNamePattern());
         loadStatistics();
     }
 

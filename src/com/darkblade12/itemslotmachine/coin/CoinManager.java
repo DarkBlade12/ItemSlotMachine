@@ -23,14 +23,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Settings;
 import com.darkblade12.itemslotmachine.core.Manager;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
-import com.darkblade12.itemslotmachine.util.SafeLocation;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public final class CoinManager extends Manager<ItemSlotMachine> {
     private Map<UUID, ShopInfo> lastShop;
@@ -45,8 +45,9 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
     @Override
     public void onEnable() {
-        ItemBuilder builder = new ItemBuilder().withMaterial(Settings.getCoinMaterial());
-        if (!Settings.isCommonCoinItemEnabled()) {
+        Settings settings = plugin.getSettings();
+        ItemBuilder builder = new ItemBuilder().withMaterial(settings.getCoinType());
+        if (settings.getUseCommonCoinItem()) {
             String coinName = plugin.formatMessage(Message.COIN_ITEM_NAME);
             String[] coinLore = plugin.formatMessage(Message.COIN_ITEM_LORE).split("\n");
             builder.withName(coinName).withLore(coinLore);
@@ -84,7 +85,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
     }
 
     public double calculatePrice(int coins) {
-        return coins * Settings.getCoinPrice();
+        return coins * plugin.getSettings().getCoinPrice();
     }
 
     private String[] getLines(int coins) {

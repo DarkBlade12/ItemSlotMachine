@@ -1,64 +1,49 @@
-# Copyright DarkBlade12 - All rights reserved.
-# DarkBlade12 is the developer and respective owner of this plugin.
-
-# This section contains general plugin settings
-General_Settings:
-
  # Determines whether the debug mode is enabled (prints error stacktraces in the console)
  # You should only set this to 'true' if you have some problems you can't solve
- Debug_Mode_Enabled: false
+debug-mode-enabled: false
  
- # This is the ending of the language file name that will be loaded
- # ItemSlotMachine will attempt to load 'lang_<tag>.txt'
- # Built-in language tags are 'en-US' for English and 'de-DE' for German
- Language_Tag: en-US
+# This is the ending of the messages file name that will be loaded
+# ItemSlotMachine will attempt to load 'messages_<tag>.json'
+# Built-in language tags are 'en-US' for English and 'de-DE' for German
+language-tag: 'en-US'
 
-# This section contains general slot machine settings
-Slot_Machine_Settings:
+# This section contains settings for designs
+design:
 
- # This is the name pattern for slot machines that will be used for generating names
- # This string has to contain '{0}' as a placeholder for the generated id
- Name_Pattern: slot{0}
- 
- # This section contains settings for the space check upon attempting to build a slot machine
- # The space check will deny building of the slot machine if it finds any block in the area of the slot machine that is not air and not on the ignored blocks list
- Space_Check:
- 
-  # Determines whether the space check is enabled
-  # If this is set to false building a slot machine will replace EVERY block
-  Enabled: true
+  # This is the name pattern for designs that will be used for generating names
+  # This string has to contain '{0}' as a placeholder for the generated id
+  name-pattern: 'design{0}'
   
-  # This is a list of blocks which are ignored in the space check
-  # Block format: <block_name>
-  # Format: <block>(, <block>...)
-  Ignored_Blocks: snow, grass, fern, tall_grass, large_fern
+  # This section contains settings for the space check when building a slot machine
+  # The space check will deny building if there is any block in the region of the design unless it is ignored
+  space-check:
  
- # This section contains settings for the coin which is used to activate a slot machine
- Coin_Settings:
+    # Determines whether the space check is enabled
+    # If this is set to false building a slot machine will replace EVERY block
+    enabled: true
   
-  # This is the item that will be used as coin
-  # Item format: <item_name>
-  Item: gold_nugget
-  
-  # Determines whether only the renamed coin item can be used to activate a slot machine
-  Common_Item_Enabled: false
-  
-  # This is the price for a single coin which is important for purchasing coins
-  # This value can be either a point number or a normal number
-  Price: 100
+    # This is a list of block types which are ignored by the space check
+    ignored-types: ['snow', 'grass', 'fern', 'tall_grass', 'large_fern']
  
- # This section contains settings for the limited usage of slot machines
- Limited_Usage:
- 
-  # Determines whether limited use is enabled
-  Enabled: true
-  
-  # This is the maximum amount of slot machines that can be used by ONE player at once
-  Amount: 1
- 
-# This section contains general design settings
-Design_Settings:
+# This section contains settings for all slot machines
+slot-machine:
 
- # This is the name pattern for designs that will be used for generating names
- # This string has to contain '{0}' as a placeholder for the generated id
- Name_Pattern: design{0}
+  # This is the name pattern for slot machines that will be used for generating names
+  # This string has to contain '{0}' as a placeholder for the generated id
+  name-pattern: 'slot{0}'
+  
+  # This is the maximum amount of slot machines that can be used by the same player at a time
+  # If this is set to a value lower than 1, the players will be able to use an unlimited number of slot machines
+  use-limit: 1
+ 
+# This section contains settings for the coin which is used to activate a slot machine
+coin:
+  
+  # This is the item type that will be used as coin
+  type: 'gold_nugget'
+  
+  # Determines whether a common item of the specified type can be used to activate a slot machine
+  use-common-item: false
+  
+  # This is the price for a single coin
+  price: 100.0

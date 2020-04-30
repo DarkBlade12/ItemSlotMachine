@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.design;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -12,12 +13,12 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
+import com.darkblade12.itemslotmachine.Settings;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.reference.Direction;
 import com.darkblade12.itemslotmachine.reference.ReferenceBlock;
 import com.darkblade12.itemslotmachine.reference.ReferenceCuboid;
 import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
-import com.darkblade12.itemslotmachine.settings.Settings;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.google.gson.JsonIOException;
@@ -98,13 +99,13 @@ public final class Design implements Nameable {
         itemFrames[2] = temp;
     }
 
-    public void build(Location viewPoint, Direction viewDirection) throws DesignBuildException {
+    public void build(Location viewPoint, Direction viewDirection, Settings settings) throws DesignBuildException {
         Cuboid cuboid = region.getCuboid(viewPoint, viewDirection);
-        if (Settings.isSpaceCheckEnabled()) {
+        if (settings.isSpaceCheckEnabled()) {
+            List<Material> ignoredTypes = settings.getSpaceCheckIgnoredTypes();
             for (Block block : cuboid) {
                 Material material = block.getType();
-
-                if (material != Material.AIR && !Settings.isBlockIgnored(material)) {
+                if (material != Material.AIR && !ignoredTypes.contains(material)) {
                     throw new DesignBuildException("There is not enough space for the design '%n'", this);
                 }
             }
@@ -127,8 +128,8 @@ public final class Design implements Nameable {
         }
     }
 
-    public void build(Player player) throws Exception {
-        build(player.getLocation(), Direction.getViewDirection(player));
+    public void build(Player player, Settings settings) throws Exception {
+        build(player.getLocation(), Direction.getViewDirection(player), settings);
     }
 
     public void dismantle(Location viewPoint, Direction viewDirection) {
