@@ -43,22 +43,19 @@ public class ReferenceLocation {
     }
 
     public ReferenceLocation add(int l, int f, int u) {
-        this.l += l;
-        this.f += f;
-        this.u += u;
-        return this;
+        return new ReferenceLocation(this.l + l, this.f + f, this.u + u);
     }
 
     public int getL() {
-        return this.l;
+        return l;
     }
 
     public int getF() {
-        return this.f;
+        return f;
     }
 
     public int getU() {
-        return this.u;
+        return u;
     }
 
     public Location getBukkitLocation(Location viewPoint, Direction viewDirection) {

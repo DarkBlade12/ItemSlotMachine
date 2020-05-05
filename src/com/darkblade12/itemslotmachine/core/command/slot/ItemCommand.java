@@ -16,12 +16,12 @@ import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
-import com.darkblade12.itemslotmachine.util.ItemList;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 
 public final class ItemCommand extends CommandBase<ItemSlotMachine> {
     public ItemCommand() {
-        super("item", Permission.COMMAND_SLOT_ITEM, false, "<name>", "<clear/deposit/set>", "[default/hand/items]");
+        super("item", Permission.COMMAND_SLOT_ITEM, false, "<name>", "<clear/add/set>", "[default/hand/items]");
     }
 
     @Override
@@ -34,7 +34,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
         }
         name = slot.getName();
 
-        if (!slot.isItemPotEnabled()) {
+        if (!slot.getSettings().isItemPotEnabled()) {
             plugin.sendMessage(sender, Message.COMMAND_SLOT_ITEM_NOT_ENABLED, name);
             return;
         }
@@ -49,11 +49,11 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
             return;
         }
 
-        ItemList list;
+        List<ItemStack> list;
         String source = args[2].toLowerCase();
         switch (source) {
             case "default":
-                list = slot.getItemPotDefaultItems();
+                list = Arrays.asList(slot.getSettings().getItemPotDefault());
                 break;
             case "hand":
                 if (sender instanceof ConsoleCommandSender) {
@@ -67,12 +67,12 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                     plugin.sendMessage(player, Message.COMMAND_SLOT_ITEM_EMPTY_HAND);
                     return;
                 }
-                list = new ItemList(item);
+                list = Arrays.asList(item);
                 break;
             default:
                 String items = StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ");
                 try {
-                    list = ItemList.fromString(items);
+                    list = ItemUtils.listFromString(items);
                 } catch (Exception ex) {
                     plugin.sendMessage(sender, Message.COMMAND_SLOT_ITEM_INVALID_LIST, ex.getMessage());
                     return;
@@ -80,15 +80,15 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                 break;
         }
 
-        String itemsText = MessageUtils.toString(list);
+        String itemsText = list.size() == 0 ? plugin.formatMessage(Message.WORD_EMPTY) : MessageUtils.toString(list);
         switch (operation) {
-            case "deposit":
-                slot.depositPotItems(list);
+            case "add":
+                slot.addItems(list);
                 Message message;
                 if (list.size() == 1) {
-                    message = Message.COMMAND_SLOT_ITEM_SINGLE_DEPOSITED;
+                    message = Message.COMMAND_SLOT_ITEM_SINGLE_ADDED;
                 } else {
-                    message = Message.COMMAND_SLOT_ITEM_DEPOSITED;
+                    message = Message.COMMAND_SLOT_ITEM_ADDED;
                 }
                 plugin.sendMessage(sender, message, itemsText, name);
                 break;
@@ -108,7 +108,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
             case 1:
                 return plugin.slotMachineManager.getNames();
             case 2:
-                return Arrays.asList(new String[] { "clear", "deposit", "set" });
+                return Arrays.asList(new String[] { "clear", "add", "set" });
             case 3:
                 List<String> completions = new ArrayList<String>(getItemNames());
                 completions.add("default");

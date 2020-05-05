@@ -1,214 +1,121 @@
-# This section contains general settings of the slot machine
-General_Settings:
+# This is the amount of coins that a player needs to pay for activating this slot machine
+# The value has to be higher than 0
+coin-amount: 1
+ 
+# The list of materials which can appear in the item frames of this slot machine
+# There have to be at least 2 symbols in this list
+symbol-types: ['apple', 'melon_slice', 'carrot', 'sweet_berries', 'golden_apple']
+ 
+# Determines whether players are able to use this slot machine while in creative mode
+# Players will be able to use this slot machine in creative mode without having to insert coins if set to 'true'
+allow-creative: true
+ 
+# Determines whether fireworks will be launched when a player wins a prize
+launch-fireworks: true
 
- # This is the amount of coins that a player needs to have in order to be able to activate this slot machine
- Activation_Amount: 1
- 
- # This is the list of items whose icons can appear in the item frames of this slot machine
- # Item format: <item_name> OR <item_name>-<data>
- # Format: <item>(, <item>...)
- Item_Icons: wooden_axe, stone_axe, iron_axe, diamond_axe, golden_axe
- 
- # Determines whether players are able to use this slot machine in creative mode
- # (Players can use slot machines in creative mode without having to insert coins)
- Creative_Usage_Enabled: true
- 
- # Determines whether fireworks will be displayed when a player wins (includes combos)
- Fireworks_Enabled: true
- 
- # This section contains settings for an individual permission for this slot machine
- Individual_Permission:
- 
-  # Determines whether the individual permission is enabled for this slot machine
-  Enabled: false
-  
-  # This is the permission which is check if the individual permission is enabled
-  # You can change this to whatever you want
-  # <name> will be replaced with the name of this slot machine
-  Permission: ItemSlotMachine.slot.use.<name>
- 
- 
- # This section contains settings for halting this slot machine
- Halt_Settings:
- 
-  # This is amount of ticks every item frame will do after the slot machine was halted
-  # This is valid for the automatic and non-automatic halt
-  # If this is set to 0-0-0 and the automatic halt is disabled the chance is completely random no matter if predetermined chance is enabled
-  # Format: <item_frame_1_ticks>-<item_frame_2_ticks>-<item_frame_3_ticks>
-  Tick_Delay: 0-5-10
- 
-  # This section contains settings for an automatic halt
-  Automatic_Halt:
-  
-   # Determines whether this slot machine is halted automatically
-   # If this is set to false the slot machine will be halted when a player punches the slot
-   Enabled: true
-   
-   # This is the amount of ticks after the slot machine will be halted automatically if 'Enabled' is set to true
-   Ticks: 20
- 
- # This section contain settings for a predetermined winning chance
- # If this feature is disabled it will be really tough to win since it's completely random
- Predetermined_Winning_Chance:
- 
-  # Determines whether the predetermined winning chance is enabled
-  # If this is set to true it will be calculated if a player wins before the slot machine is halted
-  Enabled: true
+# The permission which is checked when a player tries to interact with this slot machine
+# '<name>' will be replaced with the name of this slot machine
+# If this is commented out, the plugin will check for the permission 'ItemSlotMachine.use'
+#individual-permission: 'ItemSlotMachine.slot.use.<name>'
 
-  # This is the value of the predetermined winning chance (1/100 = 1%, 1/1000 = 0,1%)
-  # You have to use a normal number for the min/max chance value
-  # Format: <min_chance>/<max_chance>
-  Value: 1/100
+# The amount of spins every reel will do before stopping automatically
+# If this is commented out, the player needs to punch the slot in order to stop the spin
+reel-stop: 20
+
+# The amount of spins each reel will do after the spin has started to stop
+reel-delay: [0, 5, 10]
+
+# The winning chance value in percent
+# If this is commented out or set to 0, the winning chance will be completely random
+winning-chance: 2.5
+
+# The time in seconds this slot machine will be locked to the user after the slot machine is deactivated
+# The lock will prevent other players from using a slot machine while it is active
+# If this is commented out or set to 0, the lock will be disabled
+#lock-time: 10
+
+# The commands that will be executed by console if a player wins normally
+# Placeholders: <user>, <money>, <currency>, <item_amount>, <items>, <slot_machine>
+win-commands: 'say <user> has won <money> <currency> and <item_amount> items from slot machine <slot_machine>'
  
- # This section contains settings for the different sounds of this slot machine
- Sound_Settings:
- 
-  # This section contains settings for the ticking sound which will be played when the item in an item frame changes
-  Ticking_Sounds:
-  
-   # Determines whether the ticking sounds are enabled
-   Enabled: true
-   
-   # Determines whether the sounds can be heard by everyone
-   Broadcast: true
-   
-   # This is the list of sounds which will be played upon ticking
-   # Sound format: <sound_name>-<volume>-<pitch>
-   # Format: <sound>(, <sound>...)
-   Sounds: BLOCK_METAL_PRESSURE_PLATE_CLICK_ON-2-2
-  
-  # This section contains settings for the win sound which will be played when a player wins at this slot machine
-  Win_Sounds:
-  
-   # Determines whether the win sounds are enabled
-   Enabled: true
-   
-   # Determines whether the sounds can be heard by everyone
-   Broadcast: true
-   
-   # This is the list of sounds which will be played upon win
-   # Sound format: <sound_name>-<volume>-<pitch>
-   # Format: <sound>(, <sound>...)
-   Sounds: ENTITY_PLAYER_LEVELUP-2-2
+# This section contains settings for the different sounds of this slot machine
+# Sound format: <sound_name>-<volume>-<pitch>[-<broadcast>]
+# All sounds will be broadcast by default if not specified otherwise
+sounds:
+
+  # The list of sounds that will be played when the slot machine is active
+  spin: ['BLOCK_METAL_PRESSURE_PLATE_CLICK_ON-2-2']
+
+  # The list of sounds that will be played when a player wins
+  win: ['ENTITY_PLAYER_LEVELUP-2-2']
    
   # This section contains settings for the lose sound which will be played when a player loses at this slot machine
-  Lose_Sounds:
+  lose: ['BLOCK_NOTE_BLOCK_PLING-2-2', 'BLOCK_NOTE_BLOCK_BASS-2-2']
   
-   # Determines whether the lose sounds are enabled
-   Enabled: true
-   
-   # Determines whether the sounds can be heard by everyone
-   Broadcast: true
-   
-   # This is the list of sounds which will be played upon lose
-   # Sound format: <sound_name>-<volume>-<pitch>
-   # Format: <sound>(, <sound>...)
-   Sounds: BLOCK_NOTE_BLOCK_PLING-2-2, BLOCK_NOTE_BLOCK_BASS-2-2
-  
- # This section contains settings for the player lock of this slot machine
- # A player lock will prevent other players from using a slot machine right after the spin of the recent user is over for a specified time
- Player_Lock:
-  
-  # Determines whether the player lock is enabled
-  Enabled: false
-  
-  # This is the time in seconds this slot machine will be locked to the user after the slot machine is deactivated
-  Time: 10
-  
- # This section contains settings for the command execution when a player has 3 items of the same type in a row
- Command_Execution:
+# This section contains settings for the money pot
+# Please note that at least one of the pots (money or item) has to be enabled
+money-pot:
  
-  # Determines whether the command execution is enabled
-  Enabled: false
-  
-  # These are the commands that will be executed by console if 'Enabled' is set to true when a player has 3 items of the same type in a row
-  # Valid placeholders are <user_name>, <money>, <currency_name>, <item_amount>, <items> and <slot_machine>
-  # Format: <command>(;<command>...)
-  Commands: say <user_name> has won <money> <currency_name> and <item_amount> items from slot machine <slot_machine>
-  
-# This section contains settings especially for the money pot
-# Note that one of the pots has to be enabled, otherwise the slot machine won't work. You can also enable both if you want
-Money_Pot_Settings:
- 
- # Determines whether the money pot is enabled
- Enabled: true
-  
- # This is the default size of the money pot, the money pot will be set to this value after a player won the pot
- # This value can be either a point number or a normal number
- Default_Size: 1000.0
-  
- # This is the value the money pot will be raised when a player inserts a coin
- # This value can be either a point number or a normal number
- Pot_Raise: 50.0
-  
- # This section contains settings for the House Cut especially for the money pot
- # (The House Cut is the percentage amount or total amount of money taken from the pot by the house, that means that this amount will be subtracted from the current pot and the rest will be distributed to the player who won)
- House_Cut:
-  
-  # Determines whether the House Cut is enabled
-  Enabled: true
-   
-  # Determines whether the 'Amount' value is counted as the percentage amount or the total amount of money
-  Percentage: true
-   
-  # This is the amount of the House Cut that can either be the percentage amount or the total amount of money, this is determined by the 'Percentage' setting
-  Amount: 10.0
-  
- # This section contains settings for combos especially for the money pot
- # Combos are activated when a player has a specific formation of items in the frames after the slot machine halted
- Combo_Settings:
-  
-  # Determines whether the combos for the money pot are enabled
-  Enabled: true
-   
-  # This is a list of combos which will are if 'Enabled' is set to true
-  # An item id will match everything if it's set to 0
-  # Item format: <item_name>
-  # Valid action names: MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDENT_MONEY
-  # The amount value can either be a point number or a normal number and is only necessary for the actions MULTIPLY_POT_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDENT_MONEY
-  # Combo format: <item>@<item>@<item>#<action> OR <item>@<item>@<item>#<action>#<amount>
-  # Format: <combo>(;<combo>...)
-  Combos: diamond_axe@diamond_axe@diamond_axe#MULTIPLY_POT_AND_DISTRIBUTE#2.0
+  # Determines whether the money pot is enabled
+  enabled: true
 
-# This section contains settings especially for the item pot
-# Note that one of the pots has to be enabled, otherwise the slot machine won't work. You can also enable both if you want
-Item_Pot_Settings:
+  # The default amount of money in the pot, which will be set after a player has won the pot
+  default: 1000.0
   
- # Determines whether the item pot is enabled
- Enabled: true
+  # The amount of money which will be raised when a player inserts a coin
+  raise: 50.0
+  
+  # This section contains settings for the house cut of the money pot
+  # The house cut is an amount or percentage of money taken from the pot by the house instead of being distributed to the winner
+  house-cut:
+
+    # Determines whether the value will be counted as a fixed amount or a percentage of the pot
+    fixed: false
+
+    # The amount or percentage of the house cut
+    # If this is commented out or set to 0, the house cut will be disabled
+    value: 10.0
+
+# This section contains settings for the item pot
+# Please note that at least one of the pots (money or item) has to be enabled
+item-pot:
+  
+  # Determines whether the item pot is enabled
+  enabled: true
    
- # These are the default items that are in the pot, the item pot will be set to these items after a player won the pot
- # Item format: <item_name> OR <item_name>-<amount>
- # Format: <item>(, <item>...)
- Default_Items: feather-5, diamond-1, iron_ingot-10
+  # The default content of the item pot, which will be set after a player has won the pot
+  # Item format: <item_name>[-<amount>]
+  default: ['feather-5', 'diamond-1', 'iron_ingot-1']
    
- # These are the items that are added to the current pot when a player inserts a coin
- # Item format: <item_name> OR <item_name>-<amount>
- # Format: <item>(, <item>...)
- Pot_Raise: glowstone_dust-2, lapis_lazuli-2
+  # These are the items that are added to the current pot when a player inserts a coin
+  # Item format: <item_name>[-<amount>]
+  raise: ['glowstone_dust-2', 'lapis_lazuli-2']
   
- # This section contains settings for the House Cut especially for the item pot
- # (The House Cut is in this case the amount of random items that will be taken from the pot by the house, that means that these items will be removed from the actual pot and the rest will be distributed to the player who won)
- House_Cut:
-  
-  # Determines whether the House Cut is enabled
-  Enabled: true
-   
-  # This is the amount of items that will be taken by the house and not distributed to the player
-  Amount: 1
-  
- # This section contains settings for combos especially for the item pot
- # Combos are activated when a player has a specific formation of items in the frames after a spin is over
- Combo_Settings:
-  
-  # Determines whether the combos for the item pot are enabled
-  Enabled: true
-   
-  # This is a list of combos which are active if 'Enabled' is set to true
-  # An item id will match everything if it's set to 0
-  # Item format: <item_name> (OR <item_name>-<amount> for the items value)
-  # Valid action names: DOUBLE_POT_ITEMS_AND_DISTRIBUTE, ADD_TO_POT_AND_DISTRIBUTE, DISTRIBUTE_POT, DISTRIBUTE_INDEPENDENT_ITEMS
-  # The items value can either be a point number or a normal number and is only necessary for the actions ADD_TO_POT_AND_DISTRIBUTE and DISTRIBUTE_INDEPENDENT_ITEMS
-  # Combo format: <item>@<item>@<item>#<action> OR <item>@<item>@<item>#<action>#<items>
-  # Format: <combo>(;<combo>...)
-  Combos: diamond_axe@diamond_axe@diamond_axe#ADD_TO_POT_AND_DISTRIBUTE#diamond-3, iron_sword-1, sponge-20
+  # The amount of random items that will be taken by the house instead of being distributed to the winner
+  # If this is commented out or set to 0, the house cut will be disabled
+  #house-cut-amount: 1
+
+# The list of active item pot combos
+# Each combo has its own section and can named how you like
+# Combos are activated by a specific pattern of symbols in the item frames after the slot machine has halted
+combos:
+
+  # The default example combo
+  # If you want to disable this combo, you can comment out this section and its sub-sections
+  example:
+
+    # The symbol pattern which activates this combo
+    # '*' can be used as a wildcard and will match every symbol
+    pattern: ['golden_apple', 'golden_apple', 'golden_apple']
+
+    # The list of actions that will be executed by this combo
+    # Money pot actions: MULTIPLY_MONEY_POT:<amount>, RAISE_MONEY_POT:<amount>, DISTRIBUTE_MONEY_POT
+    # Item pot actions: MULTIPLY_ITEM_POT:<amount>, RAISE_ITEM_POT:<amount>, DISTRIBUTE_ITEM_POT
+    # Independent actions: DISTRIBUTE_MONEY:<amount>, DISTRIBUTE_ITEMS:<items>, EXECUTE_COMMAND:<command>
+    # Command placeholders: <user_name>, <money>, <currency_name>, <item_amount>, <items>, <slot_machine>
+    # Please note that the money or item pot actions will only work if that pot is enabled
+    actions:
+      - 'MULTIPLY_MONEY_POT:2.0'
+      - 'DISTRIBUTE_MONEY_POT'
+      - 'RAISE_ITEM_POT:diamond-3, iron_sword-1, sponge-20'
+      - 'DISTRIBUTE_ITEM_POT'

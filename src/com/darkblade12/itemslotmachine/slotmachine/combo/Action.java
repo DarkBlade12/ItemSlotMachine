@@ -1,49 +1,63 @@
 package com.darkblade12.itemslotmachine.slotmachine.combo;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.darkblade12.itemslotmachine.slotmachine.combo.types.ItemPotCombo;
-import com.darkblade12.itemslotmachine.slotmachine.combo.types.MoneyPotCombo;
+import org.bukkit.inventory.ItemStack;
 
-public enum Action {
-    MULTIPLY_POT_AND_DISTRIBUTE(true, MoneyPotCombo.class),
-    ADD_TO_POT_AND_DISTRIBUTE(true, MoneyPotCombo.class, ItemPotCombo.class),
-    DISTRIBUTE_POT(false, MoneyPotCombo.class, ItemPotCombo.class),
-    DISTRIBUTE_INDEPENDENT_MONEY(true, MoneyPotCombo.class),
-    DOUBLE_POT_ITEMS_AND_DISTRIBUTE(false, ItemPotCombo.class),
-    DISTRIBUTE_INDEPENDENT_ITEMS(true, ItemPotCombo.class);
+import com.darkblade12.itemslotmachine.util.ItemUtils;
 
-    private boolean requiresInput;
-    private List<Class<? extends Combo>> applicable;
-    private static final Map<String, Action> NAME_MAP = new HashMap<String, Action>();
+public class Action {
+    protected ActionType type;
 
-    static {
-        for (Action a : values())
-            NAME_MAP.put(a.name(), a);
+    protected Action(ActionType type) {
+        this.type = type;
     }
 
-    @SafeVarargs
-    private Action(boolean requiresInput, Class<? extends Combo>... applicable) {
-        this.requiresInput = requiresInput;
-        this.applicable = Arrays.asList(applicable);
+    public static Action fromString(String text) throws IllegalArgumentException {
+        int separatorIndex = text.indexOf(':');
+        String typeName = separatorIndex == -1 ? text : text.substring(0, separatorIndex);
+        ActionType type = ActionType.fromName(typeName);
+        if (type == null) {
+            throw new IllegalArgumentException("Invalid action type");
+        }
+
+        switch (type) {
+            case MULTIPLY_MONEY_POT:
+            case MULTIPLY_ITEM_POT:
+            case RAISE_MONEY_POT:
+            case DISTRIBUTE_MONEY:
+                double amount;
+                try {
+                    amount = Double.parseDouble(text.substring(separatorIndex + 1));
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid amount");
+                }
+                if (amount <= 0) {
+                    throw new IllegalArgumentException("Amount must be higher than 0");
+                }
+                return new AmountAction(type, amount);
+            case RAISE_ITEM_POT:
+            case DISTRIBUTE_ITEMS:
+                List<ItemStack> items = ItemUtils.listFromString(text.substring(separatorIndex + 1));
+                return new ItemAction(type, items);
+            case EXECUTE_COMMAND:
+                String command = text.substring(separatorIndex + 1);
+                if (command.startsWith("/")) {
+                    if (command.length() == 1) {
+                        throw new IllegalArgumentException("Invalid command");
+                    }
+                    command = command.substring(1);
+                }
+                return new CommandAction(type, command);
+            case DISTRIBUTE_MONEY_POT:
+            case DISTRIBUTE_ITEM_POT:
+                return new Action(type);
+            default:
+                throw new IllegalArgumentException("Unsupported action type");
+        }
     }
 
-    public boolean requiresInput() {
-        return this.requiresInput;
-    }
-
-    public List<Class<? extends Combo>> getApplicable() {
-        return this.applicable;
-    }
-
-    public boolean isApplicable(Class<? extends Combo> clazz) {
-        return applicable.contains(clazz);
-    }
-
-    public static Action fromName(String name) {
-        return name == null ? null : NAME_MAP.get(name.toUpperCase());
+    public ActionType getType() {
+        return type;
     }
 }

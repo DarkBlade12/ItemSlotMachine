@@ -64,10 +64,10 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
             String error = ex.getMessage();
             Message message;
             if (type.equals("slot")) {
-                plugin.logException("Failed to reset the statistic of slot machine '" + name + "': %c", ex);
+                plugin.logException("Failed to reset the statistic of slot machine {1}: {0}", ex, name);
                 message = Message.COMMAND_STATISTIC_RESET_SLOT_MACHINE_FAILED;
             } else {
-                plugin.logException("Failed to reset the statistic of player '" + name + "': %c", ex);
+                plugin.logException("Failed to reset the statistic of player {1}: {0}", ex, name);
                 message = Message.COMMAND_STATISTIC_RESET_PLAYER_FAILED;
             }
             plugin.sendMessage(sender, message, name, error);

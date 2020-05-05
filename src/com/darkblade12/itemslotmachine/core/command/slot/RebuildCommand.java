@@ -29,7 +29,7 @@ public final class RebuildCommand extends CommandBase<ItemSlotMachine> {
         try {
             slot.rebuild();
         } catch (DesignBuildException ex) {
-            plugin.logException("Failed to rebuild slot machine '" + name + "'! Cause: %c", ex);
+            plugin.logException("Failed to rebuild slot machine {1}: {0}", ex, name);
             plugin.sendMessage(sender, Message.COMMAND_SLOT_REBUILD_FAILED, name, ex.getMessage());
             return;
         }

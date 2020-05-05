@@ -1,11 +1,9 @@
 {
-    "message-missing": "&cThe message &6{0} &cis not available. Please check the messages file!",
-
-    "plugin.prefix": "&7[&2Item&eSlotMachine&7]",
-    "plugin.reloaded": "&7Plugin version {0} has been reloaded. ({1} ms)",
+    "message.missing": "&cThe message &6{0} &cis not available. Please check the messages file!",
+    "message.prefix": "&7[&2Item&eSlotMachine&7]",
 
     "coin.item.name": "&eCoin",
-    "coin.item.lore": "&7Used for activating slot machines",
+    "coin.item.lore": "&7Used for a slot machine spins",
 
     "sign.shop.header": "&8&l[CoinShop]",
     "sign.shop.spacer": "&8&m-----------",
@@ -18,6 +16,7 @@
     "word.coin-singular": "coin",
     "word.coin-plural": "coins",
     "word.and": "and",
+    "word.empty": "empty",
 
     "amount.invalid": "&6{0} &cis not a valid amount!",
     "amount.lower-than": "&cThe amount cannot be lower than {0}!",
@@ -39,9 +38,9 @@
     "slot-machine.modify-not-allowed": "&cYou are not allowed to modify slot machine &6{0}&c!",
     "slot-machine.use-not-allowed": "&cYou are not allowed to use slot machine &6{0}&c!",
     "slot-machine.broken": "&cSlot machine &6{0} &cis broken and cannot be used!",
-    "slot-machine.still-active": "&cThis slot machine is still active and cannot be used again until it is halted!",
+    "slot-machine.still-spinning": "&cThis slot machine is still spinning and cannot be used again until it has completely stopped!",
     "slot-machine.no-creative": "&cThis slot machine cannot be used while in creative mode!",
-    "slot-machine.not-enough-coins": "&cThis slot machine requires &6{0} &c{1} to activate, but you only have &e{2} &c{3}!",
+    "slot-machine.not-enough-coins": "&cThis slot machine requires &6{0} &c{1} for a spin, but you only have &e{2} &c{3}!",
     "slot-machine.use-limited": "&cYou are not allowed to use more than &6{0} &cslot machine(s) at the same time!",
     "slot-machine.locked": "&cThis slot machine is still locked by &6{0} &cfor &e{1} &csecond(s)!",
     "slot-machine.won": "&6Congratulations! You have won {0}&6.",
@@ -137,7 +136,7 @@
     "command.slot.remove.description": "Removes an existing slot machine",
 
     "command.slot.list.none-available": "&cThere are no available slot machines!",
-    "command.slot.list.line": " &6\u25C9 &2{0} &7\u25BB &eActive: {1}",
+    "command.slot.list.line": " &6\u25C9 &2{0} &7\u25BB &eSpinning: {1}",
     "command.slot.list.displayed": "&aAll available slot machines: {0}",
     "command.slot.list.description": "Displays a list of all available slot machines",
 
@@ -153,9 +152,9 @@
     "command.slot.move.succeeded": "&aThe slot machine &6{0} &ahas been moved.",
     "command.slot.move.description": "Moves a slot machine in your view direction",
 
-    "command.slot.deactivate.not-active": "&cThe slot machine &6{0} &cis not active.",
-    "command.slot.deactivate.succeeded": "&aThe slot machine &6{0} &ahas been deactivaed.",
-    "command.slot.deactivate.description": "Deactivates a slot machine",
+    "command.slot.stop.not-spinning": "&cThe slot machine &6{0} &cis not spinning.",
+    "command.slot.stop.succeeded": "&aThe slot machine &6{0} &ahas been stopped.",
+    "command.slot.stop.description": "Stops a slot machine instantly without paying out",
 
     "command.slot.money.not-enabled": "&cThe money pot of slot machine &6{0} &cis not enabled.",
     "command.slot.money.not-specified": "&cThe amount has to be specified when using this argument!",
@@ -172,12 +171,14 @@
     "command.slot.item.empty-hand": "&cYou do not hold an item in your main hand!",
     "command.slot.item.invalid-list": "&cThe item list is invalid: &4{0}",
     "command.slot.item.cleared": "&aThe item pot of slot machine &6{0} &ahas been cleared.",
-    "command.slot.item.deposited": "{0} &ahave been added to the item pot of slot machine &e{1}&a.",
-    "command.slot.item.single-deposited": "{0} &ahas been added to the item pot of slot machine &e{1}&a.",
-    "command.slot.item.set": "&aThe item pot of slot machine &6{0} &ahas been set to {1}&a.",
+    "command.slot.item.added": "{0} &ahave been added to the item pot of slot machine &e{1}&a.",
+    "command.slot.item.single-added": "{0} &ahas been added to the item pot of slot machine &e{1}&a.",
+    "command.slot.item.set": "&aThe item pot of slot machine &6{0} &ahas been set to &6{1}&a.",
     "command.slot.item.description": "Modifies the item pot of a slot machine",
 
-    "command.slot.reload.failed": "&cFailed to reload slot machine &6{0}&c: &4{1}",
-    "command.slot.reload.succeeded": "&aThe slot machine &6{0} &ahas been reloaded.",
+    "command.slot.reload.failed": "&cFailed to reload the plugin due to an error!",
+    "command.slot.reload.single-failed": "&cFailed to reload slot machine &6{0}&c: &4{1}",
+    "command.slot.reload.succeeded": "&aPlugin version &6{0} &ahas been reloaded. (&7{1} ms&a)",
+    "command.slot.reload.single-succeeded": "&aThe slot machine &6{0} &ahas been reloaded.",
     "command.slot.reload.description": "Reloads the plugin or a single slot machine"
 }

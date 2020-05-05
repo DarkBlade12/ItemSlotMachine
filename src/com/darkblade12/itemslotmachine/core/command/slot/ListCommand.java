@@ -26,8 +26,8 @@ public final class ListCommand extends CommandBase<ItemSlotMachine> {
 
         StringBuilder list = new StringBuilder();
         for (SlotMachine slot : slots) {
-            String enabled = (slot.isActive() ? "\u00A7a\u2714" : "\u00A7c\u2718");
-            String line = plugin.formatMessage(Message.COMMAND_SLOT_LIST_LINE, slot.getName(), enabled);
+            String spinning = (slot.isSpinning() ? "\u00A7a\u2714" : "\u00A7c\u2718");
+            String line = plugin.formatMessage(Message.COMMAND_SLOT_LIST_LINE, slot.getName(), spinning);
             list.append("\n").append(ChatColor.RESET).append(line);
         }
         plugin.sendMessage(sender, Message.COMMAND_SLOT_LIST_DISPLAYED, list.toString());

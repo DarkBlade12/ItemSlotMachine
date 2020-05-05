@@ -35,7 +35,7 @@ public final class InvertCommand extends CommandBase<ItemSlotMachine> {
         try {
             design.saveFile(plugin.designManager.getDataDirectory());
         } catch (IOException ex) {
-            plugin.logException("Failed to invert item frame order of design '" + name + "'!", ex);
+            plugin.logException("Failed to invert item frame order of design {1}: {0}", ex, name);
             plugin.sendMessage(sender, Message.COMMAND_DESIGN_INVERT_FAILED, name, ex.getMessage());
         }
         plugin.sendMessage(sender, Message.COMMAND_DESIGN_INVERT_SUCCEEDED, name);

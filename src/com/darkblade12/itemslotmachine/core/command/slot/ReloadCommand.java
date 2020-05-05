@@ -9,6 +9,7 @@ import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineException;
 
 public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
     public ReloadCommand() {
@@ -19,9 +20,13 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
         if (args.length == 0) {
             long startTime = System.currentTimeMillis();
-            plugin.onReload(); // TODO: Send different message on failure
-            long duration = System.currentTimeMillis() - startTime;
-            plugin.sendMessage(sender, Message.PLUGIN_RELOADED, plugin.getDescription().getVersion(), duration);
+            if (!plugin.onReload()) {
+                plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_FAILED);
+            } else {
+                long duration = System.currentTimeMillis() - startTime;
+                String version = plugin.getDescription().getVersion();
+                plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SUCCEEDED, version, duration);
+            }
             return;
         }
 
@@ -34,13 +39,13 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
         name = slot.getName();
 
         try {
-            plugin.slotMachineManager.reload(slot);
-        } catch (Exception ex) {
-            plugin.logException("Failed to reload slot machine '" + name + "': %c", ex);
-            plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_FAILED, name, ex.getMessage());
+            slot.reload();
+        } catch (SlotMachineException ex) {
+            plugin.logException("Failed to reload slot machine {1}: {0}", ex, name);
+            plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SINGLE_FAILED, name, ex.getMessage());
             return;
         }
-        plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SUCCEEDED, name);
+        plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SINGLE_SUCCEEDED, name);
     }
 
     @Override

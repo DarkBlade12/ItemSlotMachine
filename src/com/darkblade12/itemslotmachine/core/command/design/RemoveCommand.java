@@ -34,7 +34,7 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
         try {
             plugin.designManager.unregister(design);
         } catch (IOException ex) {
-            plugin.logException("Failed to remove design '" + name + "'! Cause: %c", ex);
+            plugin.logException("Failed to remove design {1}: {0}", ex, name);
             plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_FAILED, name, ex.getMessage());
         }
         plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_SUCCEEDED, name);

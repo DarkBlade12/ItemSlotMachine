@@ -1,5 +1,5 @@
- # Determines whether the debug mode is enabled (prints error stacktraces in the console)
- # You should only set this to 'true' if you have some problems you can't solve
+# Determines whether the debug mode is enabled (prints error stacktraces in the console)
+# You should only set this to 'true' if you have some problems you can't solve
 debug-mode-enabled: false
  
 # This is the ending of the messages file name that will be loaded

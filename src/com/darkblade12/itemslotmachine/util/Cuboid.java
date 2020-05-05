@@ -34,14 +34,14 @@ public final class Cuboid implements Iterable<Block> {
         this(l1.getBukkitLocation(), l2.getBukkitLocation());
     }
 
-    public boolean isInside(Location l) {
-        if (!l.getWorld().getName().equals(worldName)) {
+    public boolean isInside(Location location) {
+        if (!location.getWorld().getName().equals(worldName)) {
             return false;
         }
 
-        int x = l.getBlockX();
-        int y = l.getBlockY();
-        int z = l.getBlockZ();
+        int x = location.getBlockX();
+        int y = location.getBlockY();
+        int z = location.getBlockZ();
         return x >= x1 && x <= x2 && y >= y1 && y <= y2 && z >= z1 && z <= z2;
     }
 
@@ -118,20 +118,19 @@ public final class Cuboid implements Iterable<Block> {
     }
 
     private class CuboidIterator implements Iterator<Block> {
-        private World w;
+        private World world;
         private int baseX, baseY, baseZ;
         private int x, y, z;
         private int sizeX, sizeY, sizeZ;
 
-        public CuboidIterator(World w, int x1, int y1, int z1, int x2, int y2, int z2) {
-            this.w = w;
+        public CuboidIterator(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
+            this.world = world;
             baseX = x1;
             baseY = y1;
             baseZ = z1;
             sizeX = Math.abs(x2 - x1) + 1;
             sizeY = Math.abs(y2 - y1) + 1;
             sizeZ = Math.abs(z2 - z1) + 1;
-            x = this.y = this.z = 0;
         }
 
         @Override
@@ -141,16 +140,16 @@ public final class Cuboid implements Iterable<Block> {
 
         @Override
         public Block next() {
-            Block b = this.w.getBlockAt(baseX + x, baseY + y, baseZ + z);
+            Block block = world.getBlockAt(baseX + x, baseY + y, baseZ + z);
             if (++x >= sizeX) {
                 x = 0;
-                if (++y >= this.sizeY) {
+                if (++y >= sizeY) {
                     y = 0;
                     ++z;
                 }
             }
 
-            return b;
+            return block;
         }
 
         @Override

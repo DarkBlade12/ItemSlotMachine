@@ -11,9 +11,9 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
-import com.darkblade12.itemslotmachine.design.DesignBuildException;
 import com.darkblade12.itemslotmachine.reference.Direction;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineException;
 
 public class MoveCommand extends CommandBase<ItemSlotMachine> {
     public MoveCommand() {
@@ -48,8 +48,8 @@ public class MoveCommand extends CommandBase<ItemSlotMachine> {
 
         try {
             slot.move(moveDirection, amount);
-        } catch (DesignBuildException ex) {
-            plugin.logException("Failed to move slot machine '" + name + "': %c", ex);
+        } catch (SlotMachineException ex) {
+            plugin.logException("Failed to move slot machine {1}: {0}", ex, name);
             plugin.sendMessage(player, Message.COMMAND_SLOT_MOVE_FAILED, name, ex.getMessage());
             return;
         }

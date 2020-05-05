@@ -1,6 +1,10 @@
 package com.darkblade12.itemslotmachine;
 
+import java.io.File;
 import java.util.Locale;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.darkblade12.itemslotmachine.coin.CoinManager;
 import com.darkblade12.itemslotmachine.core.PluginBase;
@@ -11,14 +15,13 @@ import com.darkblade12.itemslotmachine.core.command.slot.SlotCommandHandler;
 import com.darkblade12.itemslotmachine.core.command.statistic.StatisticCommandHandler;
 import com.darkblade12.itemslotmachine.core.hook.VaultHook;
 import com.darkblade12.itemslotmachine.design.DesignManager;
-import com.darkblade12.itemslotmachine.reader.TemplateReader;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 
 public final class ItemSlotMachine extends PluginBase {
     private final Settings settings;
     private final VaultHook vaultHook;
-    public TemplateReader template;
     public final DesignCommandHandler designCommandHandler;
     public final CoinCommandHandler coinCommandHandler;
     public final SlotCommandHandler slotCommandHandler;
@@ -51,14 +54,15 @@ public final class ItemSlotMachine extends PluginBase {
         try {
             settings.load();
         } catch (Exception ex) {
-            logException("An error occurred while loading the settings from config.yml: %c", ex);
+            logException("An error occurred while loading the settings from config.yml: {0}", ex);
             disable();
             return;
         }
-
-        template = new TemplateReader(this, "template.yml", "plugins/ItemSlotMachine/");
-        if (!template.readTemplate()) {
-            logWarning("Failed to read template.yml!");
+        
+        try {
+            loadTemplate();
+        } catch (Exception ex) {
+            logException("An error occurred while loading the template file: {0}", ex);
             disable();
             return;
         }
@@ -73,7 +77,7 @@ public final class ItemSlotMachine extends PluginBase {
             slotCommandHandler.enable();
             statisticCommandHandler.enable();
         } catch (CommandRegistrationException ex) {
-            logException("Failed to register commands: %c", ex);
+            logException("Failed to register commands: {0}", ex);
         }
 
         try {
@@ -83,22 +87,25 @@ public final class ItemSlotMachine extends PluginBase {
             slotMachineManager.onEnable();
             statisticManager.onEnable();
         } catch (Exception ex) {
-            logException("Failed to enable managers: %c", ex);
+            logException("Failed to enable managers: {0}", ex);
         }
 
         enableMetrics();
         long duration = System.currentTimeMillis() - startTime;
-        logInfo("Version " + getDescription().getVersion() + " loaded. (" + duration + " ms)");
-        checkForUpdates();
+        logInfo("Version {0} loaded. ({1} ms)", getDescription().getVersion(), duration);
+        
+        getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                checkForUpdates();
+            }
+        });
     }
 
     @Override
     public void onDisable() {
-        if (slotMachineManager != null) {
-            slotMachineManager.onDisable();
-        }
-
-        logInfo("Version " + getDescription().getVersion() + " disabled.");
+        slotMachineManager.onDisable();
+        logInfo("Version {0} disabled.", getDescription().getVersion());
     }
 
     @Override
@@ -106,7 +113,7 @@ public final class ItemSlotMachine extends PluginBase {
         try {
             settings.reload();
         } catch (Exception ex) {
-            logException("An error occurred while loading the settings from config.yml: %c", ex);
+            logException("An error occurred while loading the settings from config.yml: {0}", ex);
             disable();
             return false;
         }
@@ -117,12 +124,20 @@ public final class ItemSlotMachine extends PluginBase {
             coinManager.onReload();
             slotMachineManager.onReload();
         } catch (Exception ex) {
-            logException("Failed to reload managers: %c", ex);
+            logException("Failed to reload managers: {0}", ex);
             disable();
             return false;
         }
 
         return true;
+    }
+
+    public FileConfiguration loadTemplate() {
+        File template = new File(getDataFolder(), SlotMachine.TEMPLATE_FILE);
+        if (!template.exists()) {
+            saveResource(SlotMachine.TEMPLATE_FILE, false);
+        }
+        return YamlConfiguration.loadConfiguration(template);
     }
 
     @Override
@@ -134,7 +149,7 @@ public final class ItemSlotMachine extends PluginBase {
     public Locale getCurrentLanguage() {
         return Locale.forLanguageTag(settings.getLanguageTag());
     }
-    
+
     public Settings getSettings() {
         return settings;
     }

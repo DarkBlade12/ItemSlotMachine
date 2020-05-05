@@ -16,34 +16,7 @@ public final class ItemBuilder {
 
     public ItemBuilder() {}
 
-    public static ItemStack fromString(String s, boolean amount) throws IllegalArgumentException {
-        String[] data = s.split("-");
-        Material material = Material.matchMaterial(data[0]);
-        if (material == null) {
-            throw new IllegalArgumentException("contains an invalid item name");
-        }
-
-        return new ItemStack(material, amount ? data.length >= 2 ? Integer.parseInt(data[1]) : 1 : 1);
-    }
-
-    public static ItemStack fromString(String s) throws IllegalArgumentException {
-        return fromString(s, true);
-    }
-
-    public static String toString(ItemStack item, boolean amount) {
-        StringBuilder builder = new StringBuilder(item.getType().getKey().getKey());
-        if (amount) {
-            builder.append("-" + item.getAmount());
-        }
-
-        return builder.toString();
-    }
-
-    public static String toString(ItemStack i) {
-        return toString(i, true);
-    }
-
-    public ItemBuilder withMaterial(Material material) {
+    public ItemBuilder withType(Material material) {
         this.material = material;
         return this;
     }

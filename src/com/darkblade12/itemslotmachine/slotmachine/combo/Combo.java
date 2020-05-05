@@ -1,46 +1,34 @@
 package com.darkblade12.itemslotmachine.slotmachine.combo;
 
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.util.ItemBuilder;
+public class Combo {
+    private Material[] pattern;
+    private Action[] actions;
 
-public abstract class Combo {
-    private ItemStack[] icons;
-    protected Action action;
+    public Combo(Material[] pattern, Action[] actions) {
+        if (pattern.length != 3) {
+            throw new IllegalArgumentException("The length of symbols must be 3");
+        }
 
-    public Combo(ItemStack[] icons, Action action) {
-        if (icons.length != 3)
-            throw new IllegalArgumentException("The icons array has an invalid length (not 3)");
-        this.icons = icons;
-        this.action = action;
+        this.pattern = pattern;
+        this.actions = actions;
     }
 
-    public ItemStack[] getIcons() {
-        return this.icons;
-    }
-
-    public boolean isActivated(ItemStack... display) {
-        for (int i = 0; i < 3; i++)
-            if (!display[i].isSimilar(icons[i]) && icons[i].getType() != Material.AIR)
+    public boolean isActivated(Material[] pattern) {
+        for (int i = 0; i < pattern.length; i++) {
+            if (this.pattern[i] != Material.AIR && pattern[i] != this.pattern[i]) {
                 return false;
+            }
+        }
         return true;
     }
 
-    public boolean hasHighPriority() {
-        for (ItemStack i : icons)
-            if (i.getType() == Material.AIR)
-                return false;
-        return true;
+    public Material[] getPattern() {
+        return pattern.clone();
     }
 
-    public Action getAction() {
-        return this.action;
-    }
-
-    @Override
-    public String toString() {
-        return ItemBuilder.toString(icons[0], false) + "@" + ItemBuilder.toString(icons[1], false) + "@"
-                + ItemBuilder.toString(icons[2], false) + "#" + action.name();
+    public Action[] getActions() {
+        return actions.clone();
     }
 }

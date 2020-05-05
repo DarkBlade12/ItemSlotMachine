@@ -42,7 +42,7 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
         try {
             design.reloadFile(plugin.designManager.getDataDirectory());
         } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-            plugin.logException("Failed to reload design '" + name + "': %c", ex);
+            plugin.logException("Failed to reload design {1}: {0}", ex, name);
             plugin.sendMessage(sender, Message.COMMAND_DESIGN_RELOAD_SINGLE_FAILED, name);
             return;
         }

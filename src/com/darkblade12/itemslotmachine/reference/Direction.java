@@ -19,8 +19,8 @@ public enum Direction {
     private int ordinal;
 
     static {
-        for (Direction d : values()) {
-            ORDINAL_MAP.put(d.ordinal, d);
+        for (Direction direction : values()) {
+            ORDINAL_MAP.put(direction.ordinal, direction);
         }
 
         FACE_ORDER = new BlockFace[] { BlockFace.SOUTH, BlockFace.SOUTH_SOUTH_WEST, BlockFace.SOUTH_WEST,
@@ -41,7 +41,7 @@ public enum Direction {
     public static Direction fromBlockFace(BlockFace face) {
         try {
             return valueOf(face.name());
-        } catch (Exception e) {
+        } catch (IllegalArgumentException ex) {
             return null;
         }
     }

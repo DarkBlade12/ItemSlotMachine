@@ -51,7 +51,7 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
                 SlotMachineStatistic stat = SlotMachineStatistic.fromFile(file);
                 slotStats.add(stat);
             } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to load slot machine statistic file '" + file.getName() + "': %c", ex);
+                plugin.logException("Failed to load slot machine statistic file {1}: {0}", ex, file.getName());
             }
         }
 
@@ -60,13 +60,11 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
                 PlayerStatistic stat = PlayerStatistic.fromFile(file);
                 playerStats.add(stat);
             } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to load player statistic file '" + file.getName() + "': %c", ex);
+                plugin.logException("Failed to load player statistic file {1}: {0}", ex, file.getName());
             }
         }
 
-        int slotCount = slotStats.size();
-        int playerCount = playerStats.size();
-        plugin.logInfo("Statistics successfully loaded. (slot machine: " + slotCount + ", player: " + playerCount + ")");
+        plugin.logInfo("Statistics successfully loaded.");
     }
 
     public boolean trySave(Statistic statistic) {
@@ -75,7 +73,7 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
             return true;
         } catch (IOException ex) {
             String type = statistic instanceof SlotMachineStatistic ? "slot machine" : "player";
-            plugin.logException("Failed to save " + type + " statistic file '" + statistic.getFileName() + "': %c", ex);
+            plugin.logException("Failed to save {1} statistic file {2}: {0}", ex, type, statistic.getFileName());
             return false;
         }
     }

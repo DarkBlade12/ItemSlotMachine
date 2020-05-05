@@ -10,9 +10,9 @@ import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 
-public final class DeactivateCommand extends CommandBase<ItemSlotMachine> {
-    public DeactivateCommand() {
-        super("deactivate", Permission.COMMAND_SLOT_DEACTIVATE, "<name>");
+public final class StopCommand extends CommandBase<ItemSlotMachine> {
+    public StopCommand() {
+        super("stop", Permission.COMMAND_SLOT_STOP, "<name>");
     }
 
     @Override
@@ -25,13 +25,13 @@ public final class DeactivateCommand extends CommandBase<ItemSlotMachine> {
         }
         name = slot.getName();
 
-        if (!slot.isActive()) {
-            plugin.sendMessage(sender, Message.COMMAND_SLOT_DEACTIVATE_NOT_ACTIVE, name);
+        if (!slot.isSpinning()) {
+            plugin.sendMessage(sender, Message.COMMAND_SLOT_STOP_NOT_SPINNING, name);
             return;
         }
 
-        slot.deactivate();
-        plugin.sendMessage(sender, Message.COMMAND_SLOT_DEACTIVATE_SUCCEEDED, name);
+        slot.stop(true);
+        plugin.sendMessage(sender, Message.COMMAND_SLOT_STOP_SUCCEEDED, name);
     }
 
     @Override

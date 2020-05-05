@@ -6,7 +6,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public final class SafeLocation implements Cloneable {
-    private static final String FORMAT = ".+(@-?\\d+\\.\\d+){3}";
     private String worldName;
     private double x, y, z;
 
@@ -17,70 +16,65 @@ public final class SafeLocation implements Cloneable {
         this.z = z;
     }
 
-    public static SafeLocation fromString(String s) throws IllegalArgumentException {
-        if (!s.matches(FORMAT))
-            throw new IllegalArgumentException("Invalid format");
-        String[] p = s.split("@");
-        return new SafeLocation(p[0], Double.parseDouble(p[1]), Double.parseDouble(p[2]), Double.parseDouble(p[3]));
+    public static SafeLocation fromBukkitLocation(Location location) {
+        return new SafeLocation(location.getWorld().getName(), location.getX(), location.getY(), location.getZ());
     }
 
-    public static SafeLocation fromBukkitLocation(Location l) {
-        return new SafeLocation(l.getWorld().getName(), l.getX(), l.getY(), l.getZ());
+    public static SafeLocation fromBukkitBlock(Block block) {
+        return fromBukkitLocation(block.getLocation());
     }
 
-    public static SafeLocation fromBukkitBlock(Block b) {
-        return fromBukkitLocation(b.getLocation());
+    public double distanceSquared(Location location) {
+        return getBukkitLocation().distanceSquared(location);
     }
 
-    public double distanceSquared(Location l) {
-        return getBukkitLocation().distanceSquared(l);
+    public double distanceSquared(SafeLocation location) {
+        return distanceSquared(location.getBukkitLocation());
     }
 
-    public double distanceSquared(SafeLocation s) {
-        return distanceSquared(s.getBukkitLocation());
+    public double distance(Location location) {
+        return Math.sqrt(distanceSquared(location));
     }
 
-    public double distance(Location l) {
-        return Math.sqrt(distanceSquared(l));
-    }
-
-    public double distance(SafeLocation s) {
-        return distance(s.getBukkitLocation());
+    public double distance(SafeLocation location) {
+        return distance(location.getBukkitLocation());
     }
 
     public static boolean noDistance(Location l1, Location l2) {
         return l1 != null && l2 != null && l1.getWorld().getName().equals(l2.getWorld().getName()) && l1.distanceSquared(l2) == 0;
     }
 
-    public boolean noDistance(Location l) {
-        return worldName.equals(l.getWorld().getName()) && distance(l) == 0;
+    public boolean noDistance(Location location) {
+        return worldName.equals(location.getWorld().getName()) && distance(location) == 0;
     }
 
-    public boolean noDistance(SafeLocation s) {
-        return noDistance(s.getBukkitLocation());
+    public boolean noDistance(SafeLocation location) {
+        return noDistance(location.getBukkitLocation());
     }
 
     public double getX() {
-        return this.x;
+        return x;
     }
 
     public double getY() {
-        return this.y;
+        return y;
     }
 
     public double getZ() {
-        return this.z;
+        return z;
     }
 
     public String getWorldName() {
-        return this.worldName;
+        return worldName;
     }
 
-    public World getWorld() {
-        World w = Bukkit.getWorld(worldName);
-        if (w == null)
-            throw new IllegalStateException("World '" + worldName + "' is not loaded");
-        return w;
+    public World getWorld() throws IllegalStateException {
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            throw new IllegalStateException("World " + worldName + " is not loaded");
+        }
+
+        return world;
     }
 
     public Location getBukkitLocation() {
@@ -89,11 +83,6 @@ public final class SafeLocation implements Cloneable {
 
     public Block getBukkitBlock() {
         return getBukkitLocation().getBlock();
-    }
-
-    @Override
-    public String toString() {
-        return worldName + "@" + x + "@" + y + "@" + z;
     }
 
     @Override

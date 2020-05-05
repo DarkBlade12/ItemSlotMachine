@@ -45,7 +45,7 @@ public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
         String input = args[2];
         double amount;
         if (input.equalsIgnoreCase("default")) {
-            amount = slot.getMoneyPotDefaultSize();
+            amount = slot.getSettings().getMoneyPotDefault();
         } else {
             try {
                 amount = Double.parseDouble(input);
@@ -69,7 +69,8 @@ public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
         String amountCurrency = vault.getCurrencyName(amount, true);
         switch (operation) {
             case "deposit":
-                pot = slot.depositPotMoney(amount);
+                slot.depositMoney(amount);
+                pot = slot.getMoneyPot();
                 potCurrency = vault.getCurrencyName(pot, true);
                 plugin.sendMessage(sender, Message.COMMAND_SLOT_MONEY_DEPOSITED, amount, amountCurrency, name, pot, potCurrency);
                 break;
@@ -83,7 +84,8 @@ public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
                     return;
                 }
 
-                pot = slot.withdrawPotMoney(amount);
+                slot.withdrawMoney(amount);
+                pot = slot.getMoneyPot();
                 potCurrency = vault.getCurrencyName(pot, true);
                 plugin.sendMessage(sender, Message.COMMAND_SLOT_MONEY_WITHDRAWN, amount, amountCurrency, name, pot, potCurrency);
                 break;

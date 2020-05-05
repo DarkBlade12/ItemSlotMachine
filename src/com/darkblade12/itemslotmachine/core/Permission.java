@@ -34,7 +34,7 @@ public enum Permission {
     COMMAND_SLOT_TP("itemslotmachine.command.slot.tp", COMMAND_SLOT_ALL),
     COMMAND_SLOT_REBUILD("itemslotmachine.command.slot.rebuild", COMMAND_SLOT_ALL),
     COMMAND_SLOT_MOVE("itemslotmachine.command.slot.move", COMMAND_SLOT_ALL),
-    COMMAND_SLOT_DEACTIVATE("itemslotmachine.command.slot.deactivate", COMMAND_SLOT_ALL),
+    COMMAND_SLOT_STOP("itemslotmachine.command.slot.stop", COMMAND_SLOT_ALL),
     COMMAND_SLOT_MONEY("itemslotmachine.command.slot.money", COMMAND_SLOT_ALL),
     COMMAND_SLOT_ITEM("itemslotmachine.command.slot.item", COMMAND_SLOT_ALL),
     COMMAND_SLOT_RESET("itemslotmachine.command.slot.reset", COMMAND_SLOT_ALL),

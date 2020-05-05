@@ -39,10 +39,10 @@ public class MessageManager extends Manager<PluginBase> {
             try {
                 messageData = FileUtils.readJson(file, JsonElement.class).getAsJsonObject();
             } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to read '" + fileName + "': %c", ex);
+                plugin.logException("Failed to read {1}: {0}", ex, fileName);
             }
         } else {
-            plugin.logWarning("Could not find message file '" + fileName + "'! Copying default files...");
+            plugin.logWarning("Could not find message file {0}! Copying default files...", fileName);
             saveDefaultFiles();
         }
 
@@ -53,13 +53,13 @@ public class MessageManager extends Manager<PluginBase> {
                 messageData = FileUtils.readJson(plugin, defaultName, JsonElement.class).getAsJsonObject();
                 plugin.logInfo("Default message files successfully copied.");
             } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to read the default language file: %c", ex);
+                plugin.logException("Failed to read the default language file: {0}", ex);
                 return;
             }
         }
 
         loadMessages(messageData);
-        plugin.logInfo("Language " + tag + " loaded.");
+        plugin.logInfo("Language {0} loaded.", tag);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MessageManager extends Manager<PluginBase> {
             try {
                 plugin.saveResource(fileName, false);
             } catch (Exception ex) {
-                plugin.logException("Failed to save '" + fileName + "'! Cause: %c", ex);
+                plugin.logException("Failed to save {1}: {0}", ex, fileName);
             }
         }
     }
@@ -111,7 +111,7 @@ public class MessageManager extends Manager<PluginBase> {
             String key = entry.getKey();
             Message message = Message.fromKey(key);
             if (message == null) {
-                plugin.logInfo("Found unknown message '" + key + "' in messages file.");
+                plugin.logInfo("Found unknown message {0} in messages file.", key);
                 continue;
             }
 

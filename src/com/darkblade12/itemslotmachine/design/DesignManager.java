@@ -47,7 +47,7 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
         defaultComparator = new NameableComparator<Design>(plugin.getSettings().getDesignNamePattern());
         String wandName = plugin.formatMessage(Message.DESIGN_WAND_NAME);
         String[] wandLore = plugin.formatMessage(Message.DESIGN_WAND_LORE).split("\n");
-        wand = new ItemBuilder().withMaterial(Material.BONE).withName(wandName).withLore(wandLore).build();
+        wand = new ItemBuilder().withType(Material.BONE).withName(wandName).withLore(wandLore).build();
         loadDesigns();
         registerEvents();
     }
@@ -63,7 +63,7 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
         try {
             return FileUtils.readJson(plugin, Design.DEFAULT_FILE, Design.class);
         } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-            plugin.logException("Failed to load default design: %c", ex);
+            plugin.logException("Failed to load default design: {0}", ex);
             return null;
         }
     }
@@ -80,12 +80,12 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
                 Design design = Design.fromFile(file);
                 designs.add(design);
             } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to load design file '" + file.getName() + "': %c", ex);
+                plugin.logException("Failed to load design file {1}: {0}", ex, file.getName());
             }
         }
 
         int amount = designs.size();
-        plugin.logInfo(amount + " design" + (amount == 1 ? "" : "s") + " loaded.");
+        plugin.logInfo("{0} design{1} loaded.", amount, amount == 1 ? "" : "s");
     }
 
     public void register(Design design) {
@@ -93,7 +93,7 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
             design.saveFile(dataDirectory);
             designs.add(design);
         } catch (IOException ex) {
-            plugin.logException("Failed to save design file '" + design.getFileName() + "': %c", ex);
+            plugin.logException("Failed to save design file {1}: {0}", ex, design.getFileName());
         }
     }
 

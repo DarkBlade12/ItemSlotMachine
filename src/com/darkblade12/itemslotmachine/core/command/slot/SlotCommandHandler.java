@@ -17,7 +17,7 @@ public final class SlotCommandHandler extends CommandHandler<ItemSlotMachine> {
         registerCommand(TpCommand.class);
         registerCommand(RebuildCommand.class);
         registerCommand(MoveCommand.class);
-        registerCommand(DeactivateCommand.class);
+        registerCommand(StopCommand.class);
         registerCommand(MoneyCommand.class);
         registerCommand(ItemCommand.class);
         registerCommand(ReloadCommand.class);

@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Message {
-    MESSAGE_MISSING("message-missing"),
-
-    PLUGIN_PREFIX("plugin.prefix"),
-    PLUGIN_RELOADED("plugin.reloaded"),
+    MESSAGE_MISSING("message.missing"),
+    MESSAGE_PREFIX("message.prefix"),
 
     COIN_ITEM_NAME("coin.item.name"),
     COIN_ITEM_LORE("coin.item.lore"),
@@ -23,6 +21,7 @@ public enum Message {
     WORD_COIN_SINGULAR("word.coin-singular"),
     WORD_COIN_PLURAL("word.coin-plural"),
     WORD_AND("word.and"),
+    WORD_EMPTY("word.empty"),
 
     AMOUNT_INVALID("amount.invalid"),
     AMOUNT_LOWER_THAN("amount.lower-than"),
@@ -55,7 +54,7 @@ public enum Message {
     SLOT_MACHINE_MODIFY_NOT_ALLOWED("slot-machine.modify-not-allowed"),
     SLOT_MACHINE_USE_NOT_ALLOWED("slot-machine.use-not-allowed"),
     SLOT_MACHINE_BROKEN("slot-machine.broken"),
-    SLOT_MACHINE_STILL_ACTIVE("slot-machine.still-active"),
+    SLOT_MACHINE_STILL_SPINNING("slot-machine.still-spinning"),
     SLOT_MACHINE_NO_CREATIVE("slot-machine.no-creative"),
     SLOT_MACHINE_NOT_ENOUGH_COINS("slot-machine.not-enough-coins"),
     SLOT_MACHINE_USE_LIMITED("slot-machine.use-limited"),
@@ -159,9 +158,9 @@ public enum Message {
     COMMAND_SLOT_MOVE_SUCCEEDED("command.slot.move.succeeded"),
     COMMAND_SLOT_MOVE_DESCRIPTION("command.slot.move.description"),
 
-    COMMAND_SLOT_DEACTIVATE_NOT_ACTIVE("command.slot.deactivate.not-active"),
-    COMMAND_SLOT_DEACTIVATE_SUCCEEDED("command.slot.deactivate.succeeded"),
-    COMMAND_SLOT_DEACTIVATE_DESCRIPTION("command.slot.deactivate.description"),
+    COMMAND_SLOT_STOP_NOT_SPINNING("command.slot.stop.not-spinning"),
+    COMMAND_SLOT_STOP_SUCCEEDED("command.slot.stop.succeeded"),
+    COMMAND_SLOT_STOP_DESCRIPTION("command.slot.stop.description"),
 
     COMMAND_SLOT_MONEY_NOT_ENABLED("command.slot.money.not-enabled"),
     COMMAND_SLOT_MONEY_NOT_SPECIFIED("command.slot.money.not-specified"),
@@ -178,13 +177,15 @@ public enum Message {
     COMMAND_SLOT_ITEM_EMPTY_HAND("command.slot.item.empty-hand"),
     COMMAND_SLOT_ITEM_INVALID_LIST("command.slot.item.invalid-list"),
     COMMAND_SLOT_ITEM_CLEARED("command.slot.item.cleared"),
-    COMMAND_SLOT_ITEM_DEPOSITED("command.slot.item.deposited"),
-    COMMAND_SLOT_ITEM_SINGLE_DEPOSITED("command.slot.item.single-deposited"),
+    COMMAND_SLOT_ITEM_ADDED("command.slot.item.added"),
+    COMMAND_SLOT_ITEM_SINGLE_ADDED("command.slot.item.single-added"),
     COMMAND_SLOT_ITEM_SET("command.slot.item.set"),
     COMMAND_SLOT_ITEM_DESCRIPTION("command.slot.item.description"),
     
     COMMAND_SLOT_RELOAD_FAILED("command.slot.reload.failed"),
+    COMMAND_SLOT_RELOAD_SINGLE_FAILED("command.slot.reload.single-failed"),
     COMMAND_SLOT_RELOAD_SUCCEEDED("command.slot.reload.succeeded"),
+    COMMAND_SLOT_RELOAD_SINGLE_SUCCEEDED("command.slot.reload.single-succeeded"),
     COMMAND_SLOT_RELOAD_DESCRIPTION("command.slot.reload.description");
 
     private static final Map<String, Message> NAME_MAP = new HashMap<>();

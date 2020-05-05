@@ -74,8 +74,8 @@ public final class Design implements Nameable {
 
         if (frameIndex < 3) {
             int missingFrames = 3 - frameIndex;
-            String message = "The design is missing " + missingFrames + " item frame" + (missingFrames == 1 ? "" : "s");
-            throw new DesignIncompleteException(message);
+            String ending = missingFrames == 1 ? "" : "s";
+            throw new DesignIncompleteException("The design is missing {0} item frame{1}", missingFrames, ending);
         } else if (sign == null) {
             throw new DesignIncompleteException("The design is missing a pot sign");
         } else if (slot == null) {
@@ -106,7 +106,7 @@ public final class Design implements Nameable {
             for (Block block : cuboid) {
                 Material material = block.getType();
                 if (material != Material.AIR && !ignoredTypes.contains(material)) {
-                    throw new DesignBuildException("There is not enough space for the design '%n'", this);
+                    throw new DesignBuildException("There is not enough space for this design");
                 }
             }
         }
@@ -122,9 +122,9 @@ public final class Design implements Nameable {
             for (ReferenceItemFrame refFrame : itemFrames) {
                 refFrame.place(viewPoint, viewDirection);
             }
-        } catch (Exception e) {
+        } catch (Exception ex) {
             dismantle(viewPoint, viewDirection);
-            throw e;
+            throw new DesignBuildException("Failed to place blocks and item frames", ex);
         }
     }
 

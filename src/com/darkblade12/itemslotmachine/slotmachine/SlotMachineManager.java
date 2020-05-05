@@ -1,6 +1,7 @@
 package com.darkblade12.itemslotmachine.slotmachine;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import org.bukkit.GameMode;
@@ -28,11 +29,14 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Manager;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
+import com.darkblade12.itemslotmachine.core.settings.InvalidValueException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.darkblade12.itemslotmachine.util.ItemUtils;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     private final NameableList<SlotMachine> slots;
@@ -54,17 +58,17 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     public void onDisable() {
         unregisterEvents();
         for (int i = 0; i < slots.size(); i++) {
-            slots.get(i).deactivate();
+            slots.get(i).stop(true);
         }
     }
 
     public void loadSlotMachines() {
         slots.clear();
-        for (String name : getFileNames(true)) {
+        for (File file : FileUtils.getFiles(dataDirectory, SlotMachine.FILE_EXTENSION)) {
             try {
-                slots.add(SlotMachine.load(plugin, name));
-            } catch (Exception ex) {
-                plugin.logException("Failed to load slot machine '" + name + "': %c", ex);
+                slots.add(SlotMachine.fromFile(plugin, file));
+            } catch (JsonIOException | JsonSyntaxException | InvalidValueException | IOException ex) {
+                plugin.logException("Failed to load slot machine file {1}: {0}", ex, file.getName());
             }
         }
         int count = slots.size();
@@ -78,21 +82,6 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     public void unregister(SlotMachine slot) {
         slots.remove(slot.getName());
         slot.delete();
-    }
-
-    public void reload(SlotMachine slot) throws Exception {
-        slot.deactivate();
-        slots.remove(slot.name);
-        slots.add(SlotMachine.load(plugin, slot.name));
-    }
-
-    private void deactivateUsed(Player player) {
-        for (int i = 0; i < slots.size(); i++) {
-            SlotMachine slot = slots.get(i);
-            if (slot.isUser(player)) {
-                slot.deactivate();
-            }
-        }
     }
 
     public boolean hasFile(String name) {
@@ -143,7 +132,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     private SlotMachine getInteractedSlotMachine(Location location) {
         for (int i = 0; i < slots.size(); i++) {
             SlotMachine slot = slots.get(i);
-            if (slot.hasInteracted(location)) {
+            if (slot.isSlotInteraction(location)) {
                 return slot;
             }
         }
@@ -158,11 +147,11 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
         return slots.size();
     }
 
-    private int getActivatedCount(Player player) {
+    private int getSpinningCount(Player player) {
         int count = 0;
         for (int i = 0; i < slots.size(); i++) {
             SlotMachine slot = slots.get(i);
-            if (slot.isUser(player) && slot.isActive()) {
+            if (slot.isUser(player) && slot.isSpinning()) {
                 count++;
             }
         }
@@ -294,12 +283,12 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
             case LEFT_CLICK_BLOCK:
                 clickedLoc = event.getClickedBlock().getLocation();
                 slot = getInteractedSlotMachine(clickedLoc);
-                if (slot == null || !slot.isPermittedToHalt(player)) {
+                if (slot == null || !slot.isStoppable(player)) {
                     return;
                 }
 
                 event.setCancelled(true);
-                slot.halt();
+                slot.stop();
                 break;
             case RIGHT_CLICK_BLOCK:
                 clickedLoc = event.getClickedBlock().getLocation();
@@ -322,7 +311,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                 if (!plugin.coinManager.isCoin(hand) && holdingUseItem && Permission.SLOT_INSPECT.has(player)) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_INSPECTED, name);
                     return;
-                } else if (!slot.hasInteracted(clickedLoc)) {
+                } else if (!slot.isSlotInteraction(clickedLoc)) {
                     return;
                 }
 
@@ -337,26 +326,25 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                     return;
                 }
 
-                if (slot.isActive()) {
-                    plugin.sendMessage(player, Message.SLOT_MACHINE_STILL_ACTIVE);
+                if (slot.isSpinning()) {
+                    plugin.sendMessage(player, Message.SLOT_MACHINE_STILL_SPINNING);
                     return;
                 }
 
-                if (slot.isPlayerLockEnabled() && !slot.isLockExpired() && !slot.isUser(player)) {
+                if (slot.getSettings().lockTime > 0 && !slot.isLockExpired() && !slot.isUser(player)) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_LOCKED, slot.getUserName(), slot.getRemainingLockTime());
                     return;
                 }
 
-                if (player.getGameMode() == GameMode.CREATIVE && !slot.isCreativeUsageEnabled()) {
+                if (player.getGameMode() == GameMode.CREATIVE && !slot.getSettings().allowCreative) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_NO_CREATIVE);
                     return;
                 }
 
                 if (!slot.hasEnoughCoins(player)) {
-                    // TODO: Improve singular/plural handling
                     String singular = plugin.formatMessage(Message.WORD_COIN_SINGULAR);
                     String plural = plugin.formatMessage(Message.WORD_COIN_PLURAL);
-                    int required = slot.getActivationAmount();
+                    int required = slot.getSettings().coinAmount;
                     String requiredCoins = required == 1 ? singular : plural;
                     int current = ItemUtils.getTotalAmount(player, plugin.coinManager.getCoin());
                     String currentCoins = current == 1 ? singular : plural;
@@ -366,12 +354,12 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                 }
 
                 int useLimit = plugin.getSettings().getSlotMachineUseLimit();
-                if (useLimit > 0 && getActivatedCount(player) + 1 > useLimit) {
+                if (useLimit > 0 && getSpinningCount(player) + 1 > useLimit) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_USE_LIMITED, useLimit);
                     return;
                 }
 
-                slot.activate(player);
+                slot.spin(player);
                 break;
             default:
                 return;
@@ -380,6 +368,12 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        deactivateUsed(event.getPlayer());
+        Player player = event.getPlayer();
+        for (int i = 0; i < slots.size(); i++) {
+            SlotMachine slot = slots.get(i);
+            if (slot.isUser(player)) {
+                slot.stop(true);
+            }
+        }
     }
 }

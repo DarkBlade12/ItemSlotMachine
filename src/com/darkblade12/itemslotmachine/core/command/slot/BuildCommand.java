@@ -43,7 +43,7 @@ public final class BuildCommand extends CommandBase<ItemSlotMachine> {
         try {
             plugin.slotMachineManager.register(SlotMachine.create(plugin, name, design, player));
         } catch (Exception ex) {
-            plugin.logException("Failed to build slot machine '" + name + "' with design '" + designName + "'!", ex);
+            plugin.logException("Failed to build slot machine {1} with design {2}: {0}", ex, name, designName);
             plugin.sendMessage(player, Message.COMMAND_SLOT_BUILD_FAILED, name, designName, ex.getMessage());
             return;
         }
