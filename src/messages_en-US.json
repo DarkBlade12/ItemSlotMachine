@@ -1,5 +1,5 @@
 {
-    "message.missing": "&cThe message &6{0} &cis not available. Please check the messages file!",
+    "message.missing": "&cThe message &6{0} &cis not available, please check the messages file!",
     "message.prefix": "&7[&2Item&eSlotMachine&7]",
 
     "coin.item.name": "&eCoin",
@@ -43,7 +43,7 @@
     "slot-machine.not-enough-coins": "&cThis slot machine requires &6{0} &c{1} for a spin, but you only have &e{2} &c{3}!",
     "slot-machine.use-limited": "&cYou are not allowed to use more than &6{0} &cslot machine(s) at the same time!",
     "slot-machine.locked": "&cThis slot machine is still locked by &6{0} &cfor &e{1} &csecond(s)!",
-    "slot-machine.won": "&6Congratulations! You have won {0}&6.",
+    "slot-machine.won": "&6Congratulations, you have won {0}&6!",
     "slot-machine.lost": "&cYou did not win anything, try again...",
 
     "statistic.category.not-found": "&cThe category &6{0} &ccould not be found!",
@@ -76,7 +76,7 @@
 
     "command.coin.give.received": "&aYou have been given &e{0} &a{1} by &6{2}&a.",
     "command.coin.give.received-self": "&aYou have been given &6{0} &a{1}.",
-    "command.coin.give.sent": "&aYou have given &e{0} &a{1} to &a{2}.",
+    "command.coin.give.sent": "&aYou have given &e{0} &a{1} to &6{2}&a.",
     "command.coin.give.description": "Gives an amount of coins to a player",
 
     "command.design.wand.received": "&aYou have been given a design wand. Left or right click a block with it to select positions!",
@@ -160,8 +160,8 @@
     "command.slot.money.not-specified": "&cThe amount has to be specified when using this argument!",
     "command.slot.money.empty": "&cThe money pot of slot machine &6{0} &cis empty.",
     "command.slot.money.cleared": "&aThe money pot of slot machine &6{0} &ahas been cleared.",
-    "command.slot.money.deposited": "&6{0}{1} &ahave been deposited into the money pot of slot machine &e{2}&a. The money pot is now &2{3}{4}&a.",
-    "command.slot.money.withdrawn": "&6{0}{1} &ahave been withdrawn from the money pot of slot machine &e{2}&a. The money pot is now &2{3}{4}&a.",
+    "command.slot.money.deposited": "&e{0}{1} &ahave been deposited into the money pot of slot machine &6{2}&a. The money pot is now &2{3}{4}&a.",
+    "command.slot.money.withdrawn": "&e{0}{1} &ahave been withdrawn from the money pot of slot machine &6{2}&a. The money pot is now &2{3}{4}&a.",
     "command.slot.money.set": "&aThe money pot of slot machine &e{0} &ahas been set to &6{1}{2}&a.",
     "command.slot.money.description": "Modifies the money pot of a slot machine",
 
@@ -171,8 +171,8 @@
     "command.slot.item.empty-hand": "&cYou do not hold an item in your main hand!",
     "command.slot.item.invalid-list": "&cThe item list is invalid: &4{0}",
     "command.slot.item.cleared": "&aThe item pot of slot machine &6{0} &ahas been cleared.",
-    "command.slot.item.added": "{0} &ahave been added to the item pot of slot machine &e{1}&a.",
-    "command.slot.item.single-added": "{0} &ahas been added to the item pot of slot machine &e{1}&a.",
+    "command.slot.item.added": "{0} &ahave been added to the item pot of slot machine &6{1}&a.",
+    "command.slot.item.single-added": "{0} &ahas been added to the item pot of slot machine &6{1}&a.",
     "command.slot.item.set": "&aThe item pot of slot machine &6{0} &ahas been set to &6{1}&a.",
     "command.slot.item.description": "Modifies the item pot of a slot machine",
 
