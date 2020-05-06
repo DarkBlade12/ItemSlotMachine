@@ -47,7 +47,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
     public void onEnable() {
         Settings settings = plugin.getSettings();
         ItemBuilder builder = new ItemBuilder().withType(settings.getCoinType());
-        if (settings.getUseCommonCoinItem()) {
+        if (!settings.getUseCommonCoinItem()) {
             String coinName = plugin.formatMessage(Message.COIN_ITEM_NAME);
             String[] coinLore = plugin.formatMessage(Message.COIN_ITEM_LORE).split("\n");
             builder.withName(coinName).withLore(coinLore);

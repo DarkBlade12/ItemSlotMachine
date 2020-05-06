@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,6 +11,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +61,7 @@ public final class FileUtils {
     public static String readText(Plugin plugin, String path) throws IOException {
         InputStream stream = plugin.getResource(path);
         if (stream == null) {
-            throw new IOException("Resource '" + path + "' was not found");
+            throw new IOException("Resource not found");
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
@@ -70,7 +72,7 @@ public final class FileUtils {
     public static List<String> readLines(Plugin plugin, String path) throws IOException {
         InputStream stream = plugin.getResource(path);
         if (stream == null) {
-            throw new IOException("Resource '" + path + "' was not found");
+            throw new IOException("Resource not found");
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
@@ -85,7 +87,8 @@ public final class FileUtils {
     }
 
     public static <T> T readJson(File file, Class<T> objClass) throws IOException, JsonIOException, JsonSyntaxException {
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        FileInputStream stream = new FileInputStream(file);
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             return GSON.fromJson(reader, objClass);
         }
     }
@@ -98,7 +101,7 @@ public final class FileUtils {
                                                                                 JsonSyntaxException {
         InputStream stream = plugin.getResource(path);
         if (stream == null) {
-            throw new IOException("Resource '" + path + "' was not found");
+            throw new IOException("Resource not found");
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
