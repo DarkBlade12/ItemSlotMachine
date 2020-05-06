@@ -3,7 +3,7 @@
     "message.prefix": "&7[&2Item&eSlotMachine&7]",
 
     "coin.item.name": "&eCoin",
-    "coin.item.lore": "&7Used for a slot machine spins",
+    "coin.item.lore": "&7Used for spins at slot machines",
 
     "sign.shop.header": "&8&l[CoinShop]",
     "sign.shop.spacer": "&8&m-----------",
