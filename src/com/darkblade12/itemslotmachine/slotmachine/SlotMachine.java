@@ -620,9 +620,9 @@ public final class SlotMachine implements Nameable {
         Location location = getLocation();
         ReferenceBlock slotBlock = design.getSlot();
 
-        for (int offsetL = 0; offsetL <= range; offsetL++) {
-            for (int offsetF = 0; offsetF <= range; offsetF++) {
-                List<ReferenceLocation> possibleLocs = Arrays.asList(slotBlock.add(-offsetL, -offsetF, 0));
+        for (int offsetL = 0; offsetL <= range / 2; offsetL++) {
+            for (int offsetF = 1; offsetF <= range; offsetF++) {
+                List<ReferenceLocation> possibleLocs = Lists.newArrayList(slotBlock.add(-offsetL, -offsetF, 0));
                 if (offsetL > 0) {
                     possibleLocs.add(slotBlock.add(offsetL, -offsetF, 0));
                 }
@@ -645,7 +645,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public void teleport(Player player) throws SlotMachineException {
-        teleport(player, 5);
+        teleport(player, 4);
     }
 
     public void updateSign() {
