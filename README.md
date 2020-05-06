@@ -1,6 +1,20 @@
 ItemSlotMachine
 ===============
 
-ItemSlotMachine is a fun/mech plugin which adds realistic slot machines to your Minecraft server!
-This is the official repository of it and you are free to use snippets/classes of it or make a fork and modify it 
-under the condition to give credit to me or if you're customizing the whole plugin not to remove my name from the authors in the plugin.yml! Pull requests are highly appreciated if they're well-made (that means I can understand what the actual improvement is and how it works) and will be accepted as soon as take a look at it and think it's a real improvement ;)
+ItemSlotMachine is a fun/mech Bukkit plugin which adds realistic slot machines with item frames as reels to your Minecraft server!
+The slot machines are based on the concept of standalone progressives which have a jackpot that increases every spin.
+
+Features
+--------
+
+* Create and manage a multitude of slot machines
+* Create and manage your own slot machine designs (default design is built-in)
+* Customize each slot machine individually
+* Display statistics of slot machines and players
+* Create coin shops
+* Customize every plugin message
+
+Project page
+------------
+
+The official project page can be found on [CurseForge](https://www.curseforge.com/minecraft/bukkit-plugins/itemslotmachine) where you can find more information and download the compiled jar file.
