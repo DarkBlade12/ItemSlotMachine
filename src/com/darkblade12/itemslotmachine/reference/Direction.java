@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail.Shape;
 import org.bukkit.entity.Player;
@@ -82,14 +83,14 @@ public enum Direction {
     }
 
     public static Shape rotate(Shape shape, Direction initial, Direction target) {
-        Shape newShape = shape;
+        Shape result = shape;
         Direction current = initial;
         while (current != target) {
-            newShape = rotate(newShape);
+            result = rotate(result);
             current = current.next();
         }
 
-        return newShape;
+        return result;
     }
 
     private static Shape rotate(Shape shape) {
@@ -117,6 +118,21 @@ public enum Direction {
             default:
                 return shape;
         }
+    }
+    
+    public static Axis rotate(Axis axis, Direction initial, Direction target) {
+        if(axis == Axis.Y) {
+            return axis;
+        }
+        
+        Axis result = axis;
+        Direction current = initial;
+        while (current != target) {
+            result = result == Axis.X ? Axis.Z : Axis.X;
+            current = current.next();
+        }
+
+        return result;
     }
 
     public Direction next() {

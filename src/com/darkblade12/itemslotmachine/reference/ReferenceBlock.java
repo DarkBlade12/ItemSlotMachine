@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.reference;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -10,6 +11,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.MultipleFacing;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rail;
 import org.bukkit.block.data.Rail.Shape;
 import org.bukkit.block.data.Rotatable;
@@ -66,6 +68,10 @@ public class ReferenceBlock extends ReferenceLocation {
             Rail rail = (Rail) blockData;
             Shape newShape = Direction.rotate(rail.getShape(), initialDirection, viewDirection);
             rail.setShape(newShape);
+        } else if (blockData instanceof Orientable) {
+            Orientable orientable = (Orientable) blockData;
+            Axis newAxis = Direction.rotate(orientable.getAxis(), initialDirection, viewDirection);
+            orientable.setAxis(newAxis);
         }
 
         return blockData;
