@@ -8,7 +8,9 @@ import org.bukkit.entity.Player;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public class ReferenceLocation {
-    protected int l, f, u;
+    protected int l;
+    protected int f;
+    protected int u;
 
     public ReferenceLocation(int l, int f, int u) {
         this.l = l;

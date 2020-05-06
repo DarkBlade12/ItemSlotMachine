@@ -180,7 +180,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
         Location location = sign.getLocation();
         ShopInfo lastShop = getLastShop(player);
-        if (lastShop != null && !lastShop.getLocation().noDistance(location)) {
+        if (lastShop != null && !lastShop.getLocation().equals(location)) {
             updateShop(player, lastShop.getBukkitLocation(), 1);
         }
 

@@ -35,8 +35,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     boolean moneyPotEnabled;
     double moneyPotDefault;
     double moneyPotRaise;
-    double moneyPotHouseCutValue;
-    boolean moneyPotHouseCutFixed;
+    double moneyPotHouseCut;
     boolean itemPotEnabled;
     ItemStack[] itemPotDefault;
     ItemStack[] itemPotRaise;
@@ -107,11 +106,13 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                 throw new InvalidValueException("The value of setting {0} cannot be lower than 0.", Setting.MONEY_POT_RAISE);
             }
 
-            moneyPotHouseCutFixed = config.getBoolean(Setting.MONEY_POT_HOUSE_CUT_FIXED.getPath());
-            moneyPotHouseCutValue = config.getDouble(Setting.MONEY_POT_HOUSE_CUT_VALUE.getPath());
-            if (!moneyPotHouseCutFixed && moneyPotHouseCutValue > 100) {
+            moneyPotHouseCut = config.getDouble(Setting.MONEY_POT_HOUSE_CUT.getPath());
+            if (moneyPotHouseCut == 100) {
+                throw new InvalidValueException("The percentage value of setting {0} cannot be equal to 100.",
+                        Setting.MONEY_POT_HOUSE_CUT);
+            } else if (moneyPotHouseCut > 100) {
                 throw new InvalidValueException("The percentage value of setting {0} cannot be higher than 100.",
-                        Setting.MONEY_POT_HOUSE_CUT_VALUE);
+                        Setting.MONEY_POT_HOUSE_CUT);
             }
         }
 
@@ -119,6 +120,10 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         if (itemPotEnabled) {
             itemPotDefault = convertItems(Setting.ITEM_POT_DEFAULT);
             itemPotRaise = convertItems(Setting.ITEM_POT_RAISE);
+        }
+        
+        if(!moneyPotEnabled && !itemPotEnabled) {
+            throw new InvalidValueException("At least one pot has to be enabled.");
         }
 
         ConfigurationSection comboSection = config.getConfigurationSection(Setting.COMBOS.getPath());
@@ -277,12 +282,8 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         return moneyPotRaise;
     }
 
-    public double getMoneyPotHouseCutValue() {
-        return moneyPotHouseCutValue;
-    }
-
-    public boolean isMoneyPotHouseCutFixed() {
-        return moneyPotHouseCutFixed;
+    public double getMoneyPotHouseCut() {
+        return moneyPotHouseCut;
     }
 
     public boolean isItemPotEnabled() {

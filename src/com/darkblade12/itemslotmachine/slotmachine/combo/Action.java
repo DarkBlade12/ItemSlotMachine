@@ -25,7 +25,7 @@ public class Action {
             case MULTIPLY_MONEY_POT:
             case MULTIPLY_ITEM_POT:
             case RAISE_MONEY_POT:
-            case DISTRIBUTE_MONEY:
+            case PAY_OUT_MONEY:
                 double amount;
                 try {
                     amount = Double.parseDouble(text.substring(separatorIndex + 1));
@@ -37,7 +37,7 @@ public class Action {
                 }
                 return new AmountAction(type, amount);
             case RAISE_ITEM_POT:
-            case DISTRIBUTE_ITEMS:
+            case PAY_OUT_ITEMS:
                 List<ItemStack> items = ItemUtils.listFromString(text.substring(separatorIndex + 1));
                 return new ItemAction(type, items);
             case EXECUTE_COMMAND:
@@ -49,8 +49,8 @@ public class Action {
                     command = command.substring(1);
                 }
                 return new CommandAction(type, command);
-            case DISTRIBUTE_MONEY_POT:
-            case DISTRIBUTE_ITEM_POT:
+            case PAY_OUT_MONEY_POT:
+            case PAY_OUT_ITEM_POT:
                 return new Action(type);
             default:
                 throw new IllegalArgumentException("Unsupported action type");

@@ -9,8 +9,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.util.SafeLocation;
-
 public final class ReferenceItemFrame extends ReferenceLocation {
     private BlockFace facing;
     private Direction initialDirection;
@@ -28,7 +26,7 @@ public final class ReferenceItemFrame extends ReferenceLocation {
     public static ItemFrame findItemFrame(Location location) {
         for (Entity entity : location.getChunk().getEntities()) {
             Location entityLocation = entity.getLocation().getBlock().getLocation();
-            if (entity instanceof ItemFrame && SafeLocation.noDistance(location, entityLocation)) {
+            if (entity instanceof ItemFrame && location.equals(entityLocation)) {
                 return (ItemFrame) entity;
             }
         }

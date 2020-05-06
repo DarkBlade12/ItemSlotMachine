@@ -127,7 +127,7 @@ public final class SlotMachine implements Nameable {
     }
 
     private void playSounds(SoundInfo[] sounds) {
-        Location location = design.getSlot().getBukkitLocation(buildLocation.getBukkitLocation(), buildDirection);
+        Location location = design.getSlot().getBukkitLocation(getLocation(), buildDirection);
         for (SoundInfo sound : sounds) {
             sound.play(getUser(), location);
         }
@@ -216,7 +216,7 @@ public final class SlotMachine implements Nameable {
             plugin.statisticManager.trySave(slotStat);
         }
 
-        final Material[] pattern = generatePattern();
+        final Material[] result = generatePattern();
         task = new BukkitRunnable() {
             private int spins = 0;
             private int stoppedAt = -1;
@@ -235,15 +235,15 @@ public final class SlotMachine implements Nameable {
                 for (int i = 0; i < frames.length; i++) {
                     int remaining = stoppedAt == -1 ? 1 : stoppedAt + settings.reelDelay[i] - spins;
                     if (!stopped || remaining >= 0) {
-                        Material symbol = remaining == 0 ? pattern[i] : generateSymbol();
+                        Material symbol = remaining == 0 ? result[i] : generateSymbol();
                         frames[i].setItem(new ItemStack(symbol));
                     } else if (i == frames.length - 1) {
                         cancel();
-                        Material[] currentPattern = new Material[frames.length];
+                        Material[] pattern = new Material[frames.length];
                         for (int j = 0; j < frames.length; j++) {
-                            currentPattern[j] = frames[j].getItem().getType();
+                            pattern[j] = frames[j].getItem().getType();
                         }
-                        endSpin(currentPattern);
+                        endSpin(pattern);
                     }
                 }
 
@@ -257,8 +257,8 @@ public final class SlotMachine implements Nameable {
         double moneyPrize = 0;
         List<ItemStack> itemPrize = new ArrayList<>();
         List<String> commands = new ArrayList<>();
-        boolean distributeMoneyPot = false;
-        boolean distributeItemPot = false;
+        boolean payOutMoneyPot = false;
+        boolean payOutItemPot = false;
         for (Combo combo : settings.combos) {
             if (!combo.isActivated(pattern)) {
                 continue;
@@ -266,17 +266,17 @@ public final class SlotMachine implements Nameable {
 
             for (Action action : combo.getActions()) {
                 switch (action.getType()) {
-                    case DISTRIBUTE_ITEMS:
+                    case PAY_OUT_ITEMS:
                         ItemUtils.combineItems(itemPrize, ((ItemAction) action).getItems());
                         break;
-                    case DISTRIBUTE_ITEM_POT:
-                        distributeItemPot = true;
+                    case PAY_OUT_ITEM_POT:
+                        payOutItemPot = true;
                         break;
-                    case DISTRIBUTE_MONEY:
+                    case PAY_OUT_MONEY:
                         moneyPrize = ((AmountAction) action).getAmount();
                         break;
-                    case DISTRIBUTE_MONEY_POT:
-                        distributeMoneyPot = true;
+                    case PAY_OUT_MONEY_POT:
+                        payOutMoneyPot = true;
                         break;
                     case EXECUTE_COMMAND:
                         commands.add(((CommandAction) action).getCommand());
@@ -304,16 +304,15 @@ public final class SlotMachine implements Nameable {
         }
 
         if (pattern[0] == pattern[1] && pattern[1] == pattern[2]) {
-            distributeMoneyPot = true;
-            distributeItemPot = true;
-            commands.addAll(Arrays.asList(settings.winCommands));
+            payOutMoneyPot = true;
+            payOutItemPot = true;
         }
 
-        if (distributeMoneyPot && isMoneyPotEnabled()) {
+        if (payOutMoneyPot && isMoneyPotEnabled()) {
             moneyPrize += moneyPot;
             resetMoneyPot();
         }
-        if (distributeItemPot && settings.itemPotEnabled) {
+        if (payOutItemPot && settings.itemPotEnabled) {
             ItemUtils.combineItems(itemPrize, itemPot);
             resetItemPot();
         }
@@ -335,6 +334,7 @@ public final class SlotMachine implements Nameable {
             playSounds(settings.loseSounds);
             plugin.sendMessage(user, Message.SLOT_MACHINE_LOST);
         } else {
+            commands.addAll(Arrays.asList(settings.winCommands));
             payOut(moneyPrize, itemPrize, commands);
         }
 
@@ -347,7 +347,7 @@ public final class SlotMachine implements Nameable {
     private void payOut(double moneyPrize, List<ItemStack> itemPrize, List<String> commands) {
         playSounds(settings.winSounds);
         if (settings.launchFireworks) {
-            Location slotLocation = design.getSlot().getBukkitLocation(buildLocation.getBukkitLocation(), buildDirection);
+            Location slotLocation = design.getSlot().getBukkitLocation(getLocation(), buildDirection);
             FireworkRocket.randomize().displayEffects(plugin, slotLocation.add(0.5, 2, 0.5));
         }
 
@@ -365,7 +365,9 @@ public final class SlotMachine implements Nameable {
 
         StringBuilder prizeText = new StringBuilder();
         if (moneyPrize > 0) {
-            moneyPrize = subtractHouseCut(moneyPrize);
+            if(settings.moneyPotHouseCut > 0) {
+                moneyPrize *= 1.0 - settings.moneyPotHouseCut / 100.0;
+            }
 
             if (userStat != null) {
                 userStat.getRecord(Category.WON_MONEY).increaseValue(moneyPrize);
@@ -396,14 +398,6 @@ public final class SlotMachine implements Nameable {
             executeCommands(commands, moneyPrize, itemPrize);
         }
         plugin.sendMessage(user, Message.SLOT_MACHINE_WON, prizeText.toString());
-    }
-
-    private double subtractHouseCut(double money) {
-        double value = settings.moneyPotHouseCutValue;
-        if (value <= 0) {
-            return money;
-        }
-        return settings.moneyPotHouseCutFixed ? value : money * (1 - value / 100.0);
     }
 
     private void executeCommands(List<String> commands, double moneyPrize, List<ItemStack> itemPrize) {
@@ -488,10 +482,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public void setItemPot(Collection<ItemStack> itemPot) {
-        itemPot = ItemUtils.copyItems(itemPot);
-        for (ItemStack item : itemPot) {
-            item.setItemMeta(null);
-        }
+        this.itemPot = ItemUtils.copyItems(itemPot);
         try {
             saveAndUpdate();
         } catch (IOException ex) {
@@ -545,16 +536,16 @@ public final class SlotMachine implements Nameable {
 
     public void delete() throws SecurityException {
         stop(true);
-        design.dismantle(buildLocation.getBukkitLocation(), buildDirection);
-        plugin.statisticManager.deleteSlotMachineStatistic(this);
         deleteFile();
         settings.file.delete();
+        plugin.statisticManager.deleteSlotMachineStatistic(this);
+        design.dismantle(getLocation(), buildDirection);
     }
 
     public void rebuild() throws DesignBuildException {
         stop(true);
 
-        Location location = buildLocation.getBukkitLocation();
+        Location location = getLocation();
         design.dismantle(location, buildDirection);
         design.build(location, buildDirection, plugin.getSettings());
 
@@ -575,7 +566,7 @@ public final class SlotMachine implements Nameable {
             settings = slot.settings;
             updateSign();
         } catch (JsonIOException | JsonSyntaxException | IOException ex) {
-            throw new SlotMachineException("Failed to read slot machine files", ex);
+            throw new SlotMachineException("Failed to read slot machine data", ex);
         } catch (InvalidValueException ex) {
             throw new SlotMachineException("Failed to load settings", ex);
         }
@@ -599,7 +590,7 @@ public final class SlotMachine implements Nameable {
 
     public void move(BlockFace direction, int amount) throws SlotMachineException {
         stop(true);
-        Location oldLocation = buildLocation.getBukkitLocation();
+        Location oldLocation = getLocation();
         int offsetX = direction.getModX() * amount;
         int offsetY = direction.getModY() * amount;
         int offsetZ = direction.getModZ() * amount;
@@ -607,13 +598,18 @@ public final class SlotMachine implements Nameable {
         Settings settings = plugin.getSettings();
 
         try {
+            design.dismantle(oldLocation, buildDirection);
             design.build(newLocation, buildDirection, settings);
             buildLocation = SafeLocation.fromBukkitLocation(newLocation);
             saveAndUpdate();
-            design.dismantle(oldLocation, buildDirection);
         } catch (DesignBuildException | IOException ex) {
             design.dismantle(newLocation, buildDirection);
             buildLocation = SafeLocation.fromBukkitLocation(oldLocation);
+            try {
+                design.build(oldLocation, buildDirection, settings);
+            } catch (DesignBuildException ex2) {
+                /* should not occur */
+            }
             updateSign();
             throw new SlotMachineException("Failed to build the design at the new location", ex);
         }
@@ -621,7 +617,7 @@ public final class SlotMachine implements Nameable {
 
     public void teleport(Player player, int range) throws SlotMachineException {
         boolean flying = player.isFlying();
-        Location location = buildLocation.getBukkitLocation();
+        Location location = getLocation();
         ReferenceBlock slotBlock = design.getSlot();
 
         for (int offsetL = 0; offsetL <= range; offsetL++) {
@@ -690,7 +686,7 @@ public final class SlotMachine implements Nameable {
     }
 
     private Sign getSign() {
-        Block block = design.getSign().getBukkitBlock(buildLocation.getBukkitLocation(), buildDirection);
+        Block block = design.getSign().getBukkitBlock(getLocation(), buildDirection);
         BlockState state = block.getState();
         if (state == null || !(state instanceof Sign)) {
             return null;
@@ -700,7 +696,7 @@ public final class SlotMachine implements Nameable {
 
     private ItemFrame[] getItemFrames() {
         ItemFrame[] frames = new ItemFrame[3];
-        Location location = buildLocation.getBukkitLocation();
+        Location location = getLocation();
         ReferenceItemFrame[] frameRefs = design.getItemFrames();
         for (int i = 0; i < frameRefs.length; i++) {
             ItemFrame frame = frameRefs[i].getBukkitItemFrame(location, buildDirection);
@@ -721,12 +717,25 @@ public final class SlotMachine implements Nameable {
         return name + FILE_EXTENSION;
     }
 
-    public double getMoneyPot() {
-        return moneyPot;
+    public Location getLocation() {
+        return buildLocation.getBukkitLocation();
+    }
+
+    public boolean isInsideRegion(Location location) {
+        Cuboid region = design.getRegion().getCuboid(getLocation(), buildDirection);
+        return region.isInside(location);
+    }
+
+    public boolean isInteraction(Location location) {
+        return design.getSlot().getBukkitLocation(getLocation(), buildDirection).equals(location);
     }
 
     public SlotMachineSettings getSettings() {
         return settings;
+    }
+
+    public double getMoneyPot() {
+        return moneyPot;
     }
 
     public boolean isMoneyPotEnabled() {
@@ -769,10 +778,6 @@ public final class SlotMachine implements Nameable {
         return stopped;
     }
 
-    public boolean isSlotInteraction(Location location) {
-        return design.getSlot().getSafeLocation(buildLocation.getBukkitLocation(), buildDirection).noDistance(location);
-    }
-
     public boolean isStoppable(Player player) {
         return spinning && !stopped && settings.reelStop <= 0 && isUser(player);
     }
@@ -787,10 +792,5 @@ public final class SlotMachine implements Nameable {
             permission = Permission.SLOT_USE.getNode();
         }
         return player.hasPermission(permission) || Permission.SLOT_USE_ALL.has(player);
-    }
-
-    public boolean isInsideRegion(Location location) {
-        Cuboid region = design.getRegion().getCuboid(buildLocation.getBukkitLocation(), buildDirection);
-        return region.isInside(location);
     }
 }

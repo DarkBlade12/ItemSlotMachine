@@ -9,8 +9,13 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 
 public final class Cuboid implements Iterable<Block> {
-    protected int x1, y1, z1, x2, y2, z2;
-    protected String worldName;
+    private String worldName;
+    private int x1;
+    private int y1;
+    private int z1;
+    private int x2;
+    private int y2;
+    private int z2;
 
     public Cuboid(Location l1, Location l2) {
         if (l1 == null || l2 == null) {
@@ -117,11 +122,17 @@ public final class Cuboid implements Iterable<Block> {
         return new CuboidIterator(getWorld(), x1, y1, z1, x2, y2, z2);
     }
 
-    private class CuboidIterator implements Iterator<Block> {
+    private final class CuboidIterator implements Iterator<Block> {
         private World world;
-        private int baseX, baseY, baseZ;
-        private int x, y, z;
-        private int sizeX, sizeY, sizeZ;
+        private int baseX;
+        private int baseY;
+        private int baseZ;
+        private int sizeX;
+        private int sizeY;
+        private int sizeZ;
+        private int x;
+        private int y;
+        private int z;
 
         public CuboidIterator(World world, int x1, int y1, int z1, int x2, int y2, int z2) {
             this.world = world;

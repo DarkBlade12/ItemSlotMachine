@@ -24,7 +24,7 @@ public class Settings extends SettingsBase<ItemSlotMachine> {
     private boolean useCommonCoinItem;
     private double coinPrice;
 
-    protected Settings(ItemSlotMachine plugin) {
+    public Settings(ItemSlotMachine plugin) {
         super(plugin);
     }
 

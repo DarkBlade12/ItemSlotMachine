@@ -132,7 +132,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     private SlotMachine getInteractedSlotMachine(Location location) {
         for (int i = 0; i < slots.size(); i++) {
             SlotMachine slot = slots.get(i);
-            if (slot.isSlotInteraction(location)) {
+            if (slot.isInteraction(location)) {
                 return slot;
             }
         }
@@ -311,7 +311,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                 if (!plugin.coinManager.isCoin(hand) && holdingUseItem && Permission.SLOT_INSPECT.has(player)) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_INSPECTED, name);
                     return;
-                } else if (!slot.isSlotInteraction(clickedLoc)) {
+                } else if (!slot.isInteraction(clickedLoc)) {
                     return;
                 }
 
