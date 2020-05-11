@@ -67,7 +67,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                     plugin.sendMessage(player, Message.COMMAND_SLOT_ITEM_EMPTY_HAND);
                     return;
                 }
-                list = Arrays.asList(item);
+                list = Arrays.asList(item.clone());
                 break;
             default:
                 String items = StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ");

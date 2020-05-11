@@ -116,12 +116,4 @@ public final class ItemUtils {
     public static void combineItems(Collection<ItemStack> result, ItemStack... items) {
         combineItems(result, Arrays.asList(items));
     }
-
-    public static List<ItemStack> copyItems(Collection<ItemStack> items) {
-        List<ItemStack> copy = new ArrayList<>();
-        for (ItemStack item : items) {
-            copy.add(new ItemStack(item.getType(), item.getAmount()));
-        }
-        return copy;
-    }
 }

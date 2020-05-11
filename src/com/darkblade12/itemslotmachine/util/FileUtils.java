@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.google.common.io.Files;
@@ -24,7 +25,13 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 public final class FileUtils {
-    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
+    private static final Gson GSON;
+
+    static {
+        GsonBuilder builder = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting();
+        builder.registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter());
+        GSON = builder.create();
+    }
 
     private FileUtils() {}
 

@@ -365,7 +365,7 @@ public final class SlotMachine implements Nameable {
 
         StringBuilder prizeText = new StringBuilder();
         if (moneyPrize > 0) {
-            if(settings.moneyPotHouseCut > 0) {
+            if (settings.moneyPotHouseCut > 0) {
                 moneyPrize *= 1.0 - settings.moneyPotHouseCut / 100.0;
             }
 
@@ -482,7 +482,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public void setItemPot(Collection<ItemStack> itemPot) {
-        this.itemPot = ItemUtils.copyItems(itemPot);
+        this.itemPot = new ArrayList<ItemStack>(itemPot);
         try {
             saveAndUpdate();
         } catch (IOException ex) {
@@ -508,7 +508,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public void addItems(Collection<ItemStack> items) {
-        ItemUtils.combineItems(itemPot, ItemUtils.copyItems(items));
+        ItemUtils.combineItems(itemPot, items);
         try {
             saveAndUpdate();
         } catch (IOException ex) {
