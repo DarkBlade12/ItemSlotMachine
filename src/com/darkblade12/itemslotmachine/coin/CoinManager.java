@@ -1,5 +1,6 @@
 package com.darkblade12.itemslotmachine.coin;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -131,6 +132,12 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
     public boolean isCoin(ItemStack item) {
         return item.isSimilar(coin);
+    }
+
+    public Map<String, ItemStack> getCustomItems() {
+        Map<String, ItemStack> customItems = new HashMap<>();
+        customItems.put("coin", getCoin());
+        return customItems;
     }
 
     private ShopInfo getLastShop(Player player) {

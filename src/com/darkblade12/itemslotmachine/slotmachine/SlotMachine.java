@@ -108,7 +108,7 @@ public final class SlotMachine implements Nameable {
         SlotMachine slot = new SlotMachine(plugin, name, design, buildLocation, buildDirection);
         slot.settings.load();
         slot.moneyPot = slot.settings.moneyPotDefault;
-        slot.itemPot = Lists.newArrayList(slot.settings.itemPotDefault);
+        slot.itemPot = ItemUtils.cloneItems(slot.settings.itemPotDefault);
         slot.saveAndUpdate();
         return slot;
     }
@@ -483,7 +483,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public void setItemPot(Collection<ItemStack> itemPot) {
-        this.itemPot = new ArrayList<ItemStack>(itemPot);
+        this.itemPot = ItemUtils.cloneItems(itemPot);
         try {
             saveAndUpdate();
         } catch (IOException ex) {
@@ -788,9 +788,9 @@ public final class SlotMachine implements Nameable {
     }
 
     public boolean hasUsePermission(Player player) {
-        String permission = settings.individualPermission;
-        if (permission == null) {
-            permission = Permission.SLOT_USE.getNode();
+        String permission = Permission.SLOT_USE.getNode();
+        if (settings.individualPermission) {
+            permission += "." + name;
         }
         return player.hasPermission(permission) || Permission.SLOT_USE_ALL.has(player);
     }

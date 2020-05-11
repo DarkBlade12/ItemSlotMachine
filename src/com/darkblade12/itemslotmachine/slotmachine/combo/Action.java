@@ -1,6 +1,7 @@
 package com.darkblade12.itemslotmachine.slotmachine.combo;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -13,7 +14,7 @@ public class Action {
         this.type = type;
     }
 
-    public static Action fromString(String text) throws IllegalArgumentException {
+    public static Action fromString(String text, Map<String, ItemStack> customItems) throws IllegalArgumentException {
         int separatorIndex = text.indexOf(':');
         String typeName = separatorIndex == -1 ? text : text.substring(0, separatorIndex);
         ActionType type = ActionType.fromName(typeName);
@@ -38,7 +39,7 @@ public class Action {
                 return new AmountAction(type, amount);
             case RAISE_ITEM_POT:
             case PAY_OUT_ITEMS:
-                List<ItemStack> items = ItemUtils.listFromString(text.substring(separatorIndex + 1));
+                List<ItemStack> items = ItemUtils.listFromString(text.substring(separatorIndex + 1), customItems);
                 return new ItemAction(type, items);
             case EXECUTE_COMMAND:
                 String command = text.substring(separatorIndex + 1);

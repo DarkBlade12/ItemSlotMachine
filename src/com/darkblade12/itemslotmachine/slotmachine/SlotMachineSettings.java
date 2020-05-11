@@ -2,6 +2,7 @@ package com.darkblade12.itemslotmachine.slotmachine;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bukkit.Material;
@@ -22,7 +23,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     int coinAmount;
     Material[] symbolTypes;
     boolean allowCreative;
-    String individualPermission;
+    boolean individualPermission;
     boolean launchFireworks;
     int reelStop;
     int[] reelDelay;
@@ -53,6 +54,8 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     @Override
     public void load() throws InvalidValueException {
         config = YamlConfiguration.loadConfiguration(file);
+        Map<String, ItemStack> customItems = plugin.coinManager.getCustomItems();
+
         coinAmount = config.getInt(Setting.COIN_AMOUNT.getPath(), 1);
         if (coinAmount < 1) {
             throw new InvalidValueException("The value of setting {0} cannot be lower than 0.", Setting.COIN_AMOUNT);
@@ -61,7 +64,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         symbolTypes = convertMaterials(Setting.SYMBOL_TYPES, 2, 0, false);
         allowCreative = config.getBoolean(Setting.ALLOW_CREATIVE.getPath(), true);
         launchFireworks = config.getBoolean(Setting.LAUNCH_FIREWORKS.getPath(), true);
-        individualPermission = config.getString(Setting.INDIVIDUAL_PERMISSION.getPath());
+        individualPermission = config.getBoolean(Setting.INDIVIDUAL_PERMISSION.getPath());
 
         reelStop = config.getInt(Setting.REEL_STOP.getPath());
         List<Integer> reelDelayList = config.getIntegerList(Setting.REEL_DELAY.getPath());
@@ -118,11 +121,11 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
 
         itemPotEnabled = config.getBoolean(Setting.ITEM_POT_ENABLED.getPath());
         if (itemPotEnabled) {
-            itemPotDefault = convertItems(Setting.ITEM_POT_DEFAULT);
-            itemPotRaise = convertItems(Setting.ITEM_POT_RAISE);
+            itemPotDefault = convertItems(Setting.ITEM_POT_DEFAULT, customItems);
+            itemPotRaise = convertItems(Setting.ITEM_POT_RAISE, customItems);
         }
-        
-        if(!moneyPotEnabled && !itemPotEnabled) {
+
+        if (!moneyPotEnabled && !itemPotEnabled) {
             throw new InvalidValueException("At least one pot has to be enabled.");
         }
 
@@ -143,7 +146,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                 for (int i = 0; i < actions.length; i++) {
                     String action = actionList.get(i);
                     try {
-                        actions[i] = Action.fromString(action);
+                        actions[i] = Action.fromString(action, customItems);
                     } catch (IllegalArgumentException ex) {
                         throw new InvalidValueException("A list value of setting {0} contains the invalid action {1}.",
                                 actionPath, action);
@@ -197,13 +200,13 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         return sounds;
     }
 
-    private ItemStack[] convertItems(Setting setting) throws InvalidValueException {
+    private ItemStack[] convertItems(Setting setting, Map<String, ItemStack> customItems) throws InvalidValueException {
         List<String> itemList = config.getStringList(setting.getPath());
         ItemStack[] items = new ItemStack[itemList.size()];
         for (int i = 0; i < items.length; i++) {
             String item = itemList.get(i);
             try {
-                items[i] = ItemUtils.fromString(item);
+                items[i] = ItemUtils.fromString(item, customItems);
             } catch (IllegalArgumentException ex) {
                 throw new InvalidValueException("A list value of setting {0} contains the invalid item {1}.", setting, item);
             }
@@ -230,7 +233,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         return allowCreative;
     }
 
-    public String getIndividualPermission() {
+    public boolean hasIndividualPermission() {
         return individualPermission;
     }
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,24 +16,39 @@ import org.bukkit.inventory.PlayerInventory;
 public final class ItemUtils {
     private ItemUtils() {}
 
-    public static ItemStack fromString(String text, boolean withAmount) throws IllegalArgumentException {
+    public static ItemStack fromString(String text, Map<String, ItemStack> customItems) throws IllegalArgumentException {
         String[] data = text.split("-");
-        Material material = Material.matchMaterial(data[0]);
-        if (material == null) {
-            throw new IllegalArgumentException("contains an invalid item name");
+        String name = data[0].toLowerCase();
+        Material material = Material.matchMaterial(name);
+        ItemStack item;
+        if (material != null) {
+            item = new ItemStack(material);
+        } else if (!customItems.containsKey(name)) {
+            throw new IllegalArgumentException("Invalid item name");
+        } else {
+            item = customItems.get(name).clone();
         }
 
-        return new ItemStack(material, withAmount ? data.length >= 2 ? Integer.parseInt(data[1]) : 1 : 1);
+        if (data.length >= 2) {
+            try {
+                int amount = Integer.parseInt(data[1]);
+                item.setAmount(amount);
+            } catch (NumberFormatException ex) {
+                throw new IllegalArgumentException("Invalid amount value");
+            }
+        }
+
+        return item;
     }
 
     public static ItemStack fromString(String text) throws IllegalArgumentException {
-        return fromString(text, true);
+        return fromString(text, null);
     }
 
     public static String toString(ItemStack item, boolean withAmount) {
         StringBuilder builder = new StringBuilder(item.getType().getKey().getKey());
         if (withAmount) {
-            builder.append("-" + item.getAmount());
+            builder.append("-").append(item.getAmount());
         }
 
         return builder.toString();
@@ -42,17 +58,18 @@ public final class ItemUtils {
         return toString(item, true);
     }
 
-    public static List<ItemStack> listFromString(String text, boolean withAmount) throws IllegalArgumentException {
+    public static List<ItemStack> listFromString(String text,
+                                                 Map<String, ItemStack> customItems) throws IllegalArgumentException {
         String[] data = text.replace(" ", "").split(",");
         List<ItemStack> items = new ArrayList<>(data.length);
         for (String item : data) {
-            items.add(fromString(item, withAmount));
+            items.add(fromString(item, customItems));
         }
         return items;
     }
 
     public static List<ItemStack> listFromString(String text) throws IllegalArgumentException {
-        return listFromString(text, true);
+        return listFromString(text, null);
     }
 
     public static boolean hasEnoughSpace(Player player, ItemStack item) {
@@ -108,12 +125,24 @@ public final class ItemUtils {
             }
 
             if (!combined) {
-                result.add(newItem);
+                result.add(newItem.clone());
             }
         }
     }
 
     public static void combineItems(Collection<ItemStack> result, ItemStack... items) {
         combineItems(result, Arrays.asList(items));
+    }
+
+    public static List<ItemStack> cloneItems(Collection<ItemStack> items) {
+        List<ItemStack> cloned = new ArrayList<>(items.size());
+        for (ItemStack item : items) {
+            cloned.add(item.clone());
+        }
+        return cloned;
+    }
+
+    public static List<ItemStack> cloneItems(ItemStack... items) {
+        return cloneItems(Arrays.asList(items));
     }
 }

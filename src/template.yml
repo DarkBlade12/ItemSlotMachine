@@ -13,10 +13,11 @@ allow-creative: true
 # Determines whether fireworks will be launched when a player wins a prize
 launch-fireworks: true
 
-# The permission which is checked when a player tries to interact with this slot machine
-# '<name>' will be replaced with the name of this slot machine
-# If this is commented out, the plugin will check for the universal permission 'ItemSlotMachine.use'
-#individual-permission: 'ItemSlotMachine.slot.use.<name>'
+# Determines whether the individual or universal permission is required
+# Individual permission: 'itemslotmachine.slot.use.<name>'
+# Universal permission: 'itemslotmachine.slot.use'
+# '<name>' is a placeholder for the name of this slot machine
+individual-permission: false
 
 # The amount of spins every reel will do before stopping automatically
 # If this is commented out or set to 0, the player needs to punch the slot in order to stop the spin
@@ -78,10 +79,12 @@ item-pot:
 
   # The default content of the item pot, which will be set after a player has won the pot
   # Item format: <item_name>[-<amount>]
+  # The item name 'coin' can be used for a coin item
   default: ['feather-5', 'diamond-1', 'iron_ingot-1']
 
   # The items which are added to the pot by every spin
   # Item format: <item_name>[-<amount>]
+  # The item name 'coin' can be used for a coin item
   raise: ['glowstone_dust-2', 'lapis_lazuli-2']
 
 # The list of active item pot combos
@@ -102,6 +105,7 @@ combos:
     # Item pot actions: MULTIPLY_ITEM_POT:<amount>, RAISE_ITEM_POT:<amount>, PAY_OUT_ITEM_POT
     # Independent actions: PAY_OUT_MONEY:<amount>, PAY_OUT_ITEMS:<items>, EXECUTE_COMMAND:<command>
     # Command placeholders: <user_name>, <money>, <currency_name>, <item_amount>, <items>, <slot_machine>
+    # The item name 'coin' can be used for a coin item
     # Please note that the money or item pot actions will only work if that pot is enabled
     actions:
       - 'MULTIPLY_MONEY_POT:2.0'
