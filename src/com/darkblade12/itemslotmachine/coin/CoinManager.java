@@ -35,7 +35,7 @@ import com.darkblade12.itemslotmachine.util.SafeLocation;
 public final class CoinManager extends Manager<ItemSlotMachine> {
     private Map<UUID, ShopInfo> lastShop;
     private ItemStack coin;
-    private CommandBase<ItemSlotMachine> purchaseCommand;
+    private CommandBase<ItemSlotMachine> buyCommand;
     private BukkitTask task;
 
     public CoinManager(ItemSlotMachine plugin) {
@@ -54,7 +54,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
         }
         coin = builder.build();
 
-        purchaseCommand = plugin.coinCommandHandler.getCommand("purchase");
+        buyCommand = plugin.coinCommandHandler.getCommand("buy");
         task = new BukkitRunnable() {
             @Override
             public void run() {
@@ -216,6 +216,6 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
         event.setCancelled(true);
         Player player = event.getPlayer();
-        purchaseCommand.execute(plugin, player, "coin", new String[] { Integer.toString(getShopCoins(player)) });
+        buyCommand.execute(plugin, player, "coin", new String[] { Integer.toString(getShopCoins(player)) });
     }
 }

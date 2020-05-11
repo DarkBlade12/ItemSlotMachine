@@ -102,6 +102,7 @@ public final class SlotMachine implements Nameable {
 
         File from = new File(plugin.getDataFolder(), TEMPLATE_FILE);
         File to = new File(plugin.slotMachineManager.getDataDirectory(), name + ".yml");
+        Files.createParentDirs(to);
         Files.copy(from, to);
 
         SlotMachine slot = new SlotMachine(plugin, name, design, buildLocation, buildDirection);
