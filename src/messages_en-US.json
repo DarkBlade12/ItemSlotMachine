@@ -71,7 +71,7 @@
 
     "command.coin.buy.disabled": "&cCoins cannot be bought because &6Vault &cis not installed!",
     "command.coin.buy.not-enough-money": "&cYou do not have enough money to afford &6{0} &c{1}! &8(&e{2}{3}&8)",
-    "command.coin.buy.succeeded": "&aYou have bought &6{0} &a{1} for &e{2}{3}&a",
+    "command.coin.buy.succeeded": "&aYou have bought &6{0} &a{1} for &e{2}{3}&a.",
     "command.coin.buy.description": "Gives the player coins in exchange for money",
 
     "command.coin.give.received": "&aYou have been given &e{0} &a{1} by &6{2}&a.",

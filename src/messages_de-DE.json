@@ -13,15 +13,15 @@
     "sign.pot.items": "&7Items: &c{0}",
     "sign.pot.spacer": "{0}&m-----------",
 
-    "word.coin-singular": "münze",
-    "word.coin-plural": "münzen",
+    "word.coin-singular": "Münze",
+    "word.coin-plural": "Münzen",
     "word.and": "und",
     "word.empty": "leer",
 
     "amount.invalid": "&6{0} &cist keine gültige Betrag!",
     "amount.lower-than": "&cDer Betrag kann nicht niedriger als {0} sein!",
     "amount.higher-than": "&cDer Betrag kann nicht höher als {0} sein!",
-    "amount.equal-to": "&cDer Btrag kann nicht gleich {0} sein!",
+    "amount.equal-to": "&cDer Betrag kann nicht gleich {0} sein!",
 
     "player.not-found": "&cDer Spieler &6{0} &ckonnte nicht gefunden werden!",
     "player.not-enough-space": "&cDieser Spieler hat nicht genug Platz in seinem Inventar!",

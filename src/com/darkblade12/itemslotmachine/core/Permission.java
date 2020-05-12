@@ -46,9 +46,9 @@ public enum Permission {
     SLOT_ALL("itemslotmachine.slot.*", ALL),
     SLOT_MODIFY_ALL("itemslotmachine.slot.modify.*", SLOT_ALL),
     SLOT_USE_ALL("itemslotmachine.slot.use.*", SLOT_ALL),
-    SLOT_INSPECT("itemslotmachine.slot.inspect", SLOT_ALL),
     SLOT_USE("itemslotmachine.slot.use", SLOT_USE_ALL),
-    SHOP_CREATE("itemslotmachine.sign.create", ALL);
+    SLOT_INSPECT("itemslotmachine.slot.inspect", SLOT_ALL),
+    SHOP_CREATE("itemslotmachine.shop.create", ALL);
 
     private static final Map<String, Permission> NAME_MAP = new HashMap<>();
     private static final Map<String, Permission> NODE_MAP = new HashMap<>();
