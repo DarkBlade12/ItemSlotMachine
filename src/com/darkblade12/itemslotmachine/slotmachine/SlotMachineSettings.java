@@ -123,6 +123,9 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
         if (itemPotEnabled) {
             itemPotDefault = convertItems(Setting.ITEM_POT_DEFAULT, customItems);
             itemPotRaise = convertItems(Setting.ITEM_POT_RAISE, customItems);
+        } else {
+            itemPotDefault = new ItemStack[0];
+            itemPotRaise = new ItemStack[0];
         }
 
         if (!moneyPotEnabled && !itemPotEnabled) {
@@ -155,8 +158,9 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
 
                 combos[index++] = new Combo(pattern, actions);
             }
+        } else {
+            combos = new Combo[0];
         }
-
     }
 
     private Material[] convertMaterials(String path, int minSize, int maxSize, boolean allowAir) throws InvalidValueException {
@@ -294,14 +298,14 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     }
 
     public ItemStack[] getItemPotDefault() {
-        return itemPotDefault;
+        return itemPotDefault.clone();
     }
 
     public ItemStack[] getItemPotRaise() {
-        return itemPotRaise;
+        return itemPotRaise.clone();
     }
 
     public Combo[] getCombos() {
-        return combos;
+        return combos.clone();
     }
 }

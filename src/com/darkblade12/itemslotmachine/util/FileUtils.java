@@ -5,12 +5,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,7 +120,8 @@ public final class FileUtils {
 
     public static void saveJson(File file, Object obj) throws IOException {
         Files.createParentDirs(file);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        FileOutputStream stream = new FileOutputStream(file);
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8))) {
             String json = GSON.toJson(obj);
             writer.write(json);
         }
