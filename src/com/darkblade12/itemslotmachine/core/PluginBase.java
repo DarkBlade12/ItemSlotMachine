@@ -184,9 +184,10 @@ public abstract class PluginBase extends JavaPlugin {
                 break;
             }
         }
-        
-        if(!updateAvailable) {
+
+        if (!updateAvailable) {
             logInfo("There is no update available.");
+            return;
         }
 
         String fileUrl = latestFile.get("fileUrl").getAsString();
