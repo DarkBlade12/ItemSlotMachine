@@ -134,6 +134,6 @@ public enum Permission {
     }
 
     public boolean hasParent(CommandSender sender) {
-        return parent == null || parent.has(sender);
+        return parent != null && parent.has(sender);
     }
 }
