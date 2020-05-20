@@ -141,7 +141,7 @@ public abstract class PluginBase extends JavaPlugin {
     }
 
     protected void checkForUpdates() {
-        JsonArray array;
+        JsonArray files;
         try {
             URL url = new URL("https://servermods.forgesvc.net/servermods/files?projectIds=" + projectId);
             URLConnection conn = url.openConnection();
@@ -151,8 +151,8 @@ public abstract class PluginBase extends JavaPlugin {
             String response = reader.readLine();
             reader.close();
             JsonElement element = new JsonParser().parse(response);
-            array = element.getAsJsonArray();
-            if (array.size() == 0) {
+            files = element.getAsJsonArray();
+            if (files.size() == 0) {
                 logInfo("Failed to find any files for project id {0}!", projectId);
                 return;
             }
@@ -161,31 +161,50 @@ public abstract class PluginBase extends JavaPlugin {
             return;
         }
 
-        JsonObject latest = (JsonObject) array.get(array.size() - 1);
-        String fileName = latest.get("name").getAsString();
+        JsonObject latestFile = (JsonObject) files.get(files.size() - 1);
+        String fileName = latestFile.get("name").getAsString();
         Matcher matcher = VERSION.matcher(fileName);
-        if(!matcher.find()) {
+        if (!matcher.find()) {
             logInfo("Failed to compare versions!");
             return;
         }
-        String version = matcher.group();
-        int currentVersion;
-        int newVersion;
-        try {
-            currentVersion = Integer.parseInt(getDescription().getVersion().replace(".", ""));
-            newVersion = Integer.parseInt(version.replace(".", ""));
-            if (currentVersion >= newVersion) {
-                logInfo("There is no update available!");
-                return;
-            }
-        } catch (NumberFormatException ex) {
-            logException("Failed to compare versions: {0}", ex);
+        String latestVersion = matcher.group();
+
+        int[] currentNumbers = getVersionNumbers(getDescription().getVersion());
+        int[] latestNumbers = getVersionNumbers(latestVersion);
+        if (currentNumbers == null || latestNumbers == null || currentNumbers.length != latestNumbers.length) {
+            logInfo("Failed to compare versions!");
             return;
         }
 
-        String fileUrl = latest.get("fileUrl").getAsString();
-        logInfo("Version {0} is available for download at:", version);
+        boolean updateAvailable = false;
+        for (int i = 0; i < currentNumbers.length; i++) {
+            if (latestNumbers[i] > currentNumbers[i]) {
+                updateAvailable = true;
+                break;
+            }
+        }
+        
+        if(!updateAvailable) {
+            logInfo("There is no update available.");
+        }
+
+        String fileUrl = latestFile.get("fileUrl").getAsString();
+        logInfo("Version {0} is available for download at:", latestVersion);
         logInfo(fileUrl);
+    }
+
+    private int[] getVersionNumbers(String version) {
+        String[] split = version.split("\\.");
+        int[] numbers = new int[split.length];
+        for (int i = 0; i < split.length; i++) {
+            try {
+                numbers[i] = Integer.parseInt(split[i]);
+            } catch (NumberFormatException ex) {
+                return null;
+            }
+        }
+        return numbers;
     }
 
     protected String getPrefix() {
