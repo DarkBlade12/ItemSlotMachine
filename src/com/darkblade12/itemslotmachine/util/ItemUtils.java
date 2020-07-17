@@ -13,10 +13,26 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
+
 public final class ItemUtils {
+    private static final Gson GSON;
+
+    static {
+        GsonBuilder builder = new GsonBuilder().registerTypeHierarchyAdapter(ItemStack.class, new ItemStackAdapter());
+        GSON = builder.create();
+    }
+
     private ItemUtils() {}
 
-    public static ItemStack fromString(String text, Map<String, ItemStack> customItems) throws IllegalArgumentException {
+    public static ItemStack fromString(String text, Map<String, ItemStack> customItems) throws IllegalArgumentException,
+                                                                                        JsonParseException {
+        if (text.startsWith("{") && text.endsWith("}")) {
+            return GSON.fromJson(text, ItemStack.class);
+        }
+
         String[] data = text.split("-");
         String name = data[0].toLowerCase();
         Material material = Material.matchMaterial(name);
@@ -41,7 +57,7 @@ public final class ItemUtils {
         return item;
     }
 
-    public static ItemStack fromString(String text) throws IllegalArgumentException {
+    public static ItemStack fromString(String text) throws IllegalArgumentException, JsonParseException {
         return fromString(text, null);
     }
 

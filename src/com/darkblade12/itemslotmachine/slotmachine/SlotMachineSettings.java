@@ -17,6 +17,7 @@ import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
 import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.google.common.primitives.Ints;
+import com.google.gson.JsonParseException;
 
 public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     File file;
@@ -213,6 +214,9 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                 items[i] = ItemUtils.fromString(item, customItems);
             } catch (IllegalArgumentException ex) {
                 throw new InvalidValueException("A list value of setting {0} contains the invalid item {1}.", setting, item);
+            } catch (JsonParseException ex2) {
+                throw new InvalidValueException("The list value of setting {0} at index {1} could not be parsed.", setting,
+                        i + 1);
             }
         }
         return items;
