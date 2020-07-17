@@ -308,10 +308,11 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                 }
 
                 boolean holdingUseItem = !hand.getType().isBlock() || hand.getType() == Material.AIR;
-                if (!plugin.coinManager.isCoin(hand) && holdingUseItem && Permission.SLOT_INSPECT.has(player)) {
+                boolean holdingCoin = plugin.coinManager.isCoin(hand);
+                if (holdingUseItem && !holdingCoin && Permission.SLOT_INSPECT.has(player)) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_INSPECTED, name);
                     return;
-                } else if (!slot.isInteraction(clickedLoc)) {
+                } else if (!slot.isInteraction(clickedLoc) || !holdingCoin) {
                     return;
                 }
 

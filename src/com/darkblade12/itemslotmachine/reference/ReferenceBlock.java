@@ -1,7 +1,10 @@
 package com.darkblade12.itemslotmachine.reference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
@@ -14,6 +17,8 @@ import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rail;
 import org.bukkit.block.data.Rail.Shape;
+import org.bukkit.block.data.type.Wall;
+import org.bukkit.block.data.type.Wall.Height;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Player;
 
@@ -72,6 +77,18 @@ public class ReferenceBlock extends ReferenceLocation {
             Orientable orientable = (Orientable) blockData;
             Axis newAxis = Direction.rotate(orientable.getAxis(), initialDirection, viewDirection);
             orientable.setAxis(newAxis);
+        } else if (blockData instanceof Wall) {
+            Wall wall = (Wall) blockData;
+            BlockFace[] wallFaces = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
+            Map<BlockFace, Height> faceMap = new HashMap<>();
+            for (BlockFace face : wallFaces) {
+                BlockFace newFace = Direction.rotate(face, initialDirection, viewDirection);
+                faceMap.put(newFace, wall.getHeight(face));
+            }
+
+            for (Entry<BlockFace, Height> entry : faceMap.entrySet()) {
+                wall.setHeight(entry.getKey(), entry.getValue());
+            }
         }
 
         return blockData;

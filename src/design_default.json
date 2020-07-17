@@ -2,7 +2,7 @@
   "name": "default",
   "blocks": [
     {
-      "data": "minecraft:stone_brick_wall[east=false,north=false,south=true,up=true,waterlogged=false,west=true]",
+      "data": "minecraft:stone_brick_wall[east=none,north=none,south=low,up=true,waterlogged=false,west=low]",
       "initialDirection": "NORTH",
       "l": -2,
       "f": 3,
@@ -107,7 +107,7 @@
       "u": 0
     },
     {
-      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "data": "minecraft:stone_brick_wall[east=none,north=low,south=none,up=true,waterlogged=false,west=none]",
       "initialDirection": "NORTH",
       "l": -2,
       "f": 1,
@@ -142,14 +142,14 @@
       "u": 3
     },
     {
-      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "data": "minecraft:stone_brick_wall[east=none,north=low,south=none,up=true,waterlogged=false,west=none]",
       "initialDirection": "NORTH",
       "l": 2,
       "f": 1,
       "u": 2
     },
     {
-      "data": "minecraft:stone_brick_wall[east=true,north=false,south=true,up=true,waterlogged=false,west=false]",
+      "data": "minecraft:stone_brick_wall[east=low,north=none,south=low,up=true,waterlogged=false,west=none]",
       "initialDirection": "NORTH",
       "l": 2,
       "f": 3,
@@ -261,7 +261,7 @@
       "u": 0
     },
     {
-      "data": "minecraft:stone_brick_wall[east=true,north=false,south=true,up=true,waterlogged=false,west=false]",
+      "data": "minecraft:stone_brick_wall[east=low,north=none,south=low,up=true,waterlogged=false,west=none]",
       "initialDirection": "NORTH",
       "l": 2,
       "f": 3,
@@ -324,7 +324,7 @@
       "u": 3
     },
     {
-      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "data": "minecraft:stone_brick_wall[east=none,north=low,south=none,up=true,waterlogged=false,west=none]",
       "initialDirection": "NORTH",
       "l": 2,
       "f": 1,
@@ -380,7 +380,7 @@
       "u": 4
     },
     {
-      "data": "minecraft:stone_brick_wall[east=false,north=true,south=false,up=true,waterlogged=false,west=false]",
+      "data": "minecraft:stone_brick_wall[east=none,north=low,south=none,up=true,waterlogged=false,west=none]",
       "initialDirection": "NORTH",
       "l": -2,
       "f": 1,
@@ -429,7 +429,7 @@
       "u": 4
     },
     {
-      "data": "minecraft:stone_brick_wall[east=false,north=false,south=true,up=true,waterlogged=false,west=true]",
+      "data": "minecraft:stone_brick_wall[east=none,north=none,south=low,up=true,waterlogged=false,west=low]",
       "initialDirection": "NORTH",
       "l": -2,
       "f": 3,
