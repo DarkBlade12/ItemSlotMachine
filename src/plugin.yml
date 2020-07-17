@@ -3,7 +3,7 @@ version: ${project.version}
 author: DarkBlade12
 website: http://dev.bukkit.org/profiles/DarkBladee12
 main: com.darkblade12.itemslotmachine.ItemSlotMachine
-api-version: 1.15
+api-version: 1.16
 softdepend: [Vault, Multiverse-Core, Multiworld, PlotMe, MyWorlds, Essentials]
 
 commands:
