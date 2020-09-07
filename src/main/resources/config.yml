@@ -1,0 +1,50 @@
+# Determines whether the debug mode is enabled (prints error stacktraces in the console)
+# You should only set this to 'true' if you have some problems you can't solve
+debug-mode-enabled: false
+ 
+# The messages file name ending of the file which will be loaded
+# The plugin will attempt to load the file 'messages_<tag>.json'
+# Built-in language tags are 'en-US' for English and 'de-DE' for German
+language-tag: 'en-US'
+
+# This section contains settings for designs
+design:
+
+  # The name pattern for designs which will be used for generating names
+  # The string has to contain '{0}' as a placeholder for the generated id
+  name-pattern: 'design{0}'
+  
+  # This section contains settings for the space check when building a slot machine
+  # The space check will deny building if there is any block in the region of the design unless it is ignored
+  space-check:
+ 
+    # Determines whether the space check is enabled
+    # If this is set to false, building a slot machine will replace EVERY block
+    enabled: true
+  
+    # The list of block types which are ignored by the space check
+    ignored-types: ['snow', 'grass', 'fern', 'tall_grass', 'large_fern']
+ 
+# This section contains settings for all slot machines
+slot-machine:
+
+  # The name pattern for slot machines that will be used for generating names
+  # The string has to contain '{0}' as a placeholder for the generated id
+  name-pattern: 'slot{0}'
+  
+  # The maximum amount of slot machines that can be used by a player at the same time
+  # If this is set to a value lower than 1, it will be counted as infinite
+  use-limit: 1
+ 
+# This section contains settings for the coin which is used for spins at a slot machine
+coin:
+  
+  # The item type of a coin
+  type: 'gold_nugget'
+  
+  # Determines whether a common item of the specified type can be used for spins
+  # If this is set to false, only an item with the correct display name and lore can be used
+  use-common-item: false
+  
+  # The price for a single coin
+  price: 100.0

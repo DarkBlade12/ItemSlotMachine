@@ -1,0 +1,114 @@
+# The amount of coins that a player needs to pay for a spin
+# The value has to be higher than 0
+coin-amount: 1
+
+# The list of materials which can appear in the reels (item frames)
+# There have to be at least 2 symbols in this list
+symbol-types: ['apple', 'melon_slice', 'carrot', 'sweet_berries', 'golden_apple']
+
+# Determines whether players are able to use this slot machine while in creative mode
+# Players will be able to use this slot machine in creative mode without having to insert coins if set to 'true'
+allow-creative: true
+
+# Determines whether fireworks will be launched when a player wins a prize
+launch-fireworks: true
+
+# Determines whether the individual or universal permission is required
+# Individual permission: 'itemslotmachine.slot.use.<name>'
+# Universal permission: 'itemslotmachine.slot.use'
+# '<name>' is a placeholder for the name of this slot machine
+individual-permission: false
+
+# The amount of spins every reel will do before stopping automatically
+# If this is commented out or set to 0, the player needs to punch the slot in order to stop the spin
+reel-stop: 20
+
+# The amount of spins each reel will do after the spin has been stopped
+reel-delay: [0, 5, 10]
+
+# The winning chance of a spin in percent
+# If this is commented out or set to 0, the winning chance will be completely random
+winning-chance: 2.5
+
+# The time in seconds this slot machine will be locked to the user after the slot machine is deactivated
+# The lock will prevent other players from using the slot machine after it stopped spinning completely
+# If this is commented out or set to 0, the lock will be disabled
+#lock-time: 10
+
+# The commands that will always be executed by the console if a player wins
+# Placeholders: <user>, <money>, <currency>, <item_amount>, <items>, <slot_machine>
+win-commands: 'say <user> has won <money> <currency> and <item_amount> items from slot machine <slot_machine>'
+
+# This section contains settings for the different sounds of this slot machine
+# Sound format: <sound_name>-<volume>-<pitch>[-<broadcast>]
+# All sounds will be broadcast by default if not specified otherwise
+sounds:
+
+  # The list of sounds that will be played when the slot machine is spinning
+  spin: ['BLOCK_METAL_PRESSURE_PLATE_CLICK_ON-2-2']
+
+  # The list of sounds that will be played when a player wins
+  win: ['ENTITY_PLAYER_LEVELUP-2-2']
+
+  # This section contains settings for the lose sound which will be played when a player loses at this slot machine
+  lose: ['BLOCK_NOTE_BLOCK_PLING-2-2', 'BLOCK_NOTE_BLOCK_BASS-2-2']
+
+# This section contains settings for the money pot
+# Please note that at least one of the pots (money or item) has to be enabled
+money-pot:
+
+  # Determines whether the money pot is enabled
+  enabled: true
+
+  # The default amount of money in the pot, which will be set after a player has won the pot
+  default: 1000.0
+
+  # The amount of money by which the pot will be raised by every spin
+  raise: 50.0
+
+  # The percentage of money taken from the pot by the house instead of being payed out to the winner
+  # If this is commented out or set to 0, the house cut will be disabled
+  house-cut: 10.0
+
+# This section contains settings for the item pot
+# Please note that at least one of the pots (money or item) has to be enabled
+item-pot:
+
+  # Determines whether the item pot is enabled
+  enabled: true
+
+  # The default content of the item pot, which will be set after a player has won the pot
+  # Item format: <item_name>[-<amount>]
+  # The item name 'coin' can be used for a coin item
+  default: ['feather-5', 'diamond-1', 'iron_ingot-1']
+
+  # The items which are added to the pot by every spin
+  # Item format: <item_name>[-<amount>]
+  # The item name 'coin' can be used for a coin item
+  raise: ['glowstone_dust-2', 'lapis_lazuli-2']
+
+# The list of active item pot combos
+# Each combo has its own section with an unique name
+# Combos are activated by a specific pattern of symbols in the reels (item frames) after the spin has stopped completely
+combos:
+
+  # The default example combo
+  # If you want to disable this combo, you can comment out this section and its sub-sections
+  example:
+
+    # The symbol pattern which activates this combo
+    # '*' can be used as a wildcard and will match every symbol
+    pattern: ['golden_apple', 'golden_apple', 'golden_apple']
+
+    # The list of actions that will be executed by this combo
+    # Money pot actions: MULTIPLY_MONEY_POT:<amount>, RAISE_MONEY_POT:<amount>, PAY_OUT_MONEY_POT
+    # Item pot actions: MULTIPLY_ITEM_POT:<amount>, RAISE_ITEM_POT:<amount>, PAY_OUT_ITEM_POT
+    # Independent actions: PAY_OUT_MONEY:<amount>, PAY_OUT_ITEMS:<items>, EXECUTE_COMMAND:<command>
+    # Command placeholders: <user_name>, <money>, <currency_name>, <item_amount>, <items>, <slot_machine>
+    # The item name 'coin' can be used for a coin item
+    # Please note that the money or item pot actions will only work if that pot is enabled
+    actions:
+      - 'MULTIPLY_MONEY_POT:2.0'
+      - 'RAISE_ITEM_POT:diamond-3, iron_sword-1, sponge-20'
+      - 'PAY_OUT_MONEY_POT'
+      - 'PAY_OUT_ITEM_POT'
