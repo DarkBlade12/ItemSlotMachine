@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command.design;
+package com.darkblade12.itemslotmachine.command.design;
 
 import java.io.IOException;
 import java.util.List;

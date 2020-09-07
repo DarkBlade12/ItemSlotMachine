@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command.slot;
+package com.darkblade12.itemslotmachine.command.slot;
 
 import java.util.ArrayList;
 import java.util.Arrays;

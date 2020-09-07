@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command.coin;
+package com.darkblade12.itemslotmachine.command.coin;
 
 import java.util.ArrayList;
 import java.util.Arrays;

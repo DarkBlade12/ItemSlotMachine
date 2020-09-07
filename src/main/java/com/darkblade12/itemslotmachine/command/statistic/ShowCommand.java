@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command.statistic;
+package com.darkblade12.itemslotmachine.command.statistic;
 
 import java.util.Arrays;
 import java.util.List;

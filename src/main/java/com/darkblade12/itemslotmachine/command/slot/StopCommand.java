@@ -1,40 +1,37 @@
-package com.darkblade12.itemslotmachine.core.command.slot;
+package com.darkblade12.itemslotmachine.command.slot;
 
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
-import com.darkblade12.itemslotmachine.slotmachine.SlotMachineException;
 
-public final class TpCommand extends CommandBase<ItemSlotMachine> {
-    public TpCommand() {
-        super("tp", false, Permission.COMMAND_SLOT_TP, "<name>");
+public final class StopCommand extends CommandBase<ItemSlotMachine> {
+    public StopCommand() {
+        super("stop", Permission.COMMAND_SLOT_STOP, "<name>");
     }
 
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
-        Player player = (Player) sender;
         String name = args[0];
         SlotMachine slot = plugin.slotMachineManager.getSlotMachine(name);
         if (slot == null) {
-            plugin.sendMessage(player, Message.SLOT_MACHINE_NOT_FOUND, name);
+            plugin.sendMessage(sender, Message.SLOT_MACHINE_NOT_FOUND, name);
             return;
         }
         name = slot.getName();
 
-        try {
-            slot.teleport(player);
-        } catch (SlotMachineException ex) {
-            plugin.sendMessage(player, Message.COMMAND_SLOT_TP_FAILED, name, ex.getMessage());
+        if (!slot.isSpinning()) {
+            plugin.sendMessage(sender, Message.COMMAND_SLOT_STOP_NOT_SPINNING, name);
             return;
         }
-        plugin.sendMessage(player, Message.COMMAND_SLOT_TP_SUCCEEDED, name);
+
+        slot.stop(true);
+        plugin.sendMessage(sender, Message.COMMAND_SLOT_STOP_SUCCEEDED, name);
     }
 
     @Override

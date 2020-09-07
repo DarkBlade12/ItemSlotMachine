@@ -1,8 +1,10 @@
-package com.darkblade12.itemslotmachine.core.command.coin;
+package com.darkblade12.itemslotmachine.command;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.command.CommandHandler;
 import com.darkblade12.itemslotmachine.core.command.CommandRegistrationException;
+import com.darkblade12.itemslotmachine.command.coin.BuyCommand;
+import com.darkblade12.itemslotmachine.command.coin.GiveCommand;
 
 public final class CoinCommandHandler extends CommandHandler<ItemSlotMachine> {
     public CoinCommandHandler(ItemSlotMachine plugin) {

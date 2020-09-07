@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command.slot;
+package com.darkblade12.itemslotmachine.command.slot;
 
 import java.util.List;
 
@@ -8,12 +8,11 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
-import com.darkblade12.itemslotmachine.design.DesignBuildException;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 
-public final class RebuildCommand extends CommandBase<ItemSlotMachine> {
-    public RebuildCommand() {
-        super("rebuild", Permission.COMMAND_SLOT_REBUILD, "<name>");
+public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
+    public RemoveCommand() {
+        super("remove", Permission.COMMAND_SLOT_REMOVE, "<name>");
     }
 
     @Override
@@ -26,14 +25,8 @@ public final class RebuildCommand extends CommandBase<ItemSlotMachine> {
         }
         name = slot.getName();
 
-        try {
-            slot.rebuild();
-        } catch (DesignBuildException ex) {
-            plugin.logException("Failed to rebuild slot machine {1}: {0}", ex, name);
-            plugin.sendMessage(sender, Message.COMMAND_SLOT_REBUILD_FAILED, name, ex.getMessage());
-            return;
-        }
-        plugin.sendMessage(sender, Message.COMMAND_SLOT_REBUILD_SUCCEEDED, name);
+        plugin.slotMachineManager.unregister(slot);
+        plugin.sendMessage(sender, Message.COMMAND_SLOT_REMOVE_SUCCEEDED, name);
     }
 
     @Override
