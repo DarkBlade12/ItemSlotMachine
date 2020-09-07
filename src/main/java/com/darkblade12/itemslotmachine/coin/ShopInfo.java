@@ -18,7 +18,7 @@ public class ShopInfo {
     }
 
     public Location getBukkitLocation() {
-        return location.getBukkitLocation();
+        return location.toBukkitLocation();
     }
 
     public int getCoins() {

@@ -1,11 +1,8 @@
 package com.darkblade12.itemslotmachine.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,9 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public final class ItemUtils {
     private static final Gson GSON;
@@ -25,10 +24,11 @@ public final class ItemUtils {
         GSON = builder.create();
     }
 
-    private ItemUtils() {}
+    private ItemUtils() {
+    }
 
     public static ItemStack fromString(String text, Map<String, ItemStack> customItems) throws IllegalArgumentException,
-                                                                                        JsonParseException {
+                                                                                               JsonParseException {
         if (text.startsWith("{") && text.endsWith("}")) {
             return GSON.fromJson(text, ItemStack.class);
         }
@@ -40,7 +40,7 @@ public final class ItemUtils {
         if (material != null) {
             item = new ItemStack(material);
         } else if (!customItems.containsKey(name)) {
-            throw new IllegalArgumentException("Invalid item name");
+            throw new IllegalArgumentException("Invalid item name.");
         } else {
             item = customItems.get(name).clone();
         }
@@ -49,16 +49,12 @@ public final class ItemUtils {
             try {
                 int amount = Integer.parseInt(data[1]);
                 item.setAmount(amount);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("Invalid amount value");
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid amount value.");
             }
         }
 
         return item;
-    }
-
-    public static ItemStack fromString(String text) throws IllegalArgumentException, JsonParseException {
-        return fromString(text, null);
     }
 
     public static String toString(ItemStack item, boolean withAmount) {
@@ -74,18 +70,14 @@ public final class ItemUtils {
         return toString(item, true);
     }
 
-    public static List<ItemStack> listFromString(String text,
-                                                 Map<String, ItemStack> customItems) throws IllegalArgumentException {
+    public static List<ItemStack> fromListString(String text, Map<String, ItemStack> customItems) throws IllegalArgumentException {
         String[] data = text.replace(" ", "").split(",");
         List<ItemStack> items = new ArrayList<>(data.length);
         for (String item : data) {
             items.add(fromString(item, customItems));
         }
-        return items;
-    }
 
-    public static List<ItemStack> listFromString(String text) throws IllegalArgumentException {
-        return listFromString(text, null);
+        return items;
     }
 
     public static boolean hasEnoughSpace(Player player, ItemStack item) {
@@ -98,6 +90,7 @@ public final class ItemUtils {
                 space += maxStack - invItem.getAmount();
             }
         }
+
         return space >= item.getAmount();
     }
 
@@ -108,6 +101,7 @@ public final class ItemUtils {
                 total += invItem.getAmount();
             }
         }
+
         return total;
     }
 
@@ -119,35 +113,25 @@ public final class ItemUtils {
             ItemStack clone = item.clone();
             if (ItemUtils.hasEnoughSpace(player, clone)) {
                 inventory.addItem(clone);
-            } else {
+            } else if (world != null) {
                 world.dropItemNaturally(location, clone);
             }
         }
     }
 
-    public static void giveItems(Player player, ItemStack... items) {
-        giveItems(player, Arrays.asList(items));
-    }
-
-    public static void combineItems(Collection<ItemStack> result, Collection<ItemStack> items) {
-        for (ItemStack newItem : items) {
-            boolean combined = false;
-            for (ItemStack oldItem : result) {
-                if (newItem.isSimilar(oldItem)) {
-                    oldItem.setAmount(oldItem.getAmount() + newItem.getAmount());
-                    combined = true;
-                    break;
-                }
-            }
-
-            if (!combined) {
-                result.add(newItem.clone());
+    public static void stackItems(Collection<ItemStack> target, Collection<ItemStack> newItems) {
+        for (ItemStack item : newItems) {
+            ItemStack similarItem = target.stream().filter(i -> i.isSimilar(item)).findFirst().orElse(null);
+            if (similarItem != null) {
+                similarItem.setAmount(similarItem.getAmount() + item.getAmount());
+            } else {
+                target.add(item.clone());
             }
         }
     }
 
-    public static void combineItems(Collection<ItemStack> result, ItemStack... items) {
-        combineItems(result, Arrays.asList(items));
+    public static void stackItems(Collection<ItemStack> target, ItemStack... newItems) {
+        stackItems(target, Arrays.asList(newItems));
     }
 
     public static List<ItemStack> cloneItems(Collection<ItemStack> items) {
@@ -155,6 +139,7 @@ public final class ItemUtils {
         for (ItemStack item : items) {
             cloned.add(item.clone());
         }
+
         return cloned;
     }
 

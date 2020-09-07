@@ -1,14 +1,14 @@
 package com.darkblade12.itemslotmachine.util;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -24,10 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.BookMeta.Generation;
-import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.FireworkEffectMeta;
@@ -38,16 +34,20 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.SuspiciousStewMeta;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDeserializer<ItemStack> {
     private static final Gson GSON = new Gson();
@@ -62,6 +62,7 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
             ItemMeta meta = src.getItemMeta();
             JsonObject metaObj = new JsonObject();
 
+            assert meta != null;
             if (meta.hasDisplayName()) {
                 metaObj.addProperty("displayName", meta.getDisplayName());
             }
@@ -133,9 +134,9 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
         }
 
         ItemStack item = new ItemStack(material, amount);
-        if (obj.has("meta")) {
+        ItemMeta meta = item.getItemMeta();
+        if (obj.has("meta") && meta != null) {
             JsonObject metaObj = obj.get("meta").getAsJsonObject();
-            ItemMeta meta = item.getItemMeta();
 
             if (metaObj.has("displayName")) {
                 meta.setDisplayName(metaObj.get("displayName").getAsString());
@@ -197,7 +198,7 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
         }
 
         if (meta.hasGeneration()) {
-            root.addProperty("generation", meta.getGeneration().name());
+            root.addProperty("generation", Objects.requireNonNull(meta.getGeneration()).name());
         }
 
         if (meta.hasPages()) {
@@ -213,7 +214,7 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
 
     private static void serializeMeta(JsonObject root, FireworkEffectMeta meta) {
         if (meta.hasEffect()) {
-            root.add("effect", serializeFireworkEffect(meta.getEffect()));
+            root.add("effect", serializeFireworkEffect(Objects.requireNonNull(meta.getEffect())));
         }
     }
 
@@ -245,7 +246,7 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
 
     private static void serializeMeta(JsonObject root, SkullMeta meta) {
         if (meta.hasOwner()) {
-            root.addProperty("owner", meta.getOwningPlayer().getUniqueId().toString());
+            root.addProperty("owner", Objects.requireNonNull(meta.getOwningPlayer()).getUniqueId().toString());
         }
     }
 
@@ -308,7 +309,7 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
 
         if (source.has("pages")) {
             JsonArray pagesArray = source.getAsJsonArray("pages");
-            List<String> pages = deserializeList(pagesArray, e -> e.getAsString());
+            List<String> pages = deserializeList(pagesArray, JsonElement::getAsString);
             meta.setPages(pages);
         }
     }
@@ -383,9 +384,6 @@ public final class ItemStackAdapter implements JsonSerializer<ItemStack>, JsonDe
         }
 
         OfflinePlayer owner = Bukkit.getOfflinePlayer(ownerId);
-        if (owner == null) {
-            throw new JsonParseException("Invalid owner uuid");
-        }
         meta.setOwningPlayer(owner);
     }
 

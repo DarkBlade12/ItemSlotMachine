@@ -154,7 +154,7 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
     public Cuboid getSelectionRegion(Player player) {
         SafeLocation[] locations = getSelection(player);
         try {
-            return new Cuboid(locations[0].getBukkitLocation(), locations[1].getBukkitLocation());
+            return new Cuboid(locations[0].toBukkitLocation(), locations[1].toBukkitLocation());
         } catch (NullPointerException | IllegalArgumentException ex) {
             return null;
         }

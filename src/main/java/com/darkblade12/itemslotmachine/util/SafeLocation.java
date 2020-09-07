@@ -1,20 +1,24 @@
 package com.darkblade12.itemslotmachine.util;
 
-import java.util.Objects;
-
+import org.apache.commons.lang.NullArgumentException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.util.NumberConversions;
 
+import java.util.Objects;
+
 public class SafeLocation implements Cloneable {
-    private String worldName;
-    private double x;
-    private double y;
-    private double z;
+    private final String worldName;
+    private final double x;
+    private final double y;
+    private final double z;
 
     private SafeLocation(String worldName, double x, double y, double z) {
+        if (worldName == null) {
+            throw new NullArgumentException("worldName");
+        }
+
         this.worldName = worldName;
         this.x = x;
         this.y = y;
@@ -22,11 +26,12 @@ public class SafeLocation implements Cloneable {
     }
 
     public static SafeLocation fromBukkitLocation(Location location) {
-        return new SafeLocation(location.getWorld().getName(), location.getX(), location.getY(), location.getZ());
-    }
+        World world = location.getWorld();
+        if (world == null) {
+            throw new IllegalArgumentException("World of location cannot be null.");
+        }
 
-    public static SafeLocation fromBukkitBlock(Block block) {
-        return fromBukkitLocation(block.getLocation());
+        return new SafeLocation(world.getName(), location.getX(), location.getY(), location.getZ());
     }
 
     private double distanceSquared(double x, double y, double z) {
@@ -41,20 +46,13 @@ public class SafeLocation implements Cloneable {
         return distanceSquared(other.x, other.y, other.z);
     }
 
-    public double distance(Location other) {
-        return Math.sqrt(distanceSquared(other));
-    }
-
-    public double distance(SafeLocation other) {
-        return Math.sqrt(distanceSquared(other));
-    }
-
     public boolean equals(Location other) {
-        if (!worldName.equals(other.getWorld().getName())) {
+        World world = other.getWorld();
+        if (world == null || !worldName.equals(world.getName())) {
             return false;
         }
-        return Double.compare(x, other.getX()) == 0 && Double.compare(y, other.getY()) == 0
-                && Double.compare(z, other.getZ()) == 0;
+
+        return Double.compare(x, other.getX()) == 0 && Double.compare(y, other.getY()) == 0 && Double.compare(z, other.getZ()) == 0;
     }
 
     public boolean equals(SafeLocation other) {
@@ -63,15 +61,13 @@ public class SafeLocation implements Cloneable {
         } else if (!worldName.equals(other.worldName)) {
             return false;
         }
+
         return Double.compare(x, other.x) == 0 && Double.compare(y, other.y) == 0 && Double.compare(z, other.z) == 0;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof SafeLocation)) {
-            return false;
-        }
-        return equals((SafeLocation) obj);
+        return obj instanceof SafeLocation && equals((SafeLocation) obj);
     }
 
     @Override
@@ -79,41 +75,29 @@ public class SafeLocation implements Cloneable {
         return Objects.hash(worldName, x, y, z);
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getZ() {
-        return z;
-    }
-
     public String getWorldName() {
         return worldName;
     }
 
-    public World getWorld() throws IllegalStateException {
+    public World getWorld() {
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            throw new IllegalStateException("World " + worldName + " is not loaded");
+            throw new IllegalStateException("World " + worldName + " is not loaded.");
         }
 
         return world;
     }
 
-    public Location getBukkitLocation() {
+    public Location toBukkitLocation() {
         return new Location(getWorld(), x, y, z);
-    }
-
-    public Block getBukkitBlock() {
-        return getBukkitLocation().getBlock();
     }
 
     @Override
     public SafeLocation clone() {
-        return new SafeLocation(worldName, x, y, z);
+        try {
+            return (SafeLocation) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

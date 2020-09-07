@@ -1,16 +1,17 @@
 package com.darkblade12.itemslotmachine.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public final class MessageUtils {
     private static final Map<ChatColor, ChatColor> SIMILAR_COLORS = new HashMap<>();
@@ -26,16 +27,12 @@ public final class MessageUtils {
         SIMILAR_COLORS.put(ChatColor.DARK_GRAY, ChatColor.GRAY);
         SIMILAR_COLORS.put(ChatColor.GOLD, ChatColor.YELLOW);
 
-        List<ChatColor> colors = new ArrayList<>();
-        for (ChatColor color : ChatColor.values()) {
-            if (color.isColor() && color != ChatColor.BLACK && color != ChatColor.WHITE) {
-                colors.add(color);
-            }
-        }
-        COLORS = colors.toArray(new ChatColor[colors.size()]);
+        COLORS = Arrays.stream(ChatColor.values()).filter(c -> c.isColor() && c != ChatColor.BLACK && c != ChatColor.WHITE)
+                       .toArray(ChatColor[]::new);
     }
 
-    private MessageUtils() {}
+    private MessageUtils() {
+    }
 
     public static ChatColor randomColorCode() {
         return COLORS[RANDOM.nextInt(COLORS.length)];
@@ -57,7 +54,7 @@ public final class MessageUtils {
 
     public static String[] prepareSignLines(String[] lines, int... splitLines) {
         if (lines.length > 4) {
-            throw new IllegalArgumentException("There cannot be more than 4 lines on a sign");
+            throw new IllegalArgumentException("Lines cannot have more than 4 elements.");
         }
 
         for (int index : splitLines) {
@@ -80,15 +77,8 @@ public final class MessageUtils {
     }
 
     public static String formatName(Enum<?> enumObj, boolean capitalize) {
-        StringBuilder name = new StringBuilder();
         String[] split = enumObj.name().toLowerCase().split("_");
-        for (int i = 0; i < split.length; i++) {
-            if (i > 0) {
-                name.append(" ");
-            }
-            name.append(capitalize ? StringUtils.capitalize(split[i]) : split[i]);
-        }
-        return name.toString();
+        return Arrays.stream(split).map(s -> capitalize ? StringUtils.capitalize(s) : s).collect(Collectors.joining(" "));
     }
 
     public static String formatName(Enum<?> enumObj) {
@@ -96,28 +86,13 @@ public final class MessageUtils {
     }
 
     public static String toString(ItemStack item) {
-        String name = null;
-        if (item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta.hasDisplayName()) {
-                name = meta.getDisplayName();
-            }
-        }
+        ItemMeta meta = item.getItemMeta();
+        String name = meta != null && meta.hasDisplayName() ? meta.getDisplayName() : formatName(item.getType(), true);
 
-        if (name == null) {
-            name = formatName(item.getType(), true);
-        }
         return "\u00A72" + name + " \u00A78\u00D7 \u00A77" + item.getAmount();
     }
 
-    public static String toString(List<ItemStack> items) {
-        StringBuilder text = new StringBuilder();
-        for (int i = 0; i < items.size(); i++) {
-            if (i > 0) {
-                text.append(ChatColor.GREEN).append(", ");
-            }
-            text.append(toString(items.get(i)));
-        }
-        return text.toString();
+    public static String toString(Collection<ItemStack> items) {
+        return items.stream().map(MessageUtils::toString).collect(Collectors.joining(ChatColor.GREEN + ", "));
     }
 }

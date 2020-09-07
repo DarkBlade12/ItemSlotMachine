@@ -181,7 +181,7 @@ public final class SlotMachine implements Nameable {
             moneyPot += settings.moneyPotRaise;
         }
         if (settings.itemPotEnabled) {
-            ItemUtils.combineItems(itemPot, settings.itemPotRaise);
+            ItemUtils.stackItems(itemPot, settings.itemPotRaise);
         }
         try {
             saveAndUpdate();
@@ -268,7 +268,7 @@ public final class SlotMachine implements Nameable {
             for (Action action : combo.getActions()) {
                 switch (action.getType()) {
                     case PAY_OUT_ITEMS:
-                        ItemUtils.combineItems(itemPrize, ((ItemAction) action).getItems());
+                        ItemUtils.stackItems(itemPrize, ((ItemAction) action).getItems());
                         break;
                     case PAY_OUT_ITEM_POT:
                         payOutItemPot = true;
@@ -292,7 +292,7 @@ public final class SlotMachine implements Nameable {
                         moneyPot *= ((AmountAction) action).getAmount();
                         break;
                     case RAISE_ITEM_POT:
-                        ItemUtils.combineItems(itemPot, ((ItemAction) action).getItems());
+                        ItemUtils.stackItems(itemPot, ((ItemAction) action).getItems());
                         break;
                     case RAISE_MONEY_POT:
                         moneyPot += ((AmountAction) action).getAmount();
@@ -314,7 +314,7 @@ public final class SlotMachine implements Nameable {
             resetMoneyPot();
         }
         if (payOutItemPot && settings.itemPotEnabled) {
-            ItemUtils.combineItems(itemPrize, itemPot);
+            ItemUtils.stackItems(itemPrize, itemPot);
             resetItemPot();
         }
 
@@ -509,7 +509,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public void addItems(Collection<ItemStack> items) {
-        ItemUtils.combineItems(itemPot, items);
+        ItemUtils.stackItems(itemPot, items);
         try {
             saveAndUpdate();
         } catch (IOException ex) {
@@ -719,7 +719,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public Location getLocation() {
-        return buildLocation.getBukkitLocation();
+        return buildLocation.toBukkitLocation();
     }
 
     public boolean isInsideRegion(Location location) {

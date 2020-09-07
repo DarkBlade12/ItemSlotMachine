@@ -70,7 +70,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
                     SafeLocation shop = entry.getValue().getLocation();
                     Location current = player.getLocation();
                     if (!shop.getWorldName().equals(current.getWorld().getName()) || shop.distanceSquared(current) > 64) {
-                        updateShop(player, shop.getBukkitLocation(), 1);
+                        updateShop(player, shop.toBukkitLocation(), 1);
                         resetLastShop(id);
                     }
                 }

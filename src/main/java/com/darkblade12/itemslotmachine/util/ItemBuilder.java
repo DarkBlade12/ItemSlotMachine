@@ -1,11 +1,11 @@
 package com.darkblade12.itemslotmachine.util;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
+import java.util.List;
 
 public final class ItemBuilder {
     private Material material;
@@ -13,8 +13,6 @@ public final class ItemBuilder {
     private String name;
     private List<String> lore;
     private boolean unbreakable;
-
-    public ItemBuilder() {}
 
     public ItemBuilder withType(Material material) {
         this.material = material;
@@ -37,8 +35,7 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder withLore(String... lore) {
-        this.lore = Arrays.asList(lore);
-        return this;
+        return withLore(Arrays.asList(lore));
     }
 
     public ItemBuilder unbreakable(boolean unbreakable) {
@@ -53,17 +50,19 @@ public final class ItemBuilder {
     public ItemStack build() {
         ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            if (name != null) {
+                meta.setDisplayName(name);
+            }
 
-        if (name != null) {
-            meta.setDisplayName(name);
+            if (lore != null && lore.size() > 0) {
+                meta.setLore(lore);
+            }
+
+            meta.setUnbreakable(unbreakable);
+            item.setItemMeta(meta);
         }
 
-        if (lore != null && lore.size() > 0) {
-            meta.setLore(lore);
-        }
-
-        meta.setUnbreakable(unbreakable);
-        item.setItemMeta(meta);
         return item;
     }
 }

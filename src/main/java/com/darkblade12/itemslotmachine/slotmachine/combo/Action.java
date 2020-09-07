@@ -39,7 +39,7 @@ public class Action {
                 return new AmountAction(type, amount);
             case RAISE_ITEM_POT:
             case PAY_OUT_ITEMS:
-                List<ItemStack> items = ItemUtils.listFromString(text.substring(separatorIndex + 1), customItems);
+                List<ItemStack> items = ItemUtils.fromListString(text.substring(separatorIndex + 1), customItems);
                 return new ItemAction(type, items);
             case EXECUTE_COMMAND:
                 String command = text.substring(separatorIndex + 1);

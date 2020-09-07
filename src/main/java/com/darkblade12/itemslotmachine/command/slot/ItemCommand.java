@@ -73,7 +73,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                 String items = StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ");
 
                 try {
-                    list = ItemUtils.listFromString(items, plugin.coinManager.getCustomItems());
+                    list = ItemUtils.fromListString(items, plugin.coinManager.getCustomItems());
                 } catch (Exception ex) {
                     plugin.sendMessage(sender, Message.COMMAND_SLOT_ITEM_INVALID_LIST, ex.getMessage());
                     return;
