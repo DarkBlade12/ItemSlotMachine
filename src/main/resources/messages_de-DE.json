@@ -18,7 +18,7 @@
     "word.and": "und",
     "word.empty": "leer",
 
-    "amount.invalid": "&6{0} &cist keine gültige Betrag!",
+    "amount.invalid": "&6{0} &cist kein gültiger Betrag!",
     "amount.lower-than": "&cDer Betrag kann nicht niedriger als {0} sein!",
     "amount.higher-than": "&cDer Betrag kann nicht höher als {0} sein!",
     "amount.equal-to": "&cDer Betrag kann nicht gleich {0} sein!",
@@ -43,7 +43,7 @@
     "slot-machine.not-enough-coins": "&cDieser Spielautomat benötigt &6{0} &c{1} für einen Spin, jedoch hast du nur &e{2} &c{3}!",
     "slot-machine.use-limited": "&cDu darfst nicht mehr als &6{0} &cSpielautomat(en) gleichzeitig benutzen!",
     "slot-machine.locked": "&cDieser Spielautomat ist noch gesperrt von &6{0} &cfür &e{1} &csekunde(n)!",
-    "slot-machine.won": "&6Glückwunsch, du hast {0} &6gewonnnen!",
+    "slot-machine.won": "&6Glückwunsch, du hast {0} &6gewonnen!",
     "slot-machine.lost": "&cDu hast leider nichts gewonnen, versuchs nochmal...",
 
     "statistic.category.not-found": "&cDie Kategorie &6{0} &ckonnte nicht gefunden werden!",
