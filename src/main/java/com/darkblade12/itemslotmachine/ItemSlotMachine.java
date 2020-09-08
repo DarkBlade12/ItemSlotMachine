@@ -123,6 +123,7 @@ public final class ItemSlotMachine extends PluginBase {
             designManager.onReload();
             coinManager.onReload();
             slotMachineManager.onReload();
+            statisticManager.onReload();
         } catch (Exception ex) {
             logException("Failed to reload managers: {0}", ex);
             disable();
