@@ -1,27 +1,34 @@
 package com.darkblade12.itemslotmachine.statistic;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-
+import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.google.gson.JsonParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-import com.darkblade12.itemslotmachine.util.FileUtils;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.UUID;
 
 public final class PlayerStatistic extends Statistic {
+    private final UUID id;
+
     public PlayerStatistic(UUID id) {
-        super(id.toString(), Category.values());
+        super(Category.values());
+        this.id = id;
     }
 
-    public static PlayerStatistic fromFile(File file) throws IOException, JsonIOException, JsonSyntaxException {
+    public static PlayerStatistic fromFile(File file) throws IOException, JsonParseException {
         return FileUtils.readJson(file, PlayerStatistic.class);
     }
 
-    public static PlayerStatistic fromFile(String path) throws IOException, JsonIOException, JsonSyntaxException {
+    public static PlayerStatistic fromFile(String path) throws IOException, JsonParseException {
         return fromFile(new File(path));
+    }
+
+    @Override
+    public String getFileName() {
+        return id  + FILE_EXTENSION;
     }
 
     @Override
@@ -30,7 +37,7 @@ public final class PlayerStatistic extends Statistic {
     }
 
     public UUID getId() {
-        return UUID.fromString(name);
+        return id;
     }
 
     public OfflinePlayer getPlayer() {
@@ -38,6 +45,6 @@ public final class PlayerStatistic extends Statistic {
     }
 
     public String getPlayerName() {
-        return getPlayer().getName();
+        return Optional.ofNullable(getPlayer().getName()).orElse("");
     }
 }

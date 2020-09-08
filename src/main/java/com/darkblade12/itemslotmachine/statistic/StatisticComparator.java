@@ -3,7 +3,7 @@ package com.darkblade12.itemslotmachine.statistic;
 import java.util.Comparator;
 
 public final class StatisticComparator implements Comparator<Statistic> {
-    private Category category;
+    private final Category category;
 
     public StatisticComparator(Category type) {
         this.category = type;
@@ -17,7 +17,7 @@ public final class StatisticComparator implements Comparator<Statistic> {
             return 1;
         } else if (r1 != null && r2 == null) {
             return -1;
-        } else if (r1 == null && r2 == null) {
+        } else if (r1 == null) {
             return 0;
         }
 

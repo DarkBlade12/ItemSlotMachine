@@ -2,10 +2,8 @@ package com.darkblade12.itemslotmachine.statistic;
 
 import java.math.BigDecimal;
 
-import com.darkblade12.itemslotmachine.nameable.Nameable;
-
-public final class Record implements Nameable, Cloneable, Comparable<Record> {
-    private Category category;
+public final class Record implements Cloneable, Comparable<Record> {
+    private final Category category;
     private Number value;
 
     private Record(Category category, Number value) {
@@ -19,7 +17,7 @@ public final class Record implements Nameable, Cloneable, Comparable<Record> {
 
     @Override
     public int compareTo(Record record) {
-        return new BigDecimal(value.doubleValue()).compareTo(new BigDecimal(record.getValue().doubleValue()));
+        return BigDecimal.valueOf(value.doubleValue()).compareTo(BigDecimal.valueOf(record.getValue().doubleValue()));
     }
 
     public void setValue(Number value) {
@@ -27,48 +25,32 @@ public final class Record implements Nameable, Cloneable, Comparable<Record> {
     }
 
     public void resetValue() {
-        setValue(category.parse("0"));
+        value = 0;
     }
 
-    public void increaseValue(byte amount) {
-        setValue(value.byteValue() + amount);
-    }
+    public void increaseValue(Number amount) {
+        if (value instanceof Double || amount instanceof Double) {
+            value = value.doubleValue() + amount.doubleValue();
+            return;
+        }
 
-    public void increaseValue(short amount) {
-        setValue(value.shortValue() + amount);
-    }
-
-    public void increaseValue(int amount) {
-        setValue(value.intValue() + amount);
-    }
-
-    public void increaseValue(long amount) {
-        setValue(value.longValue() + amount);
-    }
-
-    public void increaseValue(float amount) {
-        setValue(value.floatValue() + amount);
-    }
-
-    public void increaseValue(double amount) {
-        setValue(value.doubleValue() + amount);
-    }
-
-    @Override
-    public String getName() {
-        return category.name();
+        value = value.intValue() + amount.intValue();
     }
 
     public Category getCategory() {
-        return this.category;
+        return category;
     }
 
     public Number getValue() {
-        return this.value;
+        return value;
     }
 
     @Override
     public Record clone() {
-        return new Record(category, value);
+        try {
+            return (Record) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

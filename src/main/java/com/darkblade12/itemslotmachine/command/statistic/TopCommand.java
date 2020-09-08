@@ -1,12 +1,5 @@
 package com.darkblade12.itemslotmachine.command.statistic;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
@@ -14,8 +7,16 @@ import com.darkblade12.itemslotmachine.core.PluginBase;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
 import com.darkblade12.itemslotmachine.statistic.Category;
 import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
+import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class TopCommand extends CommandBase<ItemSlotMachine> {
     public TopCommand() {
@@ -36,10 +37,10 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
         String type = args[0].toLowerCase();
         switch (type) {
             case "slot":
-                if (category == Category.WON_MONEY || category == Category.WON_ITEMS) {
+                if (!category.isSlotMachineCategory()) {
                     plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_INVALID_CATEGORY, categoryName);
                     return;
-                } else if (plugin.slotMachineManager.getSlotMachineCount() == 0) {
+                } else if (plugin.statisticManager.getSlotMachineStatisticCount() == 0) {
                     plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_NO_DATA, categoryName);
                     return;
                 }
@@ -58,27 +59,29 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
                 break;
             default:
                 displayUsage(sender, label);
-                return;
+                break;
         }
     }
 
     @Override
     public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
-        List<String> completions;
+        List<Category> categories = null;
+        if (args.length > 1) {
+            boolean slotOnly = args[0].equalsIgnoreCase("slot");
+            categories = Arrays.stream(Category.values()).filter(c -> !slotOnly || c.isSlotMachineCategory()).collect(Collectors.toList());
+        }
+
         switch (args.length) {
             case 1:
-                return Arrays.asList(new String[] { "slot", "player" });
+                return Arrays.asList("slot", "player");
             case 2:
-                completions = new ArrayList<String>();
-                for (Category category : Category.values()) {
-                    completions.add(MessageUtils.formatName(category));
-                }
-                return completions;
+                boolean slotOnly = args[0].equalsIgnoreCase("slot");
+                return categories.stream().map(MessageUtils::formatName).collect(Collectors.toList());
             default:
                 if (args.length >= 3) {
-                    completions = new ArrayList<String>();
+                    List<String> completions = new ArrayList<>();
                     int catLength = args.length - 1;
-                    for (Category category : Category.values()) {
+                    for (Category category : categories) {
                         String[] split = category.name().toLowerCase().split("_");
                         int previousIndex = catLength - 2;
                         if (split.length >= catLength && args[args.length - 2].equalsIgnoreCase(split[previousIndex])) {
@@ -111,13 +114,18 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
 
     private static <T extends Statistic> String toString(PluginBase plugin, List<T> statistics, Category category) {
         StringBuilder text = new StringBuilder();
-        int size = statistics.size();
-        for (int i = 0; i < (size > 10 ? 10 : size); i++) {
+        int entries = Math.min(statistics.size(), 10);
+        for (int i = 0; i < entries; i++) {
             T stat = statistics.get(i);
-            String name = stat.getName();
+            String name;
             if (stat instanceof PlayerStatistic) {
                 name = ((PlayerStatistic) stat).getPlayerName();
+            } else if (stat instanceof SlotMachineStatistic) {
+                name = ((SlotMachineStatistic) stat).getName();
+            } else {
+                continue;
             }
+
             String value = String.valueOf(stat.getRecord(category).getValue());
             int placement = i + 1;
             ChatColor color = getPlacementColor(placement);

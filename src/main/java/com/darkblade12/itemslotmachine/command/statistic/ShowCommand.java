@@ -1,14 +1,5 @@
 package com.darkblade12.itemslotmachine.command.statistic;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-
-import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
@@ -20,6 +11,14 @@ import com.darkblade12.itemslotmachine.statistic.Record;
 import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 public final class ShowCommand extends CommandBase<ItemSlotMachine> {
     private static final Random RANDOM = new Random();
@@ -43,11 +42,11 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
                 name = slot.getName();
 
                 SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(slot);
-                if(slotStat == null) {
+                if (slotStat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_SLOT_MACHINE, name);
                     return;
                 }
-                
+
                 statText = toString(plugin, slotStat);
                 plugin.sendMessage(sender, Message.COMMAND_STATISTIC_SHOW_SLOT_MACHINE, name, statText);
                 break;
@@ -78,7 +77,7 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
     public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
-                return Arrays.asList(new String[] { "slot", "player" });
+                return Arrays.asList("slot", "player");
             case 2:
                 switch (args[0].toLowerCase()) {
                     case "slot":
@@ -99,7 +98,7 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
 
     private static String toString(PluginBase plugin, Statistic statistic) {
         StringBuilder text = new StringBuilder();
-        for (Record record : statistic.getRecords()) {
+        for (Record record : statistic) {
             ChatColor color = MessageUtils.randomColorCode();
             ChatColor altColor = MessageUtils.similarColor(color);
             char dice = randomDiceSymbol();

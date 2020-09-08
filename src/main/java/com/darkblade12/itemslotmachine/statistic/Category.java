@@ -1,77 +1,84 @@
 package com.darkblade12.itemslotmachine.statistic;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.PluginBase;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Category {
-    TOTAL_SPINS(Integer.class, Message.STATISTIC_CATEGORY_TOTAL_SPINS) {
+    TOTAL_SPINS(Message.STATISTIC_CATEGORY_TOTAL_SPINS, true) {
         @Override
         public Integer parse(String input) {
             return Integer.parseInt(input);
         }
     },
-    WON_SPINS(Integer.class, Message.STATISTIC_CATEGORY_WON_SPINS) {
+    WON_SPINS(Message.STATISTIC_CATEGORY_WON_SPINS, true) {
         @Override
         public Integer parse(String input) {
             return Integer.parseInt(input);
         }
     },
-    LOST_SPINS(Integer.class, Message.STATISTIC_CATEGORY_LOST_SPINS) {
+    LOST_SPINS(Message.STATISTIC_CATEGORY_LOST_SPINS, true) {
         @Override
         public Integer parse(String input) {
             return Integer.parseInt(input);
         }
     },
-    SPENT_COINS(Integer.class, Message.STATISTIC_CATEGORY_SPENT_COINS) {
+    SPENT_COINS(Message.STATISTIC_CATEGORY_SPENT_COINS) {
         @Override
         public Integer parse(String input) {
             return Integer.parseInt(input);
         }
     },
-    WON_MONEY(Double.class, Message.STATISTIC_CATEGORY_WON_MONEY) {
+    WON_MONEY(Message.STATISTIC_CATEGORY_WON_MONEY) {
         @Override
         public Double parse(String input) {
             return Double.parseDouble(input);
         }
     },
-    WON_ITEMS(Integer.class, Message.STATISTIC_CATEGORY_WON_ITEMS) {
+    WON_ITEMS(Message.STATISTIC_CATEGORY_WON_ITEMS) {
         @Override
         public Integer parse(String input) {
             return Integer.parseInt(input);
         }
     };
 
-    private static final Map<String, Category> NAME_MAP = new HashMap<String, Category>();
-    private Class<? extends Number> valueType;
-    private Message message;
+    private static final Map<String, Category> NAME_MAP = new HashMap<>();
+    private final Message message;
+    private final boolean slotMachineCategory;
 
     static {
         for (Category category : values()) {
-            NAME_MAP.put(category.name(), category);
+            String name = category.name();
+            NAME_MAP.put(name, category);
+            NAME_MAP.put(name.replace('_', ' '), category);
         }
     }
 
-    private Category(Class<? extends Number> valueType, Message message) {
-        this.valueType = valueType;
+    Category(Message message, boolean slotMachineCategory) {
         this.message = message;
+        this.slotMachineCategory = slotMachineCategory;
     }
 
-    public Record createObject() {
+    Category(Message message) {
+        this(message, false);
+    }
+
+    public Record createRecord() {
         return new Record(this);
     }
 
     public abstract Number parse(String input);
 
-    public Class<? extends Number> getValueType() {
-        return this.valueType;
-    }
-
     public Message getMessage() {
         return message;
+    }
+
+    public boolean isSlotMachineCategory() {
+        return slotMachineCategory;
     }
 
     public String getLocalizedName(PluginBase plugin) {
@@ -84,17 +91,10 @@ public enum Category {
 
     public static Category fromName(ItemSlotMachine plugin, String name) {
         Category category = fromName(name);
-
-        if (category == null) {
-            for (Category c : values()) {
-                if (c.getLocalizedName(plugin).equalsIgnoreCase(name)) {
-                    return c;
-                }
-            }
-
-            category = fromName(name.replace(" ", "_"));
+        if (category != null) {
+            return category;
         }
 
-        return category;
+        return Arrays.stream(values()).filter(c -> c.getLocalizedName(plugin).equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 }

@@ -1,68 +1,50 @@
 package com.darkblade12.itemslotmachine.statistic;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import com.darkblade12.itemslotmachine.nameable.Nameable;
-import com.darkblade12.itemslotmachine.nameable.NameableList;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 
-public abstract class Statistic implements Nameable {
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
+
+public abstract class Statistic implements Iterable<Record> {
     public static final String FILE_EXTENSION = ".json";
-    protected NameableList<Record> records;
-    protected String name;
+    protected ConcurrentLinkedQueue<Record> records;
 
-    protected Statistic(String name) {
-        this.name = name;
-        this.records = new NameableList<Record>();
+    protected Statistic(Collection<Category> categories) {
+        this.records = categories.stream().map(Category::createRecord).collect(Collectors.toCollection(ConcurrentLinkedQueue::new));
     }
 
-    protected Statistic(String name, Collection<Record> records) {
-        this.name = name;
-        this.records = new NameableList<Record>(records);
+    protected Statistic(Category... categories) {
+        this(Arrays.asList(categories));
     }
 
-    protected Statistic(String name, Record... records) {
-        this(name, Arrays.asList(records));
-    }
-
-    protected Statistic(String name, Category... categories) {
-        this(name);
-
-        for (Category type : categories) {
-            records.add(type.createObject());
-        }
+    @Override
+    public Iterator<Record> iterator() {
+        return records.iterator();
     }
 
     public void reset() {
-        for (int i = 0; i < records.size(); i++) {
-            records.get(i).resetValue();
-        }
+        records.forEach(Record::resetValue);
     }
 
     public void saveFile(File directory) throws IOException {
         FileUtils.saveJson(new File(getSubDirectory(directory), getFileName()), this);
     }
 
-    public void deleteFile(File directory) throws SecurityException {
+    public boolean deleteFile(File directory) {
         File file = new File(getSubDirectory(directory), getFileName());
-        if (file.exists()) {
-            file.delete();
+        try {
+            return file.delete();
+        } catch (SecurityException e) {
+            return false;
         }
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public String getFileName() {
-        return name + FILE_EXTENSION;
-    }
+    public abstract String getFileName();
 
     public abstract String getSubDirectoryName();
 
@@ -70,15 +52,7 @@ public abstract class Statistic implements Nameable {
         return new File(directory, getSubDirectoryName());
     }
 
-    public List<Record> getRecords() {
-        return new ArrayList<Record>(records);
-    }
-
-    public Record getRecord(String name) {
-        return records.get(name);
-    }
-
     public Record getRecord(Category category) {
-        return getRecord(category.name());
+        return records.stream().filter(r -> r.getCategory() == category).findFirst().orElse(null);
     }
 }
