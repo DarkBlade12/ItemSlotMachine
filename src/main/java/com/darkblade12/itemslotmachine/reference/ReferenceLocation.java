@@ -3,14 +3,11 @@ package com.darkblade12.itemslotmachine.reference;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-
-import com.darkblade12.itemslotmachine.util.SafeLocation;
 
 public class ReferenceLocation {
-    protected int l;
-    protected int f;
-    protected int u;
+    protected final int l;
+    protected final int f;
+    protected final int u;
 
     public ReferenceLocation(int l, int f, int u) {
         this.l = l;
@@ -36,31 +33,15 @@ public class ReferenceLocation {
             case WEST:
                 return new ReferenceLocation(z - vZ, vX - x, y - vY);
             default:
-                return null;
+                throw new IllegalArgumentException("Value of viewDirection is not supported.");
         }
-    }
-
-    public static ReferenceLocation fromBukkitLocation(Player player, Location location) {
-        return fromBukkitLocation(player.getLocation(), Direction.getViewDirection(player), location);
     }
 
     public ReferenceLocation add(int l, int f, int u) {
         return new ReferenceLocation(this.l + l, this.f + f, this.u + u);
     }
 
-    public int getL() {
-        return l;
-    }
-
-    public int getF() {
-        return f;
-    }
-
-    public int getU() {
-        return u;
-    }
-
-    public Location getBukkitLocation(Location viewPoint, Direction viewDirection) {
+    public Location toBukkitLocation(Location viewPoint, Direction viewDirection) {
         World world = viewPoint.getWorld();
         int x = viewPoint.getBlockX();
         int y = viewPoint.getBlockY();
@@ -80,33 +61,7 @@ public class ReferenceLocation {
         }
     }
 
-    public Location getBukkitLocation(Player viewer) {
-        return getBukkitLocation(viewer.getLocation(), Direction.getViewDirection(viewer));
-    }
-
-    public SafeLocation getSafeLocation(Location viewPoint, Direction viewDirection) {
-        return SafeLocation.fromBukkitLocation(getBukkitLocation(viewPoint, viewDirection));
-    }
-
-    public SafeLocation getSafeLocation(Player viewer) {
-        return getSafeLocation(viewer.getLocation(), Direction.getViewDirection(viewer));
-    }
-
-    public Block getBukkitBlock(Location viewPoint, Direction viewDirection) {
-        return getBukkitLocation(viewPoint, viewDirection).getBlock();
-    }
-
-    public Block getBukkitBlock(Player viewer) {
-        return getBukkitBlock(viewer.getLocation(), Direction.getViewDirection(viewer));
-    }
-
-    @Override
-    public String toString() {
-        return l + "@" + f + "@" + u;
-    }
-
-    @Override
-    public ReferenceLocation clone() {
-        return new ReferenceLocation(l, f, u);
+    public Block toBukkitBlock(Location viewPoint, Direction viewDirection) {
+        return toBukkitLocation(viewPoint, viewDirection).getBlock();
     }
 }

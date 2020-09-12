@@ -1,11 +1,5 @@
 package com.darkblade12.itemslotmachine.reference;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,14 +11,20 @@ import org.bukkit.block.data.MultipleFacing;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.block.data.Rail;
 import org.bukkit.block.data.Rail.Shape;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.Wall;
 import org.bukkit.block.data.type.Wall.Height;
-import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class ReferenceBlock extends ReferenceLocation {
-    private String data;
-    private Direction initialDirection;
+    private final String data;
+    private final Direction initialDirection;
 
     public ReferenceBlock(int l, int f, int u, String data, Direction initialDirection) {
         super(l, f, u);
@@ -61,7 +61,7 @@ public class ReferenceBlock extends ReferenceLocation {
             rotatable.setRotation(newRotation);
         } else if (blockData instanceof MultipleFacing) {
             MultipleFacing multiple = (MultipleFacing) blockData;
-            List<BlockFace> faces = new ArrayList<BlockFace>(multiple.getFaces());
+            List<BlockFace> faces = new ArrayList<>(multiple.getFaces());
             for (int i = 0; i < faces.size(); i++) {
                 faces.set(i, Direction.rotate(faces.get(i), initialDirection, viewDirection));
             }
@@ -95,23 +95,10 @@ public class ReferenceBlock extends ReferenceLocation {
     }
 
     public void place(Location viewPoint, Direction viewDirection) {
-        getBukkitBlock(viewPoint, viewDirection).setBlockData(rotate(viewDirection));
+        toBukkitBlock(viewPoint, viewDirection).setBlockData(rotate(viewDirection));
     }
 
     public void place(Player viewer) {
         place(viewer.getLocation(), Direction.getViewDirection(viewer));
-    }
-
-    @Override
-    public ReferenceBlock clone() {
-        return new ReferenceBlock(l, f, u, data, initialDirection);
-    }
-
-    public String getData() {
-        return data;
-    }
-
-    public Direction getInitialDirection() {
-        return initialDirection;
     }
 }

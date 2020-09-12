@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class FileUtils {
-    private static final Gson GSON;
+    public static final Gson GSON;
 
     static {
         GsonBuilder builder = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting();

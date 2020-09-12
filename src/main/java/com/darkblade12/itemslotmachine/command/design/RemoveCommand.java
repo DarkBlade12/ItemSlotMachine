@@ -1,15 +1,14 @@
 package com.darkblade12.itemslotmachine.command.design;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.core.Message;
 import com.darkblade12.itemslotmachine.core.Permission;
 import com.darkblade12.itemslotmachine.core.command.CommandBase;
 import com.darkblade12.itemslotmachine.design.Design;
+import org.bukkit.command.CommandSender;
+
+import java.io.IOException;
+import java.util.List;
 
 public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
     public RemoveCommand() {
@@ -37,11 +36,12 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
             plugin.logException("Failed to remove design {1}: {0}", ex, name);
             plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_FAILED, name, ex.getMessage());
         }
+
         plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_SUCCEEDED, name);
     }
 
     @Override
     public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
-        return args.length == 1 ? plugin.designManager.getDesigns().getNames() : null;
+        return args.length == 1 ? plugin.designManager.getNames() : null;
     }
 }

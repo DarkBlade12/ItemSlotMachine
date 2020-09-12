@@ -128,7 +128,7 @@ public final class SlotMachine implements Nameable {
     }
 
     private void playSounds(SoundInfo[] sounds) {
-        Location location = design.getSlot().getBukkitLocation(getLocation(), buildDirection);
+        Location location = design.getSlot().toBukkitLocation(getLocation(), buildDirection);
         for (SoundInfo sound : sounds) {
             sound.play(getUser(), location);
         }
@@ -348,7 +348,7 @@ public final class SlotMachine implements Nameable {
     private void payOut(double moneyPrize, List<ItemStack> itemPrize, List<String> commands) {
         playSounds(settings.winSounds);
         if (settings.launchFireworks) {
-            Location slotLocation = design.getSlot().getBukkitLocation(getLocation(), buildDirection);
+            Location slotLocation = design.getSlot().toBukkitLocation(getLocation(), buildDirection);
             FireworkRocket.randomize().displayEffects(plugin, slotLocation.add(0.5, 2, 0.5));
         }
 
@@ -629,12 +629,12 @@ public final class SlotMachine implements Nameable {
                 }
 
                 for (ReferenceLocation possible : possibleLocs) {
-                    Block block = possible.getBukkitBlock(location, buildDirection);
+                    Block block = possible.toBukkitBlock(location, buildDirection);
                     Material above = block.getRelative(BlockFace.UP).getType();
                     Material below = block.getRelative(BlockFace.DOWN).getType();
                     if (!block.getType().isSolid() && !above.isSolid() && (below.isSolid() || flying)) {
                         Location teleportLoc = block.getLocation().add(0.5, 0, 0.5);
-                        teleportLoc.setYaw(buildDirection.getOrdinal() * 90);
+                        teleportLoc.setYaw(buildDirection.ordinal() * 90);
                         player.teleport(teleportLoc);
                         return;
                     }
@@ -687,7 +687,7 @@ public final class SlotMachine implements Nameable {
     }
 
     private Sign getSign() {
-        Block block = design.getSign().getBukkitBlock(getLocation(), buildDirection);
+        Block block = design.getSign().toBukkitBlock(getLocation(), buildDirection);
         BlockState state = block.getState();
         if (state == null || !(state instanceof Sign)) {
             return null;
@@ -700,7 +700,7 @@ public final class SlotMachine implements Nameable {
         Location location = getLocation();
         ReferenceItemFrame[] frameRefs = design.getItemFrames();
         for (int i = 0; i < frameRefs.length; i++) {
-            ItemFrame frame = frameRefs[i].getBukkitItemFrame(location, buildDirection);
+            ItemFrame frame = frameRefs[i].toBukkitItemFrame(location, buildDirection);
             if (frame == null) {
                 return null;
             }
@@ -723,12 +723,12 @@ public final class SlotMachine implements Nameable {
     }
 
     public boolean isInsideRegion(Location location) {
-        Cuboid region = design.getRegion().getCuboid(getLocation(), buildDirection);
+        Cuboid region = design.getRegion().toCuboid(getLocation(), buildDirection);
         return region.isInside(location);
     }
 
     public boolean isInteraction(Location location) {
-        return design.getSlot().getBukkitLocation(getLocation(), buildDirection).equals(location);
+        return design.getSlot().toBukkitLocation(getLocation(), buildDirection).equals(location);
     }
 
     public SlotMachineSettings getSettings() {

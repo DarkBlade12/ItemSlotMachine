@@ -1,42 +1,39 @@
 package com.darkblade12.itemslotmachine.reference;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Axis;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Rail.Shape;
 import org.bukkit.entity.Player;
 
-public enum Direction {
-    SOUTH(0),
-    WEST(1),
-    NORTH(2),
-    EAST(3);
+import java.util.HashMap;
+import java.util.Map;
 
-    private static final Map<Integer, Direction> ORDINAL_MAP = new HashMap<Integer, Direction>();
+public enum Direction {
+    SOUTH,
+    WEST,
+    NORTH,
+    EAST;
+
+    private static final Map<Integer, Direction> BY_ORDINAL = new HashMap<>();
     private static final BlockFace[] FACE_ORDER;
-    private int ordinal;
 
     static {
         for (Direction direction : values()) {
-            ORDINAL_MAP.put(direction.ordinal, direction);
+            BY_ORDINAL.put(direction.ordinal(), direction);
         }
 
-        FACE_ORDER = new BlockFace[] { BlockFace.SOUTH, BlockFace.SOUTH_SOUTH_WEST, BlockFace.SOUTH_WEST,
-                                       BlockFace.WEST_SOUTH_WEST, BlockFace.WEST, BlockFace.WEST_NORTH_WEST, BlockFace.NORTH_WEST,
-                                       BlockFace.NORTH_NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_NORTH_EAST,
-                                       BlockFace.NORTH_EAST, BlockFace.EAST_NORTH_EAST, BlockFace.EAST, BlockFace.EAST_SOUTH_EAST,
-                                       BlockFace.SOUTH_EAST, BlockFace.SOUTH_SOUTH_EAST };
-    }
-
-    private Direction(int ordinal) {
-        this.ordinal = ordinal;
+        FACE_ORDER = new BlockFace[] {
+                BlockFace.SOUTH, BlockFace.SOUTH_SOUTH_WEST, BlockFace.SOUTH_WEST,
+                BlockFace.WEST_SOUTH_WEST, BlockFace.WEST, BlockFace.WEST_NORTH_WEST, BlockFace.NORTH_WEST,
+                BlockFace.NORTH_NORTH_WEST, BlockFace.NORTH, BlockFace.NORTH_NORTH_EAST,
+                BlockFace.NORTH_EAST, BlockFace.EAST_NORTH_EAST, BlockFace.EAST, BlockFace.EAST_SOUTH_EAST,
+                BlockFace.SOUTH_EAST, BlockFace.SOUTH_SOUTH_EAST
+        };
     }
 
     public static Direction fromOrdinal(int ordinal) {
-        return ORDINAL_MAP.get(ordinal % values().length);
+        return BY_ORDINAL.get(ordinal % values().length);
     }
 
     public static Direction fromBlockFace(BlockFace face) {
@@ -63,7 +60,7 @@ public enum Direction {
         } else if (pitch >= 67.5) {
             return BlockFace.DOWN;
         }
-        
+
         return getViewDirection(player).toBlockFace();
     }
 
@@ -119,12 +116,12 @@ public enum Direction {
                 return shape;
         }
     }
-    
+
     public static Axis rotate(Axis axis, Direction initial, Direction target) {
-        if(axis == Axis.Y) {
+        if (axis == Axis.Y) {
             return axis;
         }
-        
+
         Axis result = axis;
         Direction current = initial;
         while (current != target) {
@@ -136,19 +133,11 @@ public enum Direction {
     }
 
     public Direction next() {
-        return fromOrdinal(ordinal + 1);
-    }
-
-    public Direction previous() {
-        return fromOrdinal(ordinal + (values().length - 1));
+        return fromOrdinal(ordinal() + 1);
     }
 
     public Direction opposite() {
-        return fromOrdinal(ordinal + (values().length / 2));
-    }
-
-    public int getOrdinal() {
-        return this.ordinal;
+        return fromOrdinal(ordinal() + (values().length / 2));
     }
 
     public BlockFace toBlockFace() {

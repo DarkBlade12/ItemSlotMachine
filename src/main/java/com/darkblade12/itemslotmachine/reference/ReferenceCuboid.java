@@ -1,17 +1,16 @@
 package com.darkblade12.itemslotmachine.reference;
 
+import com.darkblade12.itemslotmachine.util.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.util.Cuboid;
-
 public final class ReferenceCuboid {
-    private ReferenceLocation firstVertice;
-    private ReferenceLocation secondVertice;
+    private final ReferenceLocation firstVertex;
+    private final ReferenceLocation secondVertex;
 
-    public ReferenceCuboid(ReferenceLocation firstVertice, ReferenceLocation secondVertice) {
-        this.firstVertice = firstVertice;
-        this.secondVertice = secondVertice;
+    public ReferenceCuboid(ReferenceLocation firstVertex, ReferenceLocation secondVertex) {
+        this.firstVertex = firstVertex;
+        this.secondVertex = secondVertex;
     }
 
     public static ReferenceCuboid fromCuboid(Location viewPoint, Direction viewDirection, Cuboid cuboid) {
@@ -24,21 +23,13 @@ public final class ReferenceCuboid {
         return fromCuboid(viewer.getLocation(), Direction.getViewDirection(viewer), cuboid);
     }
 
-    public ReferenceLocation getFirstVertice() {
-        return this.firstVertice;
-    }
-
-    public ReferenceLocation getSecondVertice() {
-        return this.secondVertice;
-    }
-
-    public Cuboid getCuboid(Location viewPoint, Direction viewDirection) {
-        Location first = firstVertice.getBukkitLocation(viewPoint, viewDirection);
-        Location second = secondVertice.getBukkitLocation(viewPoint, viewDirection);
+    public Cuboid toCuboid(Location viewPoint, Direction viewDirection) {
+        Location first = firstVertex.toBukkitLocation(viewPoint, viewDirection);
+        Location second = secondVertex.toBukkitLocation(viewPoint, viewDirection);
         return new Cuboid(first, second);
     }
 
-    public Cuboid getCuboid(Player viewer) throws Exception {
-        return getCuboid(viewer.getLocation(), Direction.getViewDirection(viewer));
+    public boolean isValid() {
+        return firstVertex != null && secondVertex != null;
     }
 }

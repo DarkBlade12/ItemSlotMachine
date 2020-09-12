@@ -481,12 +481,12 @@
     "u": 0
   },
   "region": {
-    "firstVertice": {
+    "firstVertex": {
       "l": -2,
       "f": 1,
       "u": 5
     },
-    "secondVertice": {
+    "secondVertex": {
       "l": 2,
       "f": 3,
       "u": 0
