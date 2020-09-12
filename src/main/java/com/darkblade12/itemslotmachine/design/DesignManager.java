@@ -45,20 +45,17 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         comparator = new NameableComparator<>(plugin.getSettings().getDesignNamePattern());
         String wandName = plugin.formatMessage(Message.DESIGN_WAND_NAME);
         String[] wandLore = plugin.formatMessage(Message.DESIGN_WAND_LORE).split("\n");
         wand = new ItemBuilder().withType(Material.BONE).withName(wandName).withLore(wandLore).build();
 
         loadDesigns();
-        registerEvents();
     }
 
     @Override
-    public void onDisable() {
-        unregisterEvents();
-
+    protected void onDisable() {
         designs.clear();
         selections.clear();
     }

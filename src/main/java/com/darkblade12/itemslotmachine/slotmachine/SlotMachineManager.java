@@ -48,15 +48,13 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         defaultComparator = new NameableComparator<SlotMachine>(plugin.getSettings().getSlotMachineNamePattern());
         loadSlotMachines();
-        registerEvents();
     }
 
     @Override
-    public void onDisable() {
-        unregisterEvents();
+    protected void onDisable() {
         for (int i = 0; i < slots.size(); i++) {
             slots.get(i).stop(true);
         }

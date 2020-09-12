@@ -21,7 +21,7 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
         if (args.length == 0) {
             try {
-                plugin.designManager.onReload();
+                plugin.designManager.reload();
             } catch (Exception ex) {
                 plugin.sendMessage(sender, Message.COMMAND_DESIGN_RELOAD_FAILED, ex.getMessage());
                 return;

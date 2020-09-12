@@ -45,7 +45,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         Settings settings = plugin.getSettings();
         ItemBuilder builder = new ItemBuilder().withType(settings.getCoinType());
         if (!settings.getUseCommonCoinItem()) {
@@ -77,13 +77,11 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
                 }
             }
         }.runTaskTimer(plugin, 10, 10);
-        registerEvents();
     }
 
     @Override
-    public void onDisable() {
+    protected void onDisable() {
         task.cancel();
-        unregisterEvents();
     }
 
     public double calculatePrice(int coins) {

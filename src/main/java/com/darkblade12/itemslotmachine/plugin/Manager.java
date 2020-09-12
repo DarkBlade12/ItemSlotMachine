@@ -1,9 +1,9 @@
 package com.darkblade12.itemslotmachine.plugin;
 
-import java.io.File;
-
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+
+import java.io.File;
 
 public abstract class Manager<T extends PluginBase> implements Listener {
     protected final T plugin;
@@ -18,11 +18,27 @@ public abstract class Manager<T extends PluginBase> implements Listener {
         this(plugin, null);
     }
 
-    public abstract void onEnable();
+    public void enable() {
+        onEnable();
+        registerEvents();
+    }
 
-    public abstract void onDisable();
+    public void disable() {
+        unregisterEvents();
+        onDisable();
+    }
 
-    public void onReload() {
+    public void reload() {
+        unregisterEvents();
+        onReload();
+        registerEvents();
+    }
+
+    protected abstract void onEnable();
+
+    protected abstract void onDisable();
+
+    protected void onReload() {
         onDisable();
         onEnable();
     }

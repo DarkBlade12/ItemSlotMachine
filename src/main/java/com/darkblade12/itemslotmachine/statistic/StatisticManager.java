@@ -33,13 +33,13 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
     }
 
     @Override
-    public void onEnable() {
+    protected void onEnable() {
         comparator = new NameableComparator<>(plugin.getSettings().getSlotMachineNamePattern());
         loadStatistics();
     }
 
     @Override
-    public void onDisable() {
+    protected void onDisable() {
         playerStats.clear();
     }
 

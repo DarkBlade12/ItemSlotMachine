@@ -81,11 +81,11 @@ public final class ItemSlotMachine extends PluginBase {
         }
 
         try {
-            messageManager.onEnable();
-            designManager.onEnable();
-            coinManager.onEnable();
-            slotMachineManager.onEnable();
-            statisticManager.onEnable();
+            messageManager.enable();
+            designManager.enable();
+            coinManager.enable();
+            slotMachineManager.enable();
+            statisticManager.enable();
         } catch (Exception ex) {
             logException("Failed to enable managers: {0}", ex);
         }
@@ -104,7 +104,12 @@ public final class ItemSlotMachine extends PluginBase {
 
     @Override
     public void onDisable() {
-        slotMachineManager.onDisable();
+        messageManager.disable();
+        designManager.disable();
+        coinManager.disable();
+        slotMachineManager.disable();
+        statisticManager.disable();
+
         logInfo("Version {0} disabled.", getDescription().getVersion());
     }
 
@@ -119,11 +124,11 @@ public final class ItemSlotMachine extends PluginBase {
         }
 
         try {
-            messageManager.onReload();
-            designManager.onReload();
-            coinManager.onReload();
-            slotMachineManager.onReload();
-            statisticManager.onReload();
+            messageManager.reload();
+            designManager.reload();
+            coinManager.reload();
+            slotMachineManager.reload();
+            statisticManager.reload();
         } catch (Exception ex) {
             logException("Failed to reload managers: {0}", ex);
             disable();
