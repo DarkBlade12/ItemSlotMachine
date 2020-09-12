@@ -668,7 +668,7 @@ public final class SlotMachine implements Nameable {
             String itemsText = plugin.formatMessage(Message.SIGN_POT_ITEMS, itemPot.size());
             lines = new String[] { moneyText, createSpacer(), itemsText, createSpacer() };
         }
-        lines = MessageUtils.prepareSignLines(lines, 0, 2);
+        lines = MessageUtils.formatSignLines(lines, 0, 2);
         for (int i = 0; i < lines.length; i++) {
             sign.setLine(i, lines[i]);
         }

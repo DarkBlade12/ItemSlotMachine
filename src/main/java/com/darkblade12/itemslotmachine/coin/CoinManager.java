@@ -1,13 +1,17 @@
 package com.darkblade12.itemslotmachine.coin;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Settings;
+import com.darkblade12.itemslotmachine.core.Manager;
+import com.darkblade12.itemslotmachine.core.Message;
+import com.darkblade12.itemslotmachine.core.Permission;
+import com.darkblade12.itemslotmachine.core.command.CommandBase;
+import com.darkblade12.itemslotmachine.util.ItemBuilder;
+import com.darkblade12.itemslotmachine.util.MessageUtils;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -23,25 +27,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.Settings;
-import com.darkblade12.itemslotmachine.core.Manager;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.command.CommandBase;
-import com.darkblade12.itemslotmachine.util.ItemBuilder;
-import com.darkblade12.itemslotmachine.util.MessageUtils;
-import com.darkblade12.itemslotmachine.util.SafeLocation;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class CoinManager extends Manager<ItemSlotMachine> {
-    private Map<UUID, ShopInfo> lastShop;
+    private final Map<UUID, ShopInfo> lastShop;
     private ItemStack coin;
     private CommandBase<ItemSlotMachine> buyCommand;
     private BukkitTask task;
 
     public CoinManager(ItemSlotMachine plugin) {
         super(plugin);
-        lastShop = new ConcurrentHashMap<UUID, ShopInfo>();
+        lastShop = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -69,7 +69,8 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
                     SafeLocation shop = entry.getValue().getLocation();
                     Location current = player.getLocation();
-                    if (!shop.getWorldName().equals(current.getWorld().getName()) || shop.distanceSquared(current) > 64) {
+                    World world = current.getWorld();
+                    if (world == null || !shop.getWorldName().equals(world.getName()) || shop.distanceSquared(current) > 64) {
                         updateShop(player, shop.toBukkitLocation(), 1);
                         resetLastShop(id);
                     }
@@ -91,9 +92,10 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
     private String[] getLines(int coins) {
         double price = calculatePrice(coins);
-        String[] lines = { plugin.formatMessage(Message.SIGN_SHOP_HEADER), plugin.formatMessage(Message.SIGN_SHOP_COINS, coins),
-                           plugin.formatMessage(Message.SIGN_SHOP_PRICE, price), plugin.formatMessage(Message.SIGN_SHOP_SPACER) };
-        return lines;
+        return new String[] {
+                plugin.formatMessage(Message.SIGN_SHOP_HEADER), plugin.formatMessage(Message.SIGN_SHOP_COINS, coins),
+                plugin.formatMessage(Message.SIGN_SHOP_PRICE, price), plugin.formatMessage(Message.SIGN_SHOP_SPACER)
+        };
     }
 
     private void updateShop(Player player, Location signLocation, int coins) {
@@ -112,7 +114,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
             info.setCoins(coins);
         }
 
-        String[] lines = MessageUtils.prepareSignLines(getLines(coins), 2);
+        String[] lines = MessageUtils.formatSignLines(getLines(coins), 2);
         player.sendSignChange(signLocation, lines);
     }
 
@@ -155,11 +157,12 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSignChange(SignChangeEvent event) {
-        if (!event.getLine(0).equalsIgnoreCase("[CoinShop]") || !Permission.SHOP_CREATE.has(event.getPlayer())) {
+        String firstLine = event.getLine(0);
+        if (firstLine == null || !firstLine.equalsIgnoreCase("[CoinShop]") || !Permission.SHOP_CREATE.has(event.getPlayer())) {
             return;
         }
 
-        String[] lines = MessageUtils.prepareSignLines(getLines(1), 2);
+        String[] lines = MessageUtils.formatSignLines(getLines(1), 2);
         for (int i = 0; i < lines.length; i++) {
             event.setLine(i, lines[i]);
         }

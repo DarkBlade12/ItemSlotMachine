@@ -52,7 +52,7 @@ public final class MessageUtils {
         return color;
     }
 
-    public static String[] prepareSignLines(String[] lines, int... splitLines) {
+    public static String[] formatSignLines(String[] lines, int... splitLines) {
         if (lines.length > 4) {
             throw new IllegalArgumentException("Lines cannot have more than 4 elements.");
         }
