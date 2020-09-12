@@ -1,11 +1,11 @@
-package com.darkblade12.itemslotmachine.core.hook;
+package com.darkblade12.itemslotmachine.plugin.hook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;

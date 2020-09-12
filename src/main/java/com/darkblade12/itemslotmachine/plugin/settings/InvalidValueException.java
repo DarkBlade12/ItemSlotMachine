@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.settings;
+package com.darkblade12.itemslotmachine.plugin.settings;
 
 import java.text.MessageFormat;
 

@@ -2,10 +2,10 @@ package com.darkblade12.itemslotmachine.coin;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Settings;
-import com.darkblade12.itemslotmachine.core.Manager;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.command.CommandBase;
+import com.darkblade12.itemslotmachine.plugin.Manager;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import com.darkblade12.itemslotmachine.util.SafeLocation;

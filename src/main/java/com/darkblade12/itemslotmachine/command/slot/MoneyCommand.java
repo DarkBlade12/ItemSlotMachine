@@ -6,10 +6,10 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.command.CommandBase;
-import com.darkblade12.itemslotmachine.core.hook.VaultHook;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 
 public final class MoneyCommand extends CommandBase<ItemSlotMachine> {

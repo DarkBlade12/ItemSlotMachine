@@ -11,8 +11,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.settings.InvalidValueException;
-import com.darkblade12.itemslotmachine.core.settings.SettingsBase;
+import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
+import com.darkblade12.itemslotmachine.plugin.settings.SettingsBase;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
 import com.darkblade12.itemslotmachine.util.ItemUtils;

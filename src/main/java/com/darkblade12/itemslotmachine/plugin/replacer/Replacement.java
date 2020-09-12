@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.replacer;
+package com.darkblade12.itemslotmachine.plugin.replacer;
 
 public class Replacement<T> {
     private Placeholder<T> placeholder;

@@ -3,7 +3,7 @@ package com.darkblade12.itemslotmachine.slotmachine.combo;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import com.darkblade12.itemslotmachine.core.replacer.Replacer;
+import com.darkblade12.itemslotmachine.plugin.replacer.Replacer;
 
 public class CommandAction extends Action {
     private String command;

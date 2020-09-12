@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core;
+package com.darkblade12.itemslotmachine.plugin;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

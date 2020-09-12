@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.replacer;
+package com.darkblade12.itemslotmachine.plugin.replacer;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,12 +1,12 @@
-package com.darkblade12.itemslotmachine.core.command;
+package com.darkblade12.itemslotmachine.plugin.command;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 
 final class CommandHelp<T extends PluginBase> {
     private final CommandHandler<T> handler;

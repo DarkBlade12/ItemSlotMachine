@@ -1,9 +1,9 @@
 package com.darkblade12.itemslotmachine.command.design;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.command.CommandBase;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.design.Design;
 import org.bukkit.command.CommandSender;
 

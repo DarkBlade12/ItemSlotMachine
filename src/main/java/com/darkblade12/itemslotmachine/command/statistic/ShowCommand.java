@@ -1,10 +1,10 @@
 package com.darkblade12.itemslotmachine.command.statistic;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.PluginBase;
-import com.darkblade12.itemslotmachine.core.command.CommandBase;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
 import com.darkblade12.itemslotmachine.statistic.Record;

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 
-import com.darkblade12.itemslotmachine.core.settings.SettingsBase;
+import com.darkblade12.itemslotmachine.plugin.settings.SettingsBase;
 
 public class Settings extends SettingsBase<ItemSlotMachine> {
     private static final String DEFAULT_DESIGN_NAME_PATTERN = "design{0}";

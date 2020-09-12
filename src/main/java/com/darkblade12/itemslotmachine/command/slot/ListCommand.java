@@ -6,9 +6,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.command.CommandBase;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 
 public final class ListCommand extends CommandBase<ItemSlotMachine> {

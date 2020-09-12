@@ -7,13 +7,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.darkblade12.itemslotmachine.coin.CoinManager;
-import com.darkblade12.itemslotmachine.core.PluginBase;
-import com.darkblade12.itemslotmachine.core.command.CommandRegistrationException;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.command.CommandRegistrationException;
 import com.darkblade12.itemslotmachine.command.CoinCommandHandler;
 import com.darkblade12.itemslotmachine.command.DesignCommandHandler;
 import com.darkblade12.itemslotmachine.command.SlotCommandHandler;
 import com.darkblade12.itemslotmachine.command.StatisticCommandHandler;
-import com.darkblade12.itemslotmachine.core.hook.VaultHook;
+import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
 import com.darkblade12.itemslotmachine.design.DesignManager;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;

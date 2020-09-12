@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.command;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.command.CommandHandler;
-import com.darkblade12.itemslotmachine.core.command.CommandRegistrationException;
+import com.darkblade12.itemslotmachine.plugin.command.CommandHandler;
+import com.darkblade12.itemslotmachine.plugin.command.CommandRegistrationException;
 import com.darkblade12.itemslotmachine.command.slot.BuildCommand;
 import com.darkblade12.itemslotmachine.command.slot.ItemCommand;
 import com.darkblade12.itemslotmachine.command.slot.ListCommand;

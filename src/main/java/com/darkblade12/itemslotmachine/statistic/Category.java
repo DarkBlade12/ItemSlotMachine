@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.statistic;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 
 import java.util.Arrays;
 import java.util.HashMap;

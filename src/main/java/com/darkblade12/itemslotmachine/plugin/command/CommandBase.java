@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command;
+package com.darkblade12.itemslotmachine.plugin.command;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 
 import org.bukkit.command.CommandSender;
 
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 
 public abstract class CommandBase<T extends PluginBase> {
     private static final Pattern OPTIONAL_ARGUMENT = Pattern.compile("\\[.*?\\]");

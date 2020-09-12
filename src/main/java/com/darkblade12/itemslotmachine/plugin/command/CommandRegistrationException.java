@@ -1,4 +1,4 @@
-package com.darkblade12.itemslotmachine.core.command;
+package com.darkblade12.itemslotmachine.plugin.command;
 
 public class CommandRegistrationException extends Exception {
     private static final long serialVersionUID = 8484187501487250881L;

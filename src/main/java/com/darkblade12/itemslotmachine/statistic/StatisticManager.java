@@ -1,7 +1,7 @@
 package com.darkblade12.itemslotmachine.statistic;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Manager;
+import com.darkblade12.itemslotmachine.plugin.Manager;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.util.FileUtils;

@@ -1,9 +1,9 @@
-package com.darkblade12.itemslotmachine.core.hook;
+package com.darkblade12.itemslotmachine.plugin.hook;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 
 public abstract class Hook<T extends PluginBase> {
     protected T base;

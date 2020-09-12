@@ -1,8 +1,8 @@
-package com.darkblade12.itemslotmachine.core.settings;
+package com.darkblade12.itemslotmachine.plugin.settings;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.darkblade12.itemslotmachine.core.PluginBase;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 
 public abstract class SettingsBase<T extends PluginBase> {
     protected T plugin;

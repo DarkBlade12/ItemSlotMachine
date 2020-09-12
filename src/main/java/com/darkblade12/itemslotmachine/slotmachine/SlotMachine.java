@@ -27,12 +27,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Settings;
-import com.darkblade12.itemslotmachine.core.Message;
-import com.darkblade12.itemslotmachine.core.Permission;
-import com.darkblade12.itemslotmachine.core.hook.VaultHook;
-import com.darkblade12.itemslotmachine.core.replacer.Placeholder;
-import com.darkblade12.itemslotmachine.core.replacer.Replacer;
-import com.darkblade12.itemslotmachine.core.settings.InvalidValueException;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
+import com.darkblade12.itemslotmachine.plugin.replacer.Placeholder;
+import com.darkblade12.itemslotmachine.plugin.replacer.Replacer;
+import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.design.DesignBuildException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;

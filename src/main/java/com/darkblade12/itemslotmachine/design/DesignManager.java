@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.design;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.core.Manager;
-import com.darkblade12.itemslotmachine.core.Message;
+import com.darkblade12.itemslotmachine.plugin.Manager;
+import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.util.Cuboid;
