@@ -1,18 +1,17 @@
 package com.darkblade12.itemslotmachine.command.statistic;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public final class ResetCommand extends CommandBase<ItemSlotMachine> {
     public ResetCommand() {
@@ -31,12 +30,14 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
                     plugin.sendMessage(sender, Message.SLOT_MACHINE_NOT_FOUND, name);
                     return;
                 }
+
                 name = slot.getName();
                 stat = plugin.statisticManager.getSlotMachineStatistic(slot);
-                if(stat == null) {
+                if (stat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_SLOT_MACHINE, name);
                     return;
                 }
+
                 break;
             case "player":
                 OfflinePlayer player = plugin.getPlayer(name);
@@ -44,12 +45,14 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
                     plugin.sendMessage(sender, Message.PLAYER_NOT_FOUND, name);
                     return;
                 }
+
                 name = player.getName();
                 stat = plugin.statisticManager.getPlayerStatistic(name);
                 if (stat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_PLAYER, name);
                     return;
                 }
+
                 break;
             default:
                 displayUsage(sender, label);
@@ -80,14 +83,15 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
         } else {
             message = Message.COMMAND_STATISTIC_RESET_PLAYER_SUCCEEDED;
         }
+
         plugin.sendMessage(sender, message, name);
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
-                return Arrays.asList(new String[] { "slot", "player" });
+                return Arrays.asList("slot", "player");
             case 2:
                 switch (args[0].toLowerCase()) {
                     case "slot":

@@ -4,7 +4,7 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Settings;
 import com.darkblade12.itemslotmachine.plugin.Manager;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
@@ -156,7 +156,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSignChange(SignChangeEvent event) {
         String firstLine = event.getLine(0);
-        if (firstLine == null || !firstLine.equalsIgnoreCase("[CoinShop]") || !Permission.SHOP_CREATE.has(event.getPlayer())) {
+        if (firstLine == null || !firstLine.equalsIgnoreCase("[CoinShop]") || !Permission.SHOP_CREATE.test(event.getPlayer())) {
             return;
         }
 

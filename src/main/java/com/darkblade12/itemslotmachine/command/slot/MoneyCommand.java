@@ -1,16 +1,15 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import org.bukkit.command.CommandSender;
+
+import java.util.Arrays;
+import java.util.List;
 
 public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
     public MoneyCommand() {
@@ -95,19 +94,19 @@ public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
                 break;
             default:
                 displayUsage(sender, label);
-                return;
+                break;
         }
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
                 return plugin.slotMachineManager.getSlotMachines().getNames();
             case 2:
-                return Arrays.asList(new String[] { "clear", "deposit", "withdraw", "set" });
+                return Arrays.asList("clear", "deposit", "withdraw", "set");
             case 3:
-                return Arrays.asList(new String[] { "default", "1", "10", "100", "1000" });
+                return Arrays.asList("default", "1", "10", "100", "1000");
             default:
                 return null;
         }

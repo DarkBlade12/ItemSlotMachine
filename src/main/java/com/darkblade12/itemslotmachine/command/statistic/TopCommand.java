@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.command.statistic;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.PluginBase;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.statistic.Category;
@@ -64,7 +64,7 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         List<Category> categories = null;
         if (args.length > 1) {
             boolean slotOnly = args[0].equalsIgnoreCase("slot");
@@ -75,7 +75,6 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
             case 1:
                 return Arrays.asList("slot", "player");
             case 2:
-                boolean slotOnly = args[0].equalsIgnoreCase("slot");
                 return categories.stream().map(MessageUtils::formatName).collect(Collectors.toList());
             default:
                 if (args.length >= 3) {
@@ -90,6 +89,7 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
                     }
                     return completions;
                 }
+
                 return null;
         }
     }
@@ -108,7 +108,6 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
                 return ChatColor.BLUE;
             default:
                 return ChatColor.GRAY;
-
         }
     }
 
@@ -133,6 +132,7 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
             String line = plugin.formatMessage(Message.COMMAND_STATISTIC_TOP_LINE, color, symbol, name, value);
             text.append("\n").append(ChatColor.RESET).append(line);
         }
+
         return text.toString();
     }
 }

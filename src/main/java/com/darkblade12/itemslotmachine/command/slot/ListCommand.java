@@ -1,15 +1,14 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
-import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import java.util.List;
 
 public final class ListCommand extends CommandBase<ItemSlotMachine> {
     public ListCommand() {
@@ -30,6 +29,7 @@ public final class ListCommand extends CommandBase<ItemSlotMachine> {
             String line = plugin.formatMessage(Message.COMMAND_SLOT_LIST_LINE, slot.getName(), spinning);
             list.append("\n").append(ChatColor.RESET).append(line);
         }
+
         plugin.sendMessage(sender, Message.COMMAND_SLOT_LIST_DISPLAYED, list.toString());
     }
 }

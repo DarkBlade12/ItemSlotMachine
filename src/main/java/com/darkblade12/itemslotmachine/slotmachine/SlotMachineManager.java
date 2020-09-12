@@ -28,7 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.plugin.Manager;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
@@ -307,7 +307,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
 
                 boolean holdingUseItem = !hand.getType().isBlock() || hand.getType() == Material.AIR;
                 boolean holdingCoin = plugin.coinManager.isCoin(hand);
-                if (holdingUseItem && !holdingCoin && Permission.SLOT_INSPECT.has(player)) {
+                if (holdingUseItem && !holdingCoin && Permission.SLOT_INSPECT.test(player)) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_INSPECTED, name);
                     return;
                 } else if (!slot.isInteraction(clickedLoc) || !holdingCoin) {

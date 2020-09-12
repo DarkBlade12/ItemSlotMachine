@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.reference.Direction;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
@@ -57,7 +57,7 @@ public class MoveCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
                 return plugin.slotMachineManager.getSlotMachines().getNames();

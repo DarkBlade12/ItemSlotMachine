@@ -1,9 +1,12 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
+import com.darkblade12.itemslotmachine.util.MessageUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -11,13 +14,11 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
-import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
-import com.darkblade12.itemslotmachine.util.ItemUtils;
-import com.darkblade12.itemslotmachine.util.MessageUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class ItemCommand extends CommandBase<ItemSlotMachine> {
     public ItemCommand() {
@@ -67,7 +68,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                     plugin.sendMessage(player, Message.COMMAND_SLOT_ITEM_EMPTY_HAND);
                     return;
                 }
-                list = Arrays.asList(item);
+                list = Collections.singletonList(item);
                 break;
             default:
                 String items = StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ");
@@ -99,34 +100,28 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                 break;
             default:
                 displayUsage(sender, label);
-                return;
+                break;
         }
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
                 return plugin.slotMachineManager.getNames();
             case 2:
-                return Arrays.asList(new String[] { "clear", "add", "set" });
+                return Arrays.asList("clear", "add", "set");
             case 3:
-                List<String> completions = new ArrayList<String>(getItemNames());
-                completions.add("default");
-                completions.add("hand");
-                return completions;
+                List<String> suggestions = new ArrayList<>(getItemNames());
+                suggestions.add("default");
+                suggestions.add("hand");
+                return suggestions;
             default:
                 return args.length > 3 ? getItemNames() : null;
         }
     }
 
     private static List<String> getItemNames() {
-        List<String> names = new ArrayList<String>();
-        for (Material material : Material.values()) {
-            if (material.isItem()) {
-                names.add(material.getKey().getKey());
-            }
-        }
-        return names;
+        return Arrays.stream(Material.values()).filter(Material::isItem).map(m -> m.getKey().getKey()).collect(Collectors.toList());
     }
 }

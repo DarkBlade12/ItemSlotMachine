@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.command.design;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import org.bukkit.ChatColor;

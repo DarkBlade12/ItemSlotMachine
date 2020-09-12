@@ -1,10 +1,10 @@
 package com.darkblade12.itemslotmachine.command.design;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import org.bukkit.command.CommandSender;
@@ -50,7 +50,7 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         return args.length == 1 ? plugin.designManager.getNames() : null;
     }
 }

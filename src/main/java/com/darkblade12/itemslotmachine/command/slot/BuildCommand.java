@@ -1,16 +1,15 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.design.Design;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
-import com.darkblade12.itemslotmachine.design.Design;
-import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import java.util.List;
 
 public final class BuildCommand extends CommandBase<ItemSlotMachine> {
     public BuildCommand() {
@@ -51,7 +50,7 @@ public final class BuildCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         return args.length == 1 ? plugin.designManager.getNames() : null;
     }
 }

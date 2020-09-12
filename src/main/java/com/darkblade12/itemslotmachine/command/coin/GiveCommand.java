@@ -1,19 +1,18 @@
 package com.darkblade12.itemslotmachine.command.coin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
-import com.darkblade12.itemslotmachine.util.ItemUtils;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class GiveCommand extends CommandBase<ItemSlotMachine> {
     public GiveCommand() {
@@ -65,16 +64,12 @@ public final class GiveCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
-                List<String> completions = new ArrayList<String>();
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    completions.add(player.getName());
-                }
-                return completions;
+                return Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList());
             case 2:
-                return Arrays.asList(new String[] { "1", "10", "25", "50" });
+                return Arrays.asList("1", "10", "25", "50");
             default:
                 return null;
         }

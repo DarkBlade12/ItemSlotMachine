@@ -1,18 +1,17 @@
 package com.darkblade12.itemslotmachine.command.coin;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
-import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
-import com.darkblade12.itemslotmachine.util.ItemUtils;
+import java.util.Arrays;
+import java.util.List;
 
 public final class BuyCommand extends CommandBase<ItemSlotMachine> {
     public BuyCommand() {
@@ -62,7 +61,7 @@ public final class BuyCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
-        return args.length == 1 ? Arrays.asList(new String[] { "1", "10", "25", "50" }) : null;
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+        return args.length == 1 ? Arrays.asList("1", "10", "25", "50") : null;
     }
 }

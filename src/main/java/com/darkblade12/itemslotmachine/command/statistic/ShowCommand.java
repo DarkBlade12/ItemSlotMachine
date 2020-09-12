@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.command.statistic;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.PluginBase;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
@@ -69,12 +69,12 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
                 break;
             default:
                 displayUsage(sender, label);
-                return;
+                break;
         }
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
                 return Arrays.asList("slot", "player");
@@ -107,6 +107,7 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
             String line = plugin.formatMessage(Message.COMMAND_STATISTIC_SHOW_LINE, dice, color, category, altColor, value);
             text.append("\n").append(ChatColor.RESET).append(line);
         }
+
         return text.toString();
     }
 }

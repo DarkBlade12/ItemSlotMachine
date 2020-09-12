@@ -1,25 +1,21 @@
 package com.darkblade12.itemslotmachine.plugin.command;
 
-import java.util.Arrays;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
+import org.bukkit.command.CommandSender;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.bukkit.command.CommandSender;
-
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.PluginBase;
-
 public abstract class CommandBase<T extends PluginBase> {
-    private static final Pattern OPTIONAL_ARGUMENT = Pattern.compile("\\[.*?\\]");
+    private static final Pattern OPTIONAL_ARGUMENT_PATTERN = Pattern.compile("\\[.+?]");
     protected final String name;
     protected final boolean executableAsConsole;
-    protected final Permission permission;
+    protected final PermissionProvider permission;
     protected final String[] usageArgs;
     protected final int minArgs;
     protected final int maxArgs;
 
-    protected CommandBase(String name, boolean executableAsConsole, Permission permission, boolean limitArgs,
-                          String... usageArgs) {
+    protected CommandBase(String name, boolean executableAsConsole, PermissionProvider permission, boolean limitArgs, String... usageArgs) {
         this.name = name.toLowerCase();
         this.executableAsConsole = executableAsConsole;
         this.permission = permission;
@@ -32,36 +28,37 @@ public abstract class CommandBase<T extends PluginBase> {
                 maxArgs++;
             }
 
-            if (!OPTIONAL_ARGUMENT.matcher(arg).matches()) {
+            if (!OPTIONAL_ARGUMENT_PATTERN.matcher(arg).matches()) {
                 minArgs++;
             }
         }
+
         this.minArgs = minArgs;
         this.maxArgs = maxArgs;
     }
 
-    protected CommandBase(String name, boolean executableAsConsole, Permission permission, String... usageArgs) {
+    protected CommandBase(String name, boolean executableAsConsole, PermissionProvider permission, String... usageArgs) {
         this(name, executableAsConsole, permission, true, usageArgs);
     }
 
-    protected CommandBase(String name, Permission permission, boolean limitArgs, String... usageArgs) {
+    protected CommandBase(String name, PermissionProvider permission, boolean limitArgs, String... usageArgs) {
         this(name, true, permission, limitArgs, usageArgs);
     }
 
-    protected CommandBase(String name, Permission permission, String... usageArgs) {
+    protected CommandBase(String name, PermissionProvider permission, String... usageArgs) {
         this(name, true, permission, true, usageArgs);
     }
 
     public abstract void execute(T plugin, CommandSender sender, String label, String[] args);
 
-    public List<String> getCompletions(T plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(T plugin, CommandSender sender, String[] args) {
         return null;
     }
 
     public String getUsage(String label) {
         StringBuilder builder = new StringBuilder("/" + label + " " + name);
         for (String arg : usageArgs) {
-            builder.append(" " + arg);
+            builder.append(" ").append(arg);
         }
         return builder.toString();
     }
@@ -74,8 +71,8 @@ public abstract class CommandBase<T extends PluginBase> {
         return args.length >= minArgs && (maxArgs == -1 || args.length <= maxArgs);
     }
 
-    public boolean hasPermission(CommandSender sender) {
-        return permission.has(sender);
+    public boolean testPermission(CommandSender sender) {
+        return permission.test(sender);
     }
 
     public String getName() {
@@ -86,15 +83,7 @@ public abstract class CommandBase<T extends PluginBase> {
         return executableAsConsole;
     }
 
-    public Permission getPermission() {
+    public PermissionProvider getPermission() {
         return permission;
-    }
-
-    public String[] getUsageArgs() {
-        return Arrays.copyOf(usageArgs, usageArgs.length);
-    }
-
-    public int getMinArgs() {
-        return minArgs;
     }
 }

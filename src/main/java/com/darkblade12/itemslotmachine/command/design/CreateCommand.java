@@ -1,15 +1,14 @@
 package com.darkblade12.itemslotmachine.command.design;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.design.DesignIncompleteException;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.Cuboid;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public final class CreateCommand extends CommandBase<ItemSlotMachine> {
     public CreateCommand() {

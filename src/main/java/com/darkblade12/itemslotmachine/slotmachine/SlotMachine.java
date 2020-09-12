@@ -28,7 +28,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Settings;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
 import com.darkblade12.itemslotmachine.plugin.replacer.Placeholder;
 import com.darkblade12.itemslotmachine.plugin.replacer.Replacer;
@@ -784,7 +784,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public boolean hasModifyPermission(Player player) {
-        return player.hasPermission("itemslotmachine.slot.modify." + name) || Permission.SLOT_MODIFY_ALL.has(player);
+        return player.hasPermission("itemslotmachine.slot.modify." + name) || Permission.SLOT_MODIFY_ALL.test(player);
     }
 
     public boolean hasUsePermission(Player player) {
@@ -792,6 +792,6 @@ public final class SlotMachine implements Nameable {
         if (settings.individualPermission) {
             permission += "." + name;
         }
-        return player.hasPermission(permission) || Permission.SLOT_USE_ALL.has(player);
+        return player.hasPermission(permission) || Permission.SLOT_USE_ALL.test(player);
     }
 }

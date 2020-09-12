@@ -1,14 +1,13 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
     public RemoveCommand() {
@@ -30,7 +29,7 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         return args.length == 1 ? plugin.slotMachineManager.getNames() : null;
     }
 }

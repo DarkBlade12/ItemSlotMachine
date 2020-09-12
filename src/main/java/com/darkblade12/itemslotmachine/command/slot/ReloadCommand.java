@@ -1,15 +1,14 @@
 package com.darkblade12.itemslotmachine.command.slot;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachineException;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
     public ReloadCommand() {
@@ -22,11 +21,12 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
             long startTime = System.currentTimeMillis();
             if (!plugin.onReload()) {
                 plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_FAILED);
-            } else {
-                long duration = System.currentTimeMillis() - startTime;
-                String version = plugin.getDescription().getVersion();
-                plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SUCCEEDED, version, duration);
+                return;
             }
+
+            long duration = System.currentTimeMillis() - startTime;
+            String version = plugin.getDescription().getVersion();
+            plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SUCCEEDED, version, duration);
             return;
         }
 
@@ -45,11 +45,12 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
             plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SINGLE_FAILED, name, ex.getMessage());
             return;
         }
+
         plugin.sendMessage(sender, Message.COMMAND_SLOT_RELOAD_SINGLE_SUCCEEDED, name);
     }
 
     @Override
-    public List<String> getCompletions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         return args.length == 1 ? plugin.slotMachineManager.getNames() : null;
     }
 }

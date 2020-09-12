@@ -1,20 +1,19 @@
 package com.darkblade12.itemslotmachine.plugin.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
 import org.bukkit.command.CommandSender;
 
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.Permission;
-import com.darkblade12.itemslotmachine.plugin.PluginBase;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class HelpCommand<T extends PluginBase> extends CommandBase<T> {
-    private final CommandHelp<T> help;
+    private final CommandHelpIndex<T> help;
 
-    public HelpCommand(CommandHandler<T> handler, int commandsPerPage) {
-        super("help", Permission.NONE, "[page]");
-        help = new CommandHelp<T>(handler, commandsPerPage);
+    HelpCommand(CommandHandler<T> handler, int commandsPerPage) {
+        super("help", PermissionProvider.NONE, "[page]");
+        help = new CommandHelpIndex<>(handler, commandsPerPage);
     }
 
     @Override
@@ -24,7 +23,7 @@ class HelpCommand<T extends PluginBase> extends CommandBase<T> {
             String input = args[0];
             try {
                 page = Integer.parseInt(input);
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException e) {
                 plugin.sendMessage(sender, Message.COMMAND_HELP_PAGE_INVALID, input);
                 return;
             }
@@ -35,21 +34,15 @@ class HelpCommand<T extends PluginBase> extends CommandBase<T> {
             }
         }
 
-        help.displayPage(sender, label, page);
+        help.displayPage(plugin, sender, label, page);
     }
 
     @Override
-    public List<String> getCompletions(T plugin, CommandSender sender, String[] args) {
+    public List<String> getSuggestions(T plugin, CommandSender sender, String[] args) {
         if (args.length != 1) {
             return null;
         }
 
-        int pages = help.getPages(sender);
-        List<String> completions = new ArrayList<>(pages);
-        for (int i = 1; i <= pages; i++) {
-            completions.add(String.valueOf(i));
-        }
-        return completions;
+        return IntStream.rangeClosed(1, help.getPages(sender)).mapToObj(String::valueOf).collect(Collectors.toList());
     }
-
 }

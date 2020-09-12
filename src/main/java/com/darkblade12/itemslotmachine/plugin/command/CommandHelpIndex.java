@@ -1,18 +1,17 @@
 package com.darkblade12.itemslotmachine.plugin.command;
 
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.PluginBase;
+import org.bukkit.command.CommandSender;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.plugin.PluginBase;
-
-final class CommandHelp<T extends PluginBase> {
+final class CommandHelpIndex<T extends PluginBase> {
     private final CommandHandler<T> handler;
     private final int commandsPerPage;
 
-    public CommandHelp(CommandHandler<T> handler, int commandsPerPage) {
+    public CommandHelpIndex(CommandHandler<T> handler, int commandsPerPage) {
         if (commandsPerPage < 1) {
             throw new IllegalArgumentException("The value of commandsPerPage cannot be lower than 1.");
         }
@@ -20,24 +19,20 @@ final class CommandHelp<T extends PluginBase> {
         this.commandsPerPage = commandsPerPage;
     }
 
-    public void displayPage(CommandSender sender, String label, int page) {
-        T plugin = handler.getPlugin();
+    public void displayPage(T plugin, CommandSender sender, String label, int page) {
         List<CommandBase<T>> visible = getVisibleCommands(sender);
         StringBuilder message = new StringBuilder(plugin.formatMessage(Message.COMMAND_HELP_HEADER));
         for (int index = (page - 1) * commandsPerPage; index <= page * commandsPerPage - 1; index++) {
             if (index > visible.size() - 1) {
                 break;
             }
-            message.append("\n\u00A7r").append(getInfo(visible.get(index), label));
+            message.append("\n\u00A7r").append(getInfo(plugin, visible.get(index), label));
         }
+
         int pages = getPages(sender);
         String currentPage = (page == pages ? "\u00A76\u00A7l" : "\u00A7a\u00A7l") + page;
         message.append("\n\u00A7r").append(plugin.formatMessage(Message.COMMAND_HELP_FOOTER, currentPage, pages));
         sender.sendMessage(message.toString());
-    }
-
-    public int getCommandsPerPage() {
-        return commandsPerPage;
     }
 
     public boolean hasPage(CommandSender sender, int page) {
@@ -53,26 +48,27 @@ final class CommandHelp<T extends PluginBase> {
     private List<CommandBase<T>> getVisibleCommands(CommandSender sender) {
         List<CommandBase<T>> visible = new ArrayList<>();
         for (CommandBase<T> command : handler) {
-            if (command.hasPermission(sender)) {
+            if (command.testPermission(sender)) {
                 visible.add(command);
             }
         }
         return visible;
     }
 
-    private String getInfo(CommandBase<T> command, String label) {
-        T plugin = handler.getPlugin();
+    private String getInfo(T plugin, CommandBase<T> command, String label) {
         String usage = command.getUsage(label);
         String commandName = command.getName();
         String defaultLabel = handler.getDefaultLabel();
-        String descriptionText;
+        String description;
+
         if (commandName.equals("help")) {
-            descriptionText = plugin.formatMessage(Message.COMMAND_HELP_DESCRIPTION, defaultLabel);
+            description = plugin.formatMessage(Message.COMMAND_HELP_DESCRIPTION, defaultLabel);
         } else {
             Message message = Message.fromKey("command." + defaultLabel + "." + commandName + ".description");
-            descriptionText = plugin.formatMessage(message);
+            description = plugin.formatMessage(message);
         }
+
         String permission = command.getPermission().getNode();
-        return plugin.formatMessage(Message.COMMAND_HELP_COMMAND_INFO, usage, descriptionText, permission);
+        return plugin.formatMessage(Message.COMMAND_HELP_COMMAND_INFO, usage, description, permission);
     }
 }

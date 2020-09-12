@@ -1,20 +1,9 @@
-package com.darkblade12.itemslotmachine.plugin;
+package com.darkblade12.itemslotmachine;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.darkblade12.itemslotmachine.plugin.command.PermissionProvider;
 import org.bukkit.command.CommandSender;
 
-public enum Permission {
-    NONE("none") {
-        @Override
-        public boolean has(CommandSender sender) {
-            return true;
-        }
-    },
+public enum Permission implements PermissionProvider {
     ALL("itemslotmachine.*"),
     COMMAND_ALL("itemslotmachine.command.*", ALL),
     COMMAND_DESIGN_ALL("itemslotmachine.command.design.*", COMMAND_ALL),
@@ -50,90 +39,33 @@ public enum Permission {
     SLOT_INSPECT("itemslotmachine.slot.inspect", SLOT_ALL),
     SHOP_CREATE("itemslotmachine.shop.create", ALL);
 
-    private static final Map<String, Permission> NAME_MAP = new HashMap<>();
-    private static final Map<String, Permission> NODE_MAP = new HashMap<>();
     private final String node;
     private final Permission parent;
 
-    static {
-        for (Permission perm : values()) {
-            NAME_MAP.put(perm.name(), perm);
-            if (perm == NONE) {
-                continue;
-            }
-            NODE_MAP.put(perm.node, perm);
-        }
-    }
-
-    private Permission(String node, Permission parent) {
+    Permission(String node, Permission parent) {
         this.node = node;
         this.parent = parent;
     }
 
-    private Permission(String node) {
+    Permission(String node) {
         this(node, null);
     }
 
-    public static Permission fromName(String name) {
-        return NAME_MAP.getOrDefault(name.toUpperCase(), null);
+    @Override
+    public boolean test(CommandSender sender) {
+        return sender.hasPermission(node) || testParent(sender);
     }
 
-    public static Permission fromNode(String node) {
-        return NODE_MAP.getOrDefault(node.toLowerCase(), null);
+    public boolean testParent(CommandSender sender) {
+        return parent != null && parent.test(sender);
     }
 
-    public static boolean hasAny(CommandSender sender, Iterable<String> names) {
-        for (String name : names) {
-            Permission perm = fromName(name);
-            if (perm != null && perm.has(sender) || sender.hasPermission(name)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public static boolean hasAny(CommandSender sender, String... names) {
-        return hasAny(sender, Arrays.asList(names));
-    }
-
-    public static boolean hasAll(CommandSender sender, Iterable<String> names) {
-        for (String name : names) {
-            if (sender.hasPermission(name)) {
-                continue;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean hasAll(CommandSender sender, String... name) {
-        return hasAll(sender, Arrays.asList(name));
-    }
-
+    @Override
     public String getNode() {
         return node;
     }
 
     public Permission getParent() {
         return parent;
-    }
-
-    public List<Permission> getChildren() {
-        List<Permission> children = new ArrayList<Permission>();
-        for (Permission perm : values()) {
-            if (perm.getParent() == this) {
-                children.add(perm);
-            }
-        }
-        return children;
-    }
-
-    public boolean has(CommandSender sender) {
-        return sender.hasPermission(node) || hasParent(sender);
-    }
-
-    public boolean hasParent(CommandSender sender) {
-        return parent != null && parent.has(sender);
     }
 }
