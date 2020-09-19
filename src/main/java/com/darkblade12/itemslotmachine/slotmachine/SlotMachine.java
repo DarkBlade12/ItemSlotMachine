@@ -138,9 +138,14 @@ public final class SlotMachine implements Nameable {
     }
 
     private void playSounds(SoundInfo[] sounds) {
+        Player user = getUser();
         Location location = design.getSlot().toBukkitLocation(getLocation(), buildDirection);
         for (SoundInfo sound : sounds) {
-            sound.play(getUser(), location);
+            if (sound.isBroadcast()) {
+                sound.play(location);
+            } else if (user != null) {
+                sound.play(user, location);
+            }
         }
     }
 
@@ -251,10 +256,12 @@ public final class SlotMachine implements Nameable {
                         frames[i].setItem(new ItemStack(symbol));
                     } else if (i == frames.length - 1) {
                         cancel();
+
                         Material[] pattern = new Material[frames.length];
                         for (int j = 0; j < frames.length; j++) {
                             pattern[j] = frames[j].getItem().getType();
                         }
+
                         endSpin(pattern);
                     }
                 }
@@ -337,15 +344,16 @@ public final class SlotMachine implements Nameable {
                 statManager.trySave(slotStat);
             }
 
-            Player user = getUser();
-            PlayerStatistic userStat = statManager.getPlayerStatistic(user, true);
-            if (userStat != null) {
-                userStat.getRecord(Category.LOST_SPINS).increaseValue(1);
-                statManager.trySave(userStat);
-            }
+            PlayerStatistic userStat = statManager.getPlayerStatistic(userId, true);
+            userStat.getRecord(Category.LOST_SPINS).increaseValue(1);
+            statManager.trySave(userStat);
 
             playSounds(settings.loseSounds);
-            plugin.sendMessage(user, Message.SLOT_MACHINE_LOST);
+
+            Player user = getUser();
+            if (user != null) {
+                plugin.sendMessage(user, Message.SLOT_MACHINE_LOST);
+            }
         } else {
             commands.addAll(Arrays.asList(settings.winCommands));
             payOut(moneyPrize, itemPrize, commands);
@@ -371,11 +379,8 @@ public final class SlotMachine implements Nameable {
             statManager.trySave(slotStat);
         }
 
-        Player user = getUser();
-        PlayerStatistic userStat = statManager.getPlayerStatistic(user, true);
-        if (userStat != null) {
-            userStat.getRecord(Category.WON_SPINS).increaseValue(1);
-        }
+        PlayerStatistic userStat = statManager.getPlayerStatistic(userId, true);
+        userStat.getRecord(Category.WON_SPINS).increaseValue(1);
 
         StringBuilder prizeText = new StringBuilder();
         if (moneyPrize > 0) {
@@ -383,20 +388,20 @@ public final class SlotMachine implements Nameable {
                 moneyPrize *= 1.0 - settings.moneyPotHouseCut / 100.0;
             }
 
-            if (userStat != null) {
-                userStat.getRecord(Category.WON_MONEY).increaseValue(moneyPrize);
-            }
+            userStat.getRecord(Category.WON_MONEY).increaseValue(moneyPrize);
 
             VaultHook vault = plugin.getVaultHook();
             vault.depositPlayer(Bukkit.getOfflinePlayer(userId), moneyPrize);
             prizeText.append(ChatColor.YELLOW).append(moneyPrize).append(vault.getCurrencyName(moneyPrize, true));
         }
-        if (itemPrize.size() > 0) {
-            ItemUtils.giveItems(user, itemPrize);
 
-            if (userStat != null) {
-                userStat.getRecord(Category.WON_ITEMS).increaseValue(itemPrize.size());
+        Player user = getUser();
+        if (itemPrize.size() > 0) {
+            if (user != null) {
+                ItemUtils.giveItems(user, itemPrize);
             }
+
+            userStat.getRecord(Category.WON_ITEMS).increaseValue(itemPrize.size());
 
             if (prizeText.length() > 0) {
                 prizeText.append(" ").append(ChatColor.GOLD).append(plugin.formatMessage(Message.WORD_AND)).append(" ");
@@ -404,13 +409,16 @@ public final class SlotMachine implements Nameable {
             prizeText.append(MessageUtils.toString(itemPrize));
         }
 
-        if (userStat != null) {
-            statManager.trySave(userStat);
-        }
+        statManager.trySave(userStat);
 
         if (commands.size() > 0) {
             executeCommands(commands, moneyPrize, itemPrize);
         }
+
+        if (user == null) {
+            return;
+        }
+
         plugin.sendMessage(user, Message.SLOT_MACHINE_WON, prizeText.toString());
     }
 
@@ -551,10 +559,10 @@ public final class SlotMachine implements Nameable {
         stop(false);
     }
 
-    public void delete() throws SecurityException {
+    public void delete() throws IOException {
         stop(true);
         deleteFile();
-        settings.file.delete();
+        settings.deleteFile();
         plugin.getManager(StatisticManager.class).deleteSlotMachineStatistic(this);
         design.dismantle(getLocation(), buildDirection);
     }
@@ -573,7 +581,7 @@ public final class SlotMachine implements Nameable {
     public void reload() throws SlotMachineException {
         stop(true);
         try {
-            SlotMachine slot = fromFile(plugin, new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName()));
+            SlotMachine slot = fromFile(plugin, getFile());
             name = slot.name;
             design = slot.design;
             buildLocation = slot.buildLocation;
@@ -597,14 +605,16 @@ public final class SlotMachine implements Nameable {
     }
 
     public void saveFile() throws IOException {
-        FileUtils.saveJson(new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName()), this);
+        FileUtils.saveJson(getFile(), this);
     }
 
-    public void deleteFile() throws SecurityException {
-        File file = new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName());
-        if (file.exists()) {
-            file.delete();
+    public void deleteFile() throws IOException {
+        File file = getFile();
+        if (!file.exists()) {
+            return;
         }
+
+        Files.delete(file.toPath());
     }
 
     public void move(BlockFace direction, int amount) throws SlotMachineException {
@@ -662,7 +672,7 @@ public final class SlotMachine implements Nameable {
             }
         }
 
-        throw new SlotMachineException("No suitable teleport location found");
+        throw new SlotMachineException("No suitable teleport location found.");
     }
 
     public void teleport(Player player) throws SlotMachineException {
@@ -739,6 +749,10 @@ public final class SlotMachine implements Nameable {
         return name + FILE_EXTENSION;
     }
 
+    public File getFile() {
+        return new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName());
+    }
+
     public Location getLocation() {
         return buildLocation.toBukkitLocation();
     }
@@ -773,7 +787,8 @@ public final class SlotMachine implements Nameable {
     }
 
     public String getUserName() {
-        return getUser().getName();
+        Player user = getUser();
+        return user == null ? "" : user.getName();
     }
 
     public boolean isUser(Player player) {
@@ -790,10 +805,6 @@ public final class SlotMachine implements Nameable {
 
     public boolean isSpinning() {
         return spinning;
-    }
-
-    public boolean isStopped() {
-        return stopped;
     }
 
     public boolean isStoppable(Player player) {

@@ -132,6 +132,7 @@
     "command.slot.build.succeeded": "&aDer Spielautomat &6{0} &awurde gebaut.",
     "command.slot.build.description": "Baut einen neuen Spielautomaten",
 
+    "command.slot.remove.failed": "&cDer Spielautomat &6{0} &ckonnte nicht entfernt werden!",
     "command.slot.remove.succeeded": "&aDer Spielautomat &6{0} &awurde entfernt.",
     "command.slot.remove.description": "Entfernt einen vorhandenen Spielautomaten",
 

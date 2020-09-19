@@ -9,7 +9,7 @@ public enum Message {
 
     COIN_ITEM_NAME("coin.item.name"),
     COIN_ITEM_LORE("coin.item.lore"),
-    
+
     SIGN_SHOP_HEADER("sign.shop.header"),
     SIGN_SHOP_SPACER("sign.shop.spacer"),
     SIGN_SHOP_COINS("sign.shop.coins"),
@@ -17,7 +17,7 @@ public enum Message {
     SIGN_POT_MONEY("sign.pot.money"),
     SIGN_POT_ITEMS("sign.pot.items"),
     SIGN_POT_SPACER("sign.pot.spacer"),
-    
+
     WORD_COIN_SINGULAR("word.coin-singular"),
     WORD_COIN_PLURAL("word.coin-plural"),
     WORD_AND("word.and"),
@@ -138,6 +138,7 @@ public enum Message {
     COMMAND_SLOT_BUILD_SUCCEEDED("command.slot.build.succeeded"),
     COMMAND_SLOT_BUILD_DESCRIPTION("command.slot.build.description"),
 
+    COMMAND_SLOT_REMOVE_FAILED("command.slot.remove.failed"),
     COMMAND_SLOT_REMOVE_SUCCEEDED("command.slot.remove.succeeded"),
     COMMAND_SLOT_REMOVE_DESCRIPTION("command.slot.remove.description"),
 
@@ -181,7 +182,7 @@ public enum Message {
     COMMAND_SLOT_ITEM_SINGLE_ADDED("command.slot.item.single-added"),
     COMMAND_SLOT_ITEM_SET("command.slot.item.set"),
     COMMAND_SLOT_ITEM_DESCRIPTION("command.slot.item.description"),
-    
+
     COMMAND_SLOT_RELOAD_FAILED("command.slot.reload.failed"),
     COMMAND_SLOT_RELOAD_SINGLE_FAILED("command.slot.reload.single-failed"),
     COMMAND_SLOT_RELOAD_SUCCEEDED("command.slot.reload.succeeded"),
@@ -190,7 +191,7 @@ public enum Message {
 
     private static final Map<String, Message> NAME_MAP = new HashMap<>();
     private static final Map<String, Message> KEY_MAP = new HashMap<>();
-    private String key;
+    private final String key;
 
     static {
         for (Message msg : values()) {
@@ -199,7 +200,7 @@ public enum Message {
         }
     }
 
-    private Message(String key) {
+    Message(String key) {
         this.key = key.toLowerCase();
     }
 

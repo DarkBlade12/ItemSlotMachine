@@ -61,7 +61,7 @@ public class MoveCommand extends CommandBase<ItemSlotMachine> {
     public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
-                return plugin.getManager(SlotMachineManager.class).getSlotMachines().getNames();
+                return plugin.getManager(SlotMachineManager.class).getNames();
             case 2:
                 return Arrays.asList("1", "5", "10", "25");
             default:

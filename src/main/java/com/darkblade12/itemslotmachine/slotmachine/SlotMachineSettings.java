@@ -15,12 +15,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
-    File file;
+    private final File file;
     int coinAmount;
     Material[] symbolTypes;
     boolean allowCreative;
@@ -62,7 +64,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
             throw new InvalidValueException("The value of setting {0} cannot be lower than 0.", Setting.COIN_AMOUNT);
         }
 
-        symbolTypes = convertMaterials(Setting.SYMBOL_TYPES, 2, 0, false);
+        symbolTypes = convertMaterials(Setting.SYMBOL_TYPES.getPath(), 2, 0, false);
         allowCreative = config.getBoolean(Setting.ALLOW_CREATIVE.getPath(), true);
         launchFireworks = config.getBoolean(Setting.LAUNCH_FIREWORKS.getPath(), true);
         individualPermission = config.getBoolean(Setting.INDIVIDUAL_PERMISSION.getPath());
@@ -112,8 +114,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
 
             moneyPotHouseCut = config.getDouble(Setting.MONEY_POT_HOUSE_CUT.getPath());
             if (moneyPotHouseCut == 100) {
-                throw new InvalidValueException("The percentage value of setting {0} cannot be equal to 100.",
-                                                Setting.MONEY_POT_HOUSE_CUT);
+                throw new InvalidValueException("The percentage value of setting {0} cannot be equal to 100.", Setting.MONEY_POT_HOUSE_CUT);
             } else if (moneyPotHouseCut > 100) {
                 throw new InvalidValueException("The percentage value of setting {0} cannot be higher than 100.",
                                                 Setting.MONEY_POT_HOUSE_CUT);
@@ -152,8 +153,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                     try {
                         actions[i] = Action.fromString(action, customItems);
                     } catch (IllegalArgumentException ex) {
-                        throw new InvalidValueException("A list value of setting {0} contains the invalid action {1}.",
-                                                        actionPath, action);
+                        throw new InvalidValueException("A list value of setting {0} contains the invalid action {1}.", actionPath, action);
                     }
                 }
 
@@ -183,12 +183,8 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                 throw new InvalidValueException("A list value of setting {0} contains the invalid material {1}.", path, name);
             }
         }
-        return materials;
-    }
 
-    private Material[] convertMaterials(Setting setting, int minSize, int maxSize,
-                                        boolean allowAir) throws InvalidValueException {
-        return convertMaterials(setting.getPath(), minSize, maxSize, allowAir);
+        return materials;
     }
 
     private SoundInfo[] convertSounds(Setting setting) throws InvalidValueException {
@@ -202,6 +198,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                 throw new InvalidValueException("A list value of setting {0} contains the invalid sound {1}.", setting, sound);
             }
         }
+
         return sounds;
     }
 
@@ -215,15 +212,23 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
             } catch (IllegalArgumentException ex) {
                 throw new InvalidValueException("A list value of setting {0} contains the invalid item {1}.", setting, item);
             } catch (JsonParseException ex2) {
-                throw new InvalidValueException("The list value of setting {0} at index {1} could not be parsed.", setting,
-                                                i + 1);
+                throw new InvalidValueException("The list value of setting {0} at index {1} could not be parsed.", setting, i + 1);
             }
         }
+
         return items;
     }
 
     @Override
     public void unload() {
+    }
+
+    public void deleteFile() throws IOException {
+        if (!file.exists()) {
+            return;
+        }
+
+        Files.delete(file.toPath());
     }
 
     public File getFile() {

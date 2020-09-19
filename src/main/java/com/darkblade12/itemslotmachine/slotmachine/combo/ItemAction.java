@@ -1,9 +1,9 @@
 package com.darkblade12.itemslotmachine.slotmachine.combo;
 
+import org.bukkit.inventory.ItemStack;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.bukkit.inventory.ItemStack;
 
 public class ItemAction extends Action {
     private List<ItemStack> items;

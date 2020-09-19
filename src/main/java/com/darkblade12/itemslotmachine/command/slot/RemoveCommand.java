@@ -8,6 +8,7 @@ import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import org.bukkit.command.CommandSender;
 
+import java.io.IOException;
 import java.util.List;
 
 public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
@@ -26,7 +27,14 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
         }
         name = slot.getName();
 
-        slotManager.unregister(slot);
+        try {
+            slotManager.unregister(slot);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to remove slot machine %s!", name);
+            plugin.sendMessage(sender, Message.COMMAND_SLOT_REMOVE_FAILED, name);
+            return;
+        }
+
         plugin.sendMessage(sender, Message.COMMAND_SLOT_REMOVE_SUCCEEDED, name);
     }
 

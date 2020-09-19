@@ -3,12 +3,12 @@ package com.darkblade12.itemslotmachine.slotmachine.combo;
 import org.bukkit.Material;
 
 public class Combo {
-    private Material[] pattern;
-    private Action[] actions;
+    private final Material[] pattern;
+    private final Action[] actions;
 
     public Combo(Material[] pattern, Action[] actions) {
         if (pattern.length != 3) {
-            throw new IllegalArgumentException("The length of symbols must be 3");
+            throw new IllegalArgumentException("The length of pattern must be 3.");
         }
 
         this.pattern = pattern;
@@ -21,6 +21,7 @@ public class Combo {
                 return false;
             }
         }
+
         return true;
     }
 

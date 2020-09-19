@@ -132,6 +132,7 @@
     "command.slot.build.succeeded": "&aThe slot machine &6{0} &ahas been built.",
     "command.slot.build.description": "Builds a new slot machine",
 
+    "command.slot.remove.failed": "&cFailed to remove slot machine &6{0}&c!",
     "command.slot.remove.succeeded": "&aThe slot machine &6{0} &ahas been removed.",
     "command.slot.remove.description": "Removes an existing slot machine",
 

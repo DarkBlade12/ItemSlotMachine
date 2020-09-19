@@ -13,15 +13,15 @@ public enum ActionType {
     PAY_OUT_MONEY,
     PAY_OUT_ITEMS,
     EXECUTE_COMMAND;
-    
+
     private static final Map<String, ActionType> NAME_MAP = new HashMap<>();
-    
+
     static {
-        for(ActionType action : values()) {
+        for (ActionType action : values()) {
             NAME_MAP.put(action.name(), action);
         }
     }
-    
+
     public static ActionType fromName(String name) {
         return NAME_MAP.getOrDefault(name.toUpperCase(), null);
     }

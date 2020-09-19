@@ -25,7 +25,7 @@ public enum Setting {
 
     private String path;
 
-    private Setting(String path) {
+    Setting(String path) {
         this.path = path;
     }
 
