@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
 
 public abstract class PluginBase extends JavaPlugin {
     private static final Pattern VERSION_PATTERN = Pattern.compile("\\d+(\\.\\d+){2}");
+    private static final Comparator<Manager<?>> MANAGER_COMPARATOR = Comparator.comparingInt(Manager::getLoadIndex);
     protected final int projectId;
     protected final int pluginId;
     protected final Logger logger;
@@ -42,6 +44,7 @@ public abstract class PluginBase extends JavaPlugin {
     protected final ClassToInstanceMap<Manager<?>> managers;
     protected final ClassToInstanceMap<CommandHandler<?>> commandHandlers;
     protected final Map<String, OfflinePlayer> playerCache;
+    private int managerLoadIndex;
 
     protected PluginBase(int projectId, int pluginId, Locale... locales) {
         this.projectId = projectId;
@@ -96,7 +99,7 @@ public abstract class PluginBase extends JavaPlugin {
         }
 
         try {
-            managers.values().forEach(Manager::enable);
+            managers.values().stream().sorted(MANAGER_COMPARATOR).forEach(Manager::enable);
         } catch (Exception e) {
             logException(e, "Failed to enable all managers!");
             disable();
@@ -144,7 +147,7 @@ public abstract class PluginBase extends JavaPlugin {
         }
 
         try {
-            managers.values().forEach(Manager::reload);
+            managers.values().stream().sorted(MANAGER_COMPARATOR).forEach(Manager::reload);
         } catch (Exception e) {
             logException(e, "Failed to reload all managers!");
             disable();
@@ -204,6 +207,7 @@ public abstract class PluginBase extends JavaPlugin {
 
     @SuppressWarnings("unchecked")
     protected void registerManager(Manager<?> manager) {
+        manager.setLoadIndex(managerLoadIndex++);
         managers.putInstance((Class<Manager<?>>) manager.getClass(), manager);
     }
 

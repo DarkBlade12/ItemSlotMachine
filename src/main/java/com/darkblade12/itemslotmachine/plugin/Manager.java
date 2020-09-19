@@ -8,6 +8,7 @@ import java.io.File;
 public abstract class Manager<T extends PluginBase> implements Listener {
     protected final T plugin;
     protected final File dataDirectory;
+    private int loadIndex;
 
     protected Manager(T plugin, File dataDirectory) {
         this.plugin = plugin;
@@ -53,5 +54,13 @@ public abstract class Manager<T extends PluginBase> implements Listener {
 
     public File getDataDirectory() {
         return dataDirectory;
+    }
+
+    void setLoadIndex(int loadIndex) {
+        this.loadIndex = loadIndex;
+    }
+
+    int getLoadIndex() {
+        return loadIndex;
     }
 }
