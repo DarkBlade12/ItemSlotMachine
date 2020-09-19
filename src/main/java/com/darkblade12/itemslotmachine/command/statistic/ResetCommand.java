@@ -5,7 +5,9 @@ import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
+import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -20,19 +22,20 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
+        StatisticManager statManager = plugin.getManager(StatisticManager.class);
         Statistic stat;
         String name = args[1];
         String type = args[0].toLowerCase();
         switch (type) {
             case "slot":
-                SlotMachine slot = plugin.slotMachineManager.getSlotMachine(name);
+                SlotMachine slot = plugin.getManager(SlotMachineManager.class).getSlotMachine(name);
                 if (slot == null) {
                     plugin.sendMessage(sender, Message.SLOT_MACHINE_NOT_FOUND, name);
                     return;
                 }
 
                 name = slot.getName();
-                stat = plugin.statisticManager.getSlotMachineStatistic(slot);
+                stat = statManager.getSlotMachineStatistic(slot);
                 if (stat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_SLOT_MACHINE, name);
                     return;
@@ -47,7 +50,7 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
                 }
 
                 name = player.getName();
-                stat = plugin.statisticManager.getPlayerStatistic(name);
+                stat = statManager.getPlayerStatistic(name);
                 if (stat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_PLAYER, name);
                     return;
@@ -61,16 +64,16 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
 
         stat.reset();
         try {
-            stat.saveFile(plugin.statisticManager.getDataDirectory());
-        } catch (IOException ex) {
+            stat.saveFile(statManager.getDataDirectory());
+        } catch (IOException e) {
             // TODO: Rollback on failure
-            String error = ex.getMessage();
+            String error = e.getMessage();
             Message message;
             if (type.equals("slot")) {
-                plugin.logException("Failed to reset the statistic of slot machine {1}: {0}", ex, name);
+                plugin.logException(e, "Failed to reset the statistic of slot machine %s!", name);
                 message = Message.COMMAND_STATISTIC_RESET_SLOT_MACHINE_FAILED;
             } else {
-                plugin.logException("Failed to reset the statistic of player {1}: {0}", ex, name);
+                plugin.logException(e, "Failed to reset the statistic of player %s!", name);
                 message = Message.COMMAND_STATISTIC_RESET_PLAYER_FAILED;
             }
             plugin.sendMessage(sender, message, name, error);
@@ -95,9 +98,9 @@ public final class ResetCommand extends CommandBase<ItemSlotMachine> {
             case 2:
                 switch (args[0].toLowerCase()) {
                     case "slot":
-                        return plugin.slotMachineManager.getNames();
+                        return plugin.getManager(SlotMachineManager.class).getNames();
                     case "player":
-                        return plugin.statisticManager.getPlayerNames();
+                        return plugin.getManager(StatisticManager.class).getPlayerNames();
                     default:
                         return null;
                 }

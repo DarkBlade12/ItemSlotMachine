@@ -1,9 +1,17 @@
 package com.darkblade12.itemslotmachine.slotmachine;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.coin.CoinManager;
+import com.darkblade12.itemslotmachine.nameable.Nameable;
+import com.darkblade12.itemslotmachine.nameable.NameableComparator;
+import com.darkblade12.itemslotmachine.nameable.NameableList;
+import com.darkblade12.itemslotmachine.plugin.Manager;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
+import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
+import com.google.gson.JsonParseException;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,18 +33,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Manager;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.Permission;
-import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
-import com.darkblade12.itemslotmachine.nameable.Nameable;
-import com.darkblade12.itemslotmachine.nameable.NameableComparator;
-import com.darkblade12.itemslotmachine.nameable.NameableList;
-import com.darkblade12.itemslotmachine.util.FileUtils;
-import com.darkblade12.itemslotmachine.util.ItemUtils;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     private final NameableList<SlotMachine> slots;
@@ -44,12 +43,12 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
 
     public SlotMachineManager(ItemSlotMachine plugin) {
         super(plugin, new File(plugin.getDataFolder(), "slot machines"));
-        slots = new NameableList<SlotMachine>();
+        slots = new NameableList<>();
     }
 
     @Override
     protected void onEnable() {
-        defaultComparator = new NameableComparator<SlotMachine>(plugin.getSettings().getSlotMachineNamePattern());
+        defaultComparator = new NameableComparator<>(plugin.getSettings().getSlotMachineNamePattern());
         loadSlotMachines();
     }
 
@@ -65,8 +64,8 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
         for (File file : FileUtils.getFiles(dataDirectory, SlotMachine.FILE_EXTENSION)) {
             try {
                 slots.add(SlotMachine.fromFile(plugin, file));
-            } catch (JsonIOException | JsonSyntaxException | InvalidValueException | IOException ex) {
-                plugin.logException("Failed to load slot machine file {1}: {0}", ex, file.getName());
+            } catch (JsonParseException | InvalidValueException | IOException e) {
+                plugin.logException(e, "Failed to load slot machine file %s!", file.getName());
             }
         }
         int count = slots.size();
@@ -108,7 +107,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
     }
 
     public NameableList<SlotMachine> getSlotMachines() {
-        NameableList<SlotMachine> clone = new NameableList<SlotMachine>(slots);
+        NameableList<SlotMachine> clone = new NameableList<>(slots);
         clone.sort(defaultComparator);
         return clone;
     }
@@ -305,8 +304,9 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                     return;
                 }
 
+                CoinManager coinManager = plugin.getManager(CoinManager.class);
                 boolean holdingUseItem = !hand.getType().isBlock() || hand.getType() == Material.AIR;
-                boolean holdingCoin = plugin.coinManager.isCoin(hand);
+                boolean holdingCoin = coinManager.isCoin(hand);
                 if (holdingUseItem && !holdingCoin && Permission.SLOT_INSPECT.test(player)) {
                     plugin.sendMessage(player, Message.SLOT_MACHINE_INSPECTED, name);
                     return;
@@ -345,7 +345,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
                     String plural = plugin.formatMessage(Message.WORD_COIN_PLURAL);
                     int required = slot.getSettings().coinAmount;
                     String requiredCoins = required == 1 ? singular : plural;
-                    int current = ItemUtils.getTotalAmount(player, plugin.coinManager.getCoin());
+                    int current = ItemUtils.getTotalAmount(player, coinManager.getCoin());
                     String currentCoins = current == 1 ? singular : plural;
                     plugin.sendMessage(player, Message.SLOT_MACHINE_NOT_ENOUGH_COINS, required, requiredCoins, current,
                                        currentCoins);

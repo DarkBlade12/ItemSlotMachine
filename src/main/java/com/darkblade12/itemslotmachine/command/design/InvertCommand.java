@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.command.design;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
+import com.darkblade12.itemslotmachine.design.DesignManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import org.bukkit.command.CommandSender;
@@ -18,7 +19,8 @@ public final class InvertCommand extends CommandBase<ItemSlotMachine> {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
         String name = args[0];
-        Design design = plugin.designManager.getDesign(name);
+        DesignManager designManager = plugin.getManager(DesignManager.class);
+        Design design = designManager.getDesign(name);
         if (design == null) {
             plugin.sendMessage(sender, Message.DESIGN_NOT_FOUND, name);
             return;
@@ -32,10 +34,10 @@ public final class InvertCommand extends CommandBase<ItemSlotMachine> {
 
         design.invertItemFrames();
         try {
-            design.saveFile(plugin.designManager.getDataDirectory());
-        } catch (IOException ex) {
-            plugin.logException("Failed to invert item frame order of design {1}: {0}", ex, name);
-            plugin.sendMessage(sender, Message.COMMAND_DESIGN_INVERT_FAILED, name, ex.getMessage());
+            design.saveFile(designManager.getDataDirectory());
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to invert item frame order of design %s!", name);
+            plugin.sendMessage(sender, Message.COMMAND_DESIGN_INVERT_FAILED, name, e.getMessage());
         }
 
         plugin.sendMessage(sender, Message.COMMAND_DESIGN_INVERT_SUCCEEDED, name);
@@ -43,6 +45,6 @@ public final class InvertCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
-        return args.length == 1 ? plugin.designManager.getNames() : null;
+        return args.length == 1 ? plugin.getManager(DesignManager.class).getNames() : null;
     }
 }

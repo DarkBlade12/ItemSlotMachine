@@ -1,8 +1,8 @@
 package com.darkblade12.itemslotmachine.statistic;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Manager;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
+import com.darkblade12.itemslotmachine.plugin.Manager;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.google.gson.JsonObject;
@@ -48,8 +48,8 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
             try {
                 SlotMachineStatistic stat = SlotMachineStatistic.fromFile(file);
                 slotStats.add(stat);
-            } catch (IOException | JsonParseException ex) {
-                plugin.logException("Failed to load slot machine statistic file {1}: {0}", ex, file.getName());
+            } catch (IOException | JsonParseException e) {
+                plugin.logException(e, "Failed to load slot machine statistic file %s!", file.getName());
             }
         }
 
@@ -62,8 +62,8 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
                 }
 
                 playerStats.add(stat);
-            } catch (IOException | JsonParseException ex) {
-                plugin.logException("Failed to load player statistic file {1}: {0}", ex, file.getName());
+            } catch (IOException | JsonParseException e) {
+                plugin.logException(e, "Failed to load player statistic file %s!", file.getName());
             }
         }
 
@@ -82,9 +82,9 @@ public final class StatisticManager extends Manager<ItemSlotMachine> {
         try {
             statistic.saveFile(dataDirectory);
             return true;
-        } catch (IOException ex) {
+        } catch (IOException e) {
             String type = statistic instanceof SlotMachineStatistic ? "slot machine" : "player";
-            plugin.logException("Failed to save {1} statistic file {2}: {0}", ex, type, statistic.getFileName());
+            plugin.logException(e, "Failed to save %s statistic file %s!", type, statistic.getFileName());
             return false;
         }
     }

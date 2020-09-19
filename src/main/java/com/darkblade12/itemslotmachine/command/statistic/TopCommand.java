@@ -9,6 +9,7 @@ import com.darkblade12.itemslotmachine.statistic.Category;
 import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
 import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
+import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -33,6 +34,7 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
         }
         categoryName = category.getLocalizedName(plugin);
 
+        StatisticManager statManager = plugin.getManager(StatisticManager.class);
         String statText;
         String type = args[0].toLowerCase();
         switch (type) {
@@ -40,21 +42,21 @@ public final class TopCommand extends CommandBase<ItemSlotMachine> {
                 if (!category.isSlotMachineCategory()) {
                     plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_INVALID_CATEGORY, categoryName);
                     return;
-                } else if (plugin.statisticManager.getSlotMachineStatisticCount() == 0) {
+                } else if (statManager.getSlotMachineStatisticCount() == 0) {
                     plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_NO_DATA, categoryName);
                     return;
                 }
 
-                statText = toString(plugin, plugin.statisticManager.getSlotMachineTop(category), category);
+                statText = toString(plugin, statManager.getSlotMachineTop(category), category);
                 plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_SLOT_MACHINE, categoryName, statText);
                 break;
             case "player":
-                if (plugin.statisticManager.getPlayerStatisticCount() == 0) {
+                if (statManager.getPlayerStatisticCount() == 0) {
                     plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_NO_DATA, categoryName);
                     return;
                 }
 
-                statText = toString(plugin, plugin.statisticManager.getPlayerTop(category), category);
+                statText = toString(plugin, statManager.getPlayerTop(category), category);
                 plugin.sendMessage(sender, Message.COMMAND_STATISTIC_TOP_PLAYER, categoryName, statText);
                 break;
             default:

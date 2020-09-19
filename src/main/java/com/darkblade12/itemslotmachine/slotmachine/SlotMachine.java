@@ -1,14 +1,40 @@
 package com.darkblade12.itemslotmachine.slotmachine;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-
+import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.Settings;
+import com.darkblade12.itemslotmachine.coin.CoinManager;
+import com.darkblade12.itemslotmachine.design.Design;
+import com.darkblade12.itemslotmachine.design.DesignBuildException;
+import com.darkblade12.itemslotmachine.nameable.Nameable;
+import com.darkblade12.itemslotmachine.plugin.Message;
+import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
+import com.darkblade12.itemslotmachine.plugin.replacer.Placeholder;
+import com.darkblade12.itemslotmachine.plugin.replacer.Replacer;
+import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
+import com.darkblade12.itemslotmachine.reference.Direction;
+import com.darkblade12.itemslotmachine.reference.ReferenceBlock;
+import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
+import com.darkblade12.itemslotmachine.reference.ReferenceLocation;
+import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
+import com.darkblade12.itemslotmachine.slotmachine.combo.AmountAction;
+import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
+import com.darkblade12.itemslotmachine.slotmachine.combo.CommandAction;
+import com.darkblade12.itemslotmachine.slotmachine.combo.ItemAction;
+import com.darkblade12.itemslotmachine.statistic.Category;
+import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
+import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
+import com.darkblade12.itemslotmachine.statistic.StatisticManager;
+import com.darkblade12.itemslotmachine.util.Cuboid;
+import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.darkblade12.itemslotmachine.util.FireworkRocket;
+import com.darkblade12.itemslotmachine.util.ItemUtils;
+import com.darkblade12.itemslotmachine.util.MessageUtils;
+import com.darkblade12.itemslotmachine.util.SafeLocation;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -25,39 +51,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.Settings;
-import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.Permission;
-import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
-import com.darkblade12.itemslotmachine.plugin.replacer.Placeholder;
-import com.darkblade12.itemslotmachine.plugin.replacer.Replacer;
-import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
-import com.darkblade12.itemslotmachine.design.Design;
-import com.darkblade12.itemslotmachine.design.DesignBuildException;
-import com.darkblade12.itemslotmachine.nameable.Nameable;
-import com.darkblade12.itemslotmachine.reference.Direction;
-import com.darkblade12.itemslotmachine.reference.ReferenceBlock;
-import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
-import com.darkblade12.itemslotmachine.reference.ReferenceLocation;
-import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
-import com.darkblade12.itemslotmachine.slotmachine.combo.AmountAction;
-import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
-import com.darkblade12.itemslotmachine.slotmachine.combo.CommandAction;
-import com.darkblade12.itemslotmachine.slotmachine.combo.ItemAction;
-import com.darkblade12.itemslotmachine.statistic.Category;
-import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
-import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
-import com.darkblade12.itemslotmachine.util.Cuboid;
-import com.darkblade12.itemslotmachine.util.FileUtils;
-import com.darkblade12.itemslotmachine.util.FireworkRocket;
-import com.darkblade12.itemslotmachine.util.ItemUtils;
-import com.darkblade12.itemslotmachine.util.MessageUtils;
-import com.darkblade12.itemslotmachine.util.SafeLocation;
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public final class SlotMachine implements Nameable {
     public static final String FILE_EXTENSION = ".json";
@@ -101,9 +103,9 @@ public final class SlotMachine implements Nameable {
         design.build(viewer.getLocation(), buildDirection, plugin.getSettings());
 
         File from = new File(plugin.getDataFolder(), TEMPLATE_FILE);
-        File to = new File(plugin.slotMachineManager.getDataDirectory(), name + ".yml");
-        Files.createParentDirs(to);
-        Files.copy(from, to);
+        File to = new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), name + ".yml");
+        Files.createDirectories(to.getParentFile().toPath());
+        Files.copy(from.toPath(), to.toPath());
 
         SlotMachine slot = new SlotMachine(plugin, name, design, buildLocation, buildDirection);
         slot.settings.load();
@@ -114,7 +116,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public static SlotMachine fromFile(ItemSlotMachine plugin, File file) throws IOException, JsonIOException,
-                                                                          JsonSyntaxException, InvalidValueException {
+                                                                                 JsonSyntaxException, InvalidValueException {
         SlotMachine slot = FileUtils.readJson(file, SlotMachine.class);
         slot.plugin = plugin;
         slot.settings = new SlotMachineSettings(plugin, slot.name);
@@ -123,7 +125,7 @@ public final class SlotMachine implements Nameable {
     }
 
     public static SlotMachine fromFile(ItemSlotMachine plugin, String path) throws IOException, JsonIOException,
-                                                                            JsonSyntaxException, InvalidValueException {
+                                                                                   JsonSyntaxException, InvalidValueException {
         return fromFile(plugin, new File(path));
     }
 
@@ -185,8 +187,8 @@ public final class SlotMachine implements Nameable {
         }
         try {
             saveAndUpdate();
-        } catch (IOException ex) {
-            plugin.logException("Failed to save data of slot machine {1}: {0}", ex, name);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to save data of slot machine %s!", name);
         }
     }
 
@@ -204,17 +206,18 @@ public final class SlotMachine implements Nameable {
         raisePot();
         removeCoins(user);
 
-        PlayerStatistic userStat = plugin.statisticManager.getPlayerStatistic(user, true);
+        StatisticManager statManager = plugin.getManager(StatisticManager.class);
+        PlayerStatistic userStat = statManager.getPlayerStatistic(user, true);
         userStat.getRecord(Category.TOTAL_SPINS).increaseValue(1);
         if (user.getGameMode() != GameMode.CREATIVE) {
             userStat.getRecord(Category.SPENT_COINS).increaseValue(settings.coinAmount);
         }
-        plugin.statisticManager.trySave(userStat);
+        statManager.trySave(userStat);
 
-        SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(this, true);
+        SlotMachineStatistic slotStat = statManager.getSlotMachineStatistic(this, true);
         if (slotStat != null) {
             slotStat.getRecord(Category.TOTAL_SPINS).increaseValue(1);
-            plugin.statisticManager.trySave(slotStat);
+            statManager.trySave(slotStat);
         }
 
         final Material[] result = generatePattern();
@@ -319,17 +322,18 @@ public final class SlotMachine implements Nameable {
         }
 
         if (moneyPrize == 0 && itemPrize.size() == 0 && commands.size() == 0) {
-            SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(this, true);
+            StatisticManager statManager = plugin.getManager(StatisticManager.class);
+            SlotMachineStatistic slotStat = statManager.getSlotMachineStatistic(this, true);
             if (slotStat != null) {
                 slotStat.getRecord(Category.LOST_SPINS).increaseValue(1);
-                plugin.statisticManager.trySave(slotStat);
+                statManager.trySave(slotStat);
             }
 
             Player user = getUser();
-            PlayerStatistic userStat = plugin.statisticManager.getPlayerStatistic(user, true);
+            PlayerStatistic userStat = statManager.getPlayerStatistic(user, true);
             if (userStat != null) {
                 userStat.getRecord(Category.LOST_SPINS).increaseValue(1);
-                plugin.statisticManager.trySave(userStat);
+                statManager.trySave(userStat);
             }
 
             playSounds(settings.loseSounds);
@@ -352,14 +356,15 @@ public final class SlotMachine implements Nameable {
             FireworkRocket.randomize().displayEffects(plugin, slotLocation.add(0.5, 2, 0.5));
         }
 
-        SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(this, true);
+        StatisticManager statManager = plugin.getManager(StatisticManager.class);
+        SlotMachineStatistic slotStat = statManager.getSlotMachineStatistic(this, true);
         if (slotStat != null) {
             slotStat.getRecord(Category.WON_SPINS).increaseValue(1);
-            plugin.statisticManager.trySave(slotStat);
+            statManager.trySave(slotStat);
         }
 
         Player user = getUser();
-        PlayerStatistic userStat = plugin.statisticManager.getPlayerStatistic(user, true);
+        PlayerStatistic userStat = statManager.getPlayerStatistic(user, true);
         if (userStat != null) {
             userStat.getRecord(Category.WON_SPINS).increaseValue(1);
         }
@@ -392,7 +397,7 @@ public final class SlotMachine implements Nameable {
         }
 
         if (userStat != null) {
-            plugin.statisticManager.trySave(userStat);
+            statManager.trySave(userStat);
         }
 
         if (commands.size() > 0) {
@@ -414,9 +419,10 @@ public final class SlotMachine implements Nameable {
             return true;
         }
 
+        CoinManager coinManager = plugin.getManager(CoinManager.class);
         int remaining = settings.coinAmount;
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && plugin.coinManager.isCoin(item)) {
+            if (item != null && coinManager.isCoin(item)) {
                 if (remaining == 0 || item.getAmount() >= remaining) {
                     return true;
                 }
@@ -432,11 +438,12 @@ public final class SlotMachine implements Nameable {
             return;
         }
 
+        CoinManager coinManager = plugin.getManager(CoinManager.class);
         int remaining = settings.coinAmount;
         ItemStack[] invContents = player.getInventory().getContents();
         for (int i = 0; i < invContents.length; i++) {
             ItemStack item = invContents[i];
-            if (item != null && plugin.coinManager.isCoin(item)) {
+            if (item != null && coinManager.isCoin(item)) {
                 int amount = item.getAmount();
                 if (amount > remaining) {
                     item.setAmount(amount - remaining);
@@ -444,13 +451,14 @@ public final class SlotMachine implements Nameable {
                 } else if (amount == remaining) {
                     item.setType(Material.AIR);
                     break;
-                } else if (remaining > amount) {
-                    item.setType(Material.AIR);
-                    remaining -= amount;
-                    if (remaining == 0) {
-                        break;
-                    }
                 }
+
+                item.setType(Material.AIR);
+                remaining -= amount;
+                if (remaining == 0) {
+                    break;
+                }
+
                 invContents[i] = item;
             }
         }
@@ -461,8 +469,8 @@ public final class SlotMachine implements Nameable {
         this.moneyPot = moneyPot;
         try {
             saveAndUpdate();
-        } catch (IOException ex) {
-            plugin.logException("Failed to save money pot of slot machine {1}: {0}", ex, name);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to save money pot of slot machine %s!", name);
         }
     }
 
@@ -486,8 +494,8 @@ public final class SlotMachine implements Nameable {
         this.itemPot = ItemUtils.cloneItems(itemPot);
         try {
             saveAndUpdate();
-        } catch (IOException ex) {
-            plugin.logException("Failed to save item pot of slot machine {1}: {0}", ex, name);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to save item pot of slot machine %s!", name);
         }
     }
 
@@ -499,8 +507,8 @@ public final class SlotMachine implements Nameable {
         itemPot.clear();
         try {
             saveAndUpdate();
-        } catch (IOException ex) {
-            plugin.logException("Failed to save item pot of slot machine {1}: {0}", ex, name);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to save item pot of slot machine %s!", name);
         }
     }
 
@@ -512,8 +520,8 @@ public final class SlotMachine implements Nameable {
         ItemUtils.stackItems(itemPot, items);
         try {
             saveAndUpdate();
-        } catch (IOException ex) {
-            plugin.logException("Failed to save item pot of slot machine {1}: {0}", ex, name);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to save item pot of slot machine %s!", name);
         }
     }
 
@@ -539,7 +547,7 @@ public final class SlotMachine implements Nameable {
         stop(true);
         deleteFile();
         settings.file.delete();
-        plugin.statisticManager.deleteSlotMachineStatistic(this);
+        plugin.getManager(StatisticManager.class).deleteSlotMachineStatistic(this);
         design.dismantle(getLocation(), buildDirection);
     }
 
@@ -557,7 +565,7 @@ public final class SlotMachine implements Nameable {
     public void reload() throws SlotMachineException {
         stop(true);
         try {
-            SlotMachine slot = fromFile(plugin, new File(plugin.slotMachineManager.getDataDirectory(), getFileName()));
+            SlotMachine slot = fromFile(plugin, new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName()));
             name = slot.name;
             design = slot.design;
             buildLocation = slot.buildLocation;
@@ -566,7 +574,7 @@ public final class SlotMachine implements Nameable {
             itemPot = slot.itemPot;
             settings = slot.settings;
             updateSign();
-        } catch (JsonIOException | JsonSyntaxException | IOException ex) {
+        } catch (JsonParseException | IOException ex) {
             throw new SlotMachineException("Failed to read slot machine data", ex);
         } catch (InvalidValueException ex) {
             throw new SlotMachineException("Failed to load settings", ex);
@@ -579,11 +587,11 @@ public final class SlotMachine implements Nameable {
     }
 
     public void saveFile() throws IOException {
-        FileUtils.saveJson(new File(plugin.slotMachineManager.getDataDirectory(), getFileName()), this);
+        FileUtils.saveJson(new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName()), this);
     }
 
     public void deleteFile() throws SecurityException {
-        File file = new File(plugin.slotMachineManager.getDataDirectory(), getFileName());
+        File file = new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), getFileName());
         if (file.exists()) {
             file.delete();
         }
@@ -603,16 +611,18 @@ public final class SlotMachine implements Nameable {
             design.build(newLocation, buildDirection, settings);
             buildLocation = SafeLocation.fromBukkitLocation(newLocation);
             saveAndUpdate();
-        } catch (DesignBuildException | IOException ex) {
+        } catch (DesignBuildException | IOException e) {
             design.dismantle(newLocation, buildDirection);
             buildLocation = SafeLocation.fromBukkitLocation(oldLocation);
+
             try {
                 design.build(oldLocation, buildDirection, settings);
-            } catch (DesignBuildException ex2) {
-                /* should not occur */
+            } catch (DesignBuildException e2) {
+                plugin.logException(e2, "Failed to build slot machine %s at the previous location.", name);
             }
+
             updateSign();
-            throw new SlotMachineException("Failed to build the design at the new location", ex);
+            throw new SlotMachineException("Failed to build the design at the new location", e);
         }
     }
 
@@ -668,7 +678,8 @@ public final class SlotMachine implements Nameable {
             String itemsText = plugin.formatMessage(Message.SIGN_POT_ITEMS, itemPot.size());
             lines = new String[] { moneyText, createSpacer(), itemsText, createSpacer() };
         }
-        lines = MessageUtils.formatSignLines(lines, 0, 2);
+
+        MessageUtils.formatSignLines(lines, 0, 2);
         for (int i = 0; i < lines.length; i++) {
             sign.setLine(i, lines[i]);
         }
@@ -681,17 +692,17 @@ public final class SlotMachine implements Nameable {
 
     private Replacer createReplacer(double money, List<ItemStack> items) {
         String currency = plugin.getVaultHook().getCurrencyName(money == 1);
-        Replacer replacer = Replacer.builder().with(USER, getUserName()).with(MONEY, money).with(CURRENCY, currency)
-                .with(ITEM_AMOUNT, items.size()).with(ITEMS, MessageUtils.toString(items)).with(SLOT_MACHINE, name).build();
-        return replacer;
+        return Replacer.builder().with(USER, getUserName()).with(MONEY, money).with(CURRENCY, currency).with(ITEM_AMOUNT, items.size())
+                       .with(ITEMS, MessageUtils.toString(items)).with(SLOT_MACHINE, name).build();
     }
 
     private Sign getSign() {
         Block block = design.getSign().toBukkitBlock(getLocation(), buildDirection);
         BlockState state = block.getState();
-        if (state == null || !(state instanceof Sign)) {
+        if (!(state instanceof Sign)) {
             return null;
         }
+
         return (Sign) state;
     }
 
@@ -759,10 +770,6 @@ public final class SlotMachine implements Nameable {
         return userId != null && player.getUniqueId().equals(userId);
     }
 
-    public long getLockEnd() {
-        return lockEnd;
-    }
-
     public int getRemainingLockTime() {
         return (int) (lockEnd - System.currentTimeMillis()) / 1000;
     }
@@ -792,6 +799,7 @@ public final class SlotMachine implements Nameable {
         if (settings.individualPermission) {
             permission += "." + name;
         }
+
         return player.hasPermission(permission) || Permission.SLOT_USE_ALL.test(player);
     }
 }

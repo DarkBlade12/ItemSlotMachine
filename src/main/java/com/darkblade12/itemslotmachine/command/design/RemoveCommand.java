@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.command.design;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
+import com.darkblade12.itemslotmachine.design.DesignManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import org.bukkit.command.CommandSender;
@@ -23,7 +24,8 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
             return;
         }
 
-        Design design = plugin.designManager.getDesign(name);
+        DesignManager designManager = plugin.getManager(DesignManager.class);
+        Design design = designManager.getDesign(name);
         if (design == null) {
             plugin.sendMessage(sender, Message.DESIGN_NOT_FOUND, name);
             return;
@@ -31,10 +33,10 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
         name = design.getName();
 
         try {
-            plugin.designManager.unregister(design);
-        } catch (IOException ex) {
-            plugin.logException("Failed to remove design {1}: {0}", ex, name);
-            plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_FAILED, name, ex.getMessage());
+            designManager.unregister(design);
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to remove design %s!", name);
+            plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_FAILED, name, e.getMessage());
         }
 
         plugin.sendMessage(sender, Message.COMMAND_DESIGN_REMOVE_SUCCEEDED, name);
@@ -42,6 +44,6 @@ public final class RemoveCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
-        return args.length == 1 ? plugin.designManager.getNames() : null;
+        return args.length == 1 ? plugin.getManager(DesignManager.class).getNames() : null;
     }
 }

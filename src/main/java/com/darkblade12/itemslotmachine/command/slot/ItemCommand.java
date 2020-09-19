@@ -2,9 +2,11 @@ package com.darkblade12.itemslotmachine.command.slot;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.coin.CoinManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +30,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
         String name = args[0];
-        SlotMachine slot = plugin.slotMachineManager.getSlotMachine(name);
+        SlotMachine slot = plugin.getManager(SlotMachineManager.class).getSlotMachine(name);
         if (slot == null) {
             plugin.sendMessage(sender, Message.SLOT_MACHINE_NOT_FOUND, name);
             return;
@@ -74,7 +76,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
                 String items = StringUtils.join(Arrays.copyOfRange(args, 2, args.length), " ");
 
                 try {
-                    list = ItemUtils.fromListString(items, plugin.coinManager.getCustomItems());
+                    list = ItemUtils.fromListString(items, plugin.getManager(CoinManager.class).getCustomItems());
                 } catch (Exception ex) {
                     plugin.sendMessage(sender, Message.COMMAND_SLOT_ITEM_INVALID_LIST, ex.getMessage());
                     return;
@@ -108,7 +110,7 @@ public final class ItemCommand extends CommandBase<ItemSlotMachine> {
     public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
-                return plugin.slotMachineManager.getNames();
+                return plugin.getManager(SlotMachineManager.class).getNames();
             case 2:
                 return Arrays.asList("clear", "add", "set");
             case 3:

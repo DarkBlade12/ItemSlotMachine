@@ -4,6 +4,7 @@ import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.design.DesignIncompleteException;
+import com.darkblade12.itemslotmachine.design.DesignManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.Cuboid;
@@ -18,7 +19,8 @@ public final class CreateCommand extends CommandBase<ItemSlotMachine> {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
-        if (!plugin.designManager.hasValidSelection(player)) {
+        DesignManager designManager = plugin.getManager(DesignManager.class);
+        if (!designManager.hasValidSelection(player)) {
             plugin.sendMessage(player, Message.COMMAND_DESIGN_CREATE_INVALID_SELECTION);
             return;
         }
@@ -26,18 +28,18 @@ public final class CreateCommand extends CommandBase<ItemSlotMachine> {
         String name;
         if (args.length == 1) {
             name = args[0];
-            if (plugin.designManager.hasDesign(name)) {
+            if (designManager.hasDesign(name)) {
                 plugin.sendMessage(player, Message.COMMAND_DESIGN_CREATE_ALREADY_EXISTS, name);
                 return;
             }
         } else {
-            name = plugin.designManager.generateName();
+            name = designManager.generateName();
         }
 
         try {
-            Cuboid selection = plugin.designManager.getSelectionRegion(player);
+            Cuboid selection = designManager.getSelectionRegion(player);
             Design design = Design.create(player, selection, name);
-            plugin.designManager.register(design);
+            designManager.register(design);
         } catch (NullPointerException | IllegalArgumentException | DesignIncompleteException ex) {
             plugin.sendMessage(player, Message.COMMAND_DESIGN_CREATE_FAILED, name, ex.getMessage());
             return;

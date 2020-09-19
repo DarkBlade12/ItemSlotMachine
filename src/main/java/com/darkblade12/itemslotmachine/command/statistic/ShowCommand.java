@@ -6,10 +6,12 @@ import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.PluginBase;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import com.darkblade12.itemslotmachine.statistic.PlayerStatistic;
 import com.darkblade12.itemslotmachine.statistic.Record;
 import com.darkblade12.itemslotmachine.statistic.SlotMachineStatistic;
 import com.darkblade12.itemslotmachine.statistic.Statistic;
+import com.darkblade12.itemslotmachine.statistic.StatisticManager;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -29,19 +31,20 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
+        StatisticManager statManager = plugin.getManager(StatisticManager.class);
         String statText;
         String name = args[1];
         String type = args[0].toLowerCase();
         switch (type) {
             case "slot":
-                SlotMachine slot = plugin.slotMachineManager.getSlotMachine(name);
+                SlotMachine slot = plugin.getManager(SlotMachineManager.class).getSlotMachine(name);
                 if (slot == null) {
                     plugin.sendMessage(sender, Message.SLOT_MACHINE_NOT_FOUND, name);
                     return;
                 }
                 name = slot.getName();
 
-                SlotMachineStatistic slotStat = plugin.statisticManager.getSlotMachineStatistic(slot);
+                SlotMachineStatistic slotStat = statManager.getSlotMachineStatistic(slot);
                 if (slotStat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_SLOT_MACHINE, name);
                     return;
@@ -58,7 +61,7 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
                 }
                 name = player.getName();
 
-                PlayerStatistic playerStat = plugin.statisticManager.getPlayerStatistic(player);
+                PlayerStatistic playerStat = statManager.getPlayerStatistic(player);
                 if (playerStat == null) {
                     plugin.sendMessage(sender, Message.STATISTIC_UNAVAILABLE_PLAYER, name);
                     return;
@@ -81,9 +84,9 @@ public final class ShowCommand extends CommandBase<ItemSlotMachine> {
             case 2:
                 switch (args[0].toLowerCase()) {
                     case "slot":
-                        return plugin.slotMachineManager.getNames();
+                        return plugin.getManager(SlotMachineManager.class).getNames();
                     case "player":
-                        return plugin.statisticManager.getPlayerNames();
+                        return plugin.getManager(StatisticManager.class).getPlayerNames();
                     default:
                         return null;
                 }

@@ -1,10 +1,10 @@
 package com.darkblade12.itemslotmachine.design;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
-import com.darkblade12.itemslotmachine.plugin.Manager;
-import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
+import com.darkblade12.itemslotmachine.plugin.Manager;
+import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.FileUtils;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
@@ -63,8 +63,8 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
     private Design loadDefaultDesign() {
         try {
             return FileUtils.readJson(plugin, Design.DEFAULT_FILE, Design.class);
-        } catch (IOException | JsonParseException ex) {
-            plugin.logException("Failed to load default design: {0}", ex);
+        } catch (IOException | JsonParseException e) {
+            plugin.logException(e, "Failed to load default design!");
             return null;
         }
     }
@@ -84,13 +84,13 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
                 }
 
                 designs.add(design);
-            } catch (IOException | JsonParseException | DesignIncompleteException ex) {
-                plugin.logException("Failed to load design file {1}: {0}", ex, file.getName());
+            } catch (IOException | JsonParseException | DesignIncompleteException e) {
+                plugin.logException(e, "Failed to load design file %s!", file.getName());
             }
         }
 
         int amount = designs.size();
-        plugin.logInfo("{0} design{1} loaded.", amount, amount == 1 ? "" : "s");
+        plugin.logInfo("%s design%s loaded.", amount, amount == 1 ? "" : "s");
     }
 
     private Design convertDesign(File file) throws IOException, JsonParseException, DesignIncompleteException {
@@ -117,8 +117,8 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
         try {
             design.saveFile(dataDirectory);
             designs.add(design);
-        } catch (IOException ex) {
-            plugin.logException("Failed to save design file {1}: {0}", ex, design.getFileName());
+        } catch (IOException e) {
+            plugin.logException(e, "Failed to save design file %s!", design.getFileName());
         }
     }
 

@@ -1,16 +1,7 @@
 package com.darkblade12.itemslotmachine.slotmachine;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.coin.CoinManager;
 import com.darkblade12.itemslotmachine.plugin.settings.InvalidValueException;
 import com.darkblade12.itemslotmachine.plugin.settings.SettingsBase;
 import com.darkblade12.itemslotmachine.slotmachine.combo.Action;
@@ -18,6 +9,15 @@ import com.darkblade12.itemslotmachine.slotmachine.combo.Combo;
 import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.google.common.primitives.Ints;
 import com.google.gson.JsonParseException;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     File file;
@@ -49,13 +49,13 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
     }
 
     public SlotMachineSettings(ItemSlotMachine plugin, String name) {
-        this(plugin, new File(plugin.slotMachineManager.getDataDirectory(), name + ".yml"));
+        this(plugin, new File(plugin.getManager(SlotMachineManager.class).getDataDirectory(), name + ".yml"));
     }
 
     @Override
     public void load() throws InvalidValueException {
         config = YamlConfiguration.loadConfiguration(file);
-        Map<String, ItemStack> customItems = plugin.coinManager.getCustomItems();
+        Map<String, ItemStack> customItems = plugin.getManager(CoinManager.class).getCustomItems();
 
         coinAmount = config.getInt(Setting.COIN_AMOUNT.getPath(), 1);
         if (coinAmount < 1) {
@@ -86,7 +86,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
             if (command.startsWith("/")) {
                 if (command.length() == 1) {
                     throw new InvalidValueException("A list value of setting {0} contains the invalid command {1}.",
-                            Setting.WIN_COMMANDS, command);
+                                                    Setting.WIN_COMMANDS, command);
                 }
                 winCommands[i] = command.substring(1);
             } else {
@@ -113,10 +113,10 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
             moneyPotHouseCut = config.getDouble(Setting.MONEY_POT_HOUSE_CUT.getPath());
             if (moneyPotHouseCut == 100) {
                 throw new InvalidValueException("The percentage value of setting {0} cannot be equal to 100.",
-                        Setting.MONEY_POT_HOUSE_CUT);
+                                                Setting.MONEY_POT_HOUSE_CUT);
             } else if (moneyPotHouseCut > 100) {
                 throw new InvalidValueException("The percentage value of setting {0} cannot be higher than 100.",
-                        Setting.MONEY_POT_HOUSE_CUT);
+                                                Setting.MONEY_POT_HOUSE_CUT);
             }
         }
 
@@ -153,7 +153,7 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                         actions[i] = Action.fromString(action, customItems);
                     } catch (IllegalArgumentException ex) {
                         throw new InvalidValueException("A list value of setting {0} contains the invalid action {1}.",
-                                actionPath, action);
+                                                        actionPath, action);
                     }
                 }
 
@@ -216,14 +216,15 @@ public class SlotMachineSettings extends SettingsBase<ItemSlotMachine> {
                 throw new InvalidValueException("A list value of setting {0} contains the invalid item {1}.", setting, item);
             } catch (JsonParseException ex2) {
                 throw new InvalidValueException("The list value of setting {0} at index {1} could not be parsed.", setting,
-                        i + 1);
+                                                i + 1);
             }
         }
         return items;
     }
 
     @Override
-    public void unload() {}
+    public void unload() {
+    }
 
     public File getFile() {
         return file;

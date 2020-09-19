@@ -2,6 +2,7 @@ package com.darkblade12.itemslotmachine.command.coin;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.coin.CoinManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
@@ -41,7 +42,8 @@ public final class BuyCommand extends CommandBase<ItemSlotMachine> {
             return;
         }
 
-        double price = plugin.coinManager.calculatePrice(amount);
+        CoinManager coinManager = plugin.getManager(CoinManager.class);
+        double price = coinManager.calculatePrice(amount);
         String coinText = plugin.formatMessage(amount == 1 ? Message.WORD_COIN_SINGULAR : Message.WORD_COIN_PLURAL);
         String currency = vault.getCurrencyName(price, true);
         if (vault.getBalance(player) < price) {
@@ -49,7 +51,7 @@ public final class BuyCommand extends CommandBase<ItemSlotMachine> {
             return;
         }
 
-        ItemStack coin = plugin.coinManager.getCoin(amount);
+        ItemStack coin = coinManager.getCoin(amount);
         if (!ItemUtils.hasEnoughSpace(player, coin)) {
             plugin.sendMessage(player, Message.PLAYER_SELF_NOT_ENOUGH_SPACE);
             return;

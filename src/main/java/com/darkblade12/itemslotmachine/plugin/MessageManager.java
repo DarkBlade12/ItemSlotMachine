@@ -1,5 +1,12 @@
 package com.darkblade12.itemslotmachine.plugin;
 
+import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.bukkit.ChatColor;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -8,16 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.bukkit.ChatColor;
-
-import com.darkblade12.itemslotmachine.util.FileUtils;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-
-public class MessageManager extends Manager<PluginBase> {
+public final class MessageManager extends Manager<PluginBase> {
     private static final String FILE_PATTERN = "messages_{0}.json";
     private final Locale[] locales;
     private final Map<Message, MessageFormat> messageCache;
@@ -26,23 +24,23 @@ public class MessageManager extends Manager<PluginBase> {
     public MessageManager(PluginBase plugin, Locale... locales) {
         super(plugin);
         this.locales = locales;
-        messageCache = new HashMap<Message, MessageFormat>();
+        messageCache = new HashMap<>();
     }
 
     @Override
     public void onEnable() {
-        String tag = getTag(plugin.getCurrentLanguage());
+        String tag = plugin.getCurrentLocale().toLanguageTag();
         File file = new File(plugin.getDataFolder(), MessageFormat.format(FILE_PATTERN, tag));
         String fileName = file.getName();
         JsonObject messageData = null;
         if (file.exists()) {
             try {
                 messageData = FileUtils.readJson(file, JsonElement.class).getAsJsonObject();
-            } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to read {1}: {0}", ex, fileName);
+            } catch (IOException | JsonParseException e) {
+                plugin.logException(e, "Failed to read message file %s!", fileName);
             }
         } else {
-            plugin.logWarning("Could not find message file {0}! Copying default files...", fileName);
+            plugin.logWarning("Could not find message file %s! Copying default files...", fileName);
             saveDefaultFiles();
         }
 
@@ -52,14 +50,14 @@ public class MessageManager extends Manager<PluginBase> {
                 String defaultName = MessageFormat.format(FILE_PATTERN, tag);
                 messageData = FileUtils.readJson(plugin, defaultName, JsonElement.class).getAsJsonObject();
                 plugin.logInfo("Default message files successfully copied.");
-            } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-                plugin.logException("Failed to read the default language file: {0}", ex);
+            } catch (IOException | JsonParseException e) {
+                plugin.logException(e, "Failed to read the default language file!");
                 return;
             }
         }
 
         loadMessages(messageData);
-        plugin.logInfo("Language {0} loaded.", tag);
+        plugin.logInfo("Messages for locale %s loaded.", tag);
     }
 
     @Override
@@ -70,14 +68,15 @@ public class MessageManager extends Manager<PluginBase> {
     public String formatMessage(Message message, Object... args) {
         for (int i = 0; i < args.length; i++) {
             if (args[i] == null) {
-                args[i] = "N/A";
+                args[i] = "";
             }
         }
 
-        if (!messageCache.containsKey(message)) {
-            return missing == null ? "N/A" : missing.format(new Object[] { message.getKey() });
-        }
         MessageFormat format = messageCache.get(message);
+        if (format == null) {
+            return missing == null ? "" : missing.format(new Object[] { message.getKey() });
+        }
+
         return format.format(args);
     }
 
@@ -85,13 +84,9 @@ public class MessageManager extends Manager<PluginBase> {
         return messageCache.containsKey(message);
     }
 
-    private String getTag(Locale locale) {
-        return locale.getLanguage() + "-" + locale.getCountry();
-    }
-
     private void saveDefaultFiles() {
         for (Locale locale : locales) {
-            String tag = getTag(locale);
+            String tag = locale.toLanguageTag();
             String fileName = MessageFormat.format(FILE_PATTERN, tag);
             File file = new File(plugin.getDataFolder(), fileName);
             if (file.exists()) {
@@ -100,8 +95,8 @@ public class MessageManager extends Manager<PluginBase> {
 
             try {
                 plugin.saveResource(fileName, false);
-            } catch (Exception ex) {
-                plugin.logException("Failed to save {1}: {0}", ex, fileName);
+            } catch (Exception e) {
+                plugin.logException(e, "Failed to save message file %s!", fileName);
             }
         }
     }
@@ -111,7 +106,7 @@ public class MessageManager extends Manager<PluginBase> {
             String key = entry.getKey();
             Message message = Message.fromKey(key);
             if (message == null) {
-                plugin.logInfo("Found unknown message {0} in messages file.", key);
+                plugin.logInfo("Found unknown message %s in messages file.", key);
                 continue;
             }
 

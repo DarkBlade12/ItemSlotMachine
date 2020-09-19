@@ -3,10 +3,10 @@ package com.darkblade12.itemslotmachine.command.design;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.design.Design;
+import com.darkblade12.itemslotmachine.design.DesignManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
@@ -19,9 +19,10 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
+        DesignManager designManager = plugin.getManager(DesignManager.class);
         if (args.length == 0) {
             try {
-                plugin.designManager.reload();
+                designManager.reload();
             } catch (Exception ex) {
                 plugin.sendMessage(sender, Message.COMMAND_DESIGN_RELOAD_FAILED, ex.getMessage());
                 return;
@@ -31,7 +32,7 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
         }
 
         String name = args[0];
-        Design design = plugin.designManager.getDesign(name);
+        Design design = designManager.getDesign(name);
         if (design == null) {
             plugin.sendMessage(sender, Message.DESIGN_NOT_FOUND, name);
             return;
@@ -39,9 +40,9 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
         name = design.getName();
 
         try {
-            design.reloadFile(plugin.designManager.getDataDirectory());
-        } catch (IOException | JsonIOException | JsonSyntaxException ex) {
-            plugin.logException("Failed to reload design {1}: {0}", ex, name);
+            design.reloadFile(designManager.getDataDirectory());
+        } catch (IOException | JsonParseException e) {
+            plugin.logException(e, "Failed to reload design %s!", name);
             plugin.sendMessage(sender, Message.COMMAND_DESIGN_RELOAD_SINGLE_FAILED, name);
             return;
         }
@@ -51,6 +52,6 @@ public final class ReloadCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
-        return args.length == 1 ? plugin.designManager.getNames() : null;
+        return args.length == 1 ? plugin.getManager(DesignManager.class).getNames() : null;
     }
 }

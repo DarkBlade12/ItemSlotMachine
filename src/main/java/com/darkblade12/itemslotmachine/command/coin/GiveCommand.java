@@ -2,6 +2,7 @@ package com.darkblade12.itemslotmachine.command.coin;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
+import com.darkblade12.itemslotmachine.coin.CoinManager;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.ItemUtils;
@@ -43,7 +44,7 @@ public final class GiveCommand extends CommandBase<ItemSlotMachine> {
 
         String senderName = sender.getName();
         boolean self = player.getName().equals(senderName);
-        ItemStack coin = plugin.coinManager.getCoin(amount);
+        ItemStack coin = plugin.getManager(CoinManager.class).getCoin(amount);
         if (!ItemUtils.hasEnoughSpace(player, coin)) {
             if (self) {
                 plugin.sendMessage(sender, Message.PLAYER_SELF_NOT_ENOUGH_SPACE);

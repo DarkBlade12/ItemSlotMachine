@@ -6,6 +6,7 @@ import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
         String name = args[0];
-        SlotMachine slot = plugin.slotMachineManager.getSlotMachine(name);
+        SlotMachine slot = plugin.getManager(SlotMachineManager.class).getSlotMachine(name);
         if (slot == null) {
             plugin.sendMessage(sender, Message.SLOT_MACHINE_NOT_FOUND, name);
             return;
@@ -102,7 +103,7 @@ public final class MoneyCommand extends CommandBase<ItemSlotMachine> {
     public List<String> getSuggestions(ItemSlotMachine plugin, CommandSender sender, String[] args) {
         switch (args.length) {
             case 1:
-                return plugin.slotMachineManager.getSlotMachines().getNames();
+                return plugin.getManager(SlotMachineManager.class).getNames();
             case 2:
                 return Arrays.asList("clear", "deposit", "withdraw", "set");
             case 3:

@@ -5,6 +5,7 @@ import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.slotmachine.SlotMachine;
+import com.darkblade12.itemslotmachine.slotmachine.SlotMachineManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -17,7 +18,7 @@ public final class ListCommand extends CommandBase<ItemSlotMachine> {
 
     @Override
     public void execute(ItemSlotMachine plugin, CommandSender sender, String label, String[] args) {
-        List<SlotMachine> slots = plugin.slotMachineManager.getSlotMachines();
+        List<SlotMachine> slots = plugin.getManager(SlotMachineManager.class).getSlotMachines();
         if (slots.isEmpty()) {
             plugin.sendMessage(sender, Message.COMMAND_SLOT_LIST_NONE_AVAILABLE);
             return;

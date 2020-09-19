@@ -1,12 +1,11 @@
 package com.darkblade12.itemslotmachine;
 
+import com.darkblade12.itemslotmachine.plugin.settings.SettingsBase;
+import org.bukkit.Material;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.bukkit.Material;
-
-import com.darkblade12.itemslotmachine.plugin.settings.SettingsBase;
 
 public class Settings extends SettingsBase<ItemSlotMachine> {
     private static final String DEFAULT_DESIGN_NAME_PATTERN = "design{0}";
@@ -33,48 +32,53 @@ public class Settings extends SettingsBase<ItemSlotMachine> {
         config = plugin.getConfig();
         debugModeEnabled = config.getBoolean(Setting.DEBUG_MODE_ENABLED.getPath());
         languageTag = config.getString(Setting.LANGUAGE_TAG.getPath(), "en-US");
-        
+
         designNamePattern = config.getString(Setting.DESIGN_NAME_PATTERN.getPath(), DEFAULT_DESIGN_NAME_PATTERN);
         if (!designNamePattern.contains("{0}")) {
-            plugin.logInfo("Missing id placeholder in setting {0}.", Setting.DESIGN_NAME_PATTERN);
+            plugin.logWarning("Missing id placeholder in setting %s! Default name pattern will be used.", Setting.DESIGN_NAME_PATTERN);
             designNamePattern = DEFAULT_DESIGN_NAME_PATTERN;
         }
-        
+
         spaceCheckEnabled = config.getBoolean(Setting.DESIGN_SPACE_CHECK_ENABLED.getPath(), true);
         spaceCheckIgnoredTypes = new ArrayList<Material>();
         List<String> ignoredTypeNames = config.getStringList(Setting.DESIGN_SPACE_CHECK_IGNORED_TYPES.getPath());
         for (String name : ignoredTypeNames) {
             Material material = Material.matchMaterial(name);
             if (material == null) {
-                plugin.logInfo("Invalid material name in setting {0}.", Setting.DESIGN_SPACE_CHECK_IGNORED_TYPES);
+                plugin.logWarning("Invalid material name in setting %s.", Setting.DESIGN_SPACE_CHECK_IGNORED_TYPES);
                 continue;
             }
+
             spaceCheckIgnoredTypes.add(material);
         }
 
         slotMachineNamePattern = config.getString(Setting.SLOT_MACHINE_NAME_PATTERN.getPath(), DEFAULT_SLOT_MACHINE_NAME_PATTERN);
-        if (!slotMachineNamePattern.contains("{0}")) {
-            plugin.logInfo("Missing id placeholder in setting {0}.", Setting.SLOT_MACHINE_NAME_PATTERN);
+        if (slotMachineNamePattern == null || !slotMachineNamePattern.contains("{0}")) {
+            plugin.logWarning("Missing id placeholder in setting %s! Default name pattern will be used.",
+                              Setting.SLOT_MACHINE_NAME_PATTERN);
             designNamePattern = DEFAULT_SLOT_MACHINE_NAME_PATTERN;
         }
         slotMachineUseLimit = config.getInt(Setting.SLOT_MACHINE_USE_LIMIT.getPath(), 1);
 
-        coinType = Material.matchMaterial(config.getString(Setting.COIN_TYPE.getPath(), DEFAULT_COIN_TYPE.getKey().getKey()));
+        String coinTypeName = config.getString(Setting.COIN_TYPE.getPath(), DEFAULT_COIN_TYPE.getKey().getKey());
+        assert coinTypeName != null;
+        coinType = Material.matchMaterial(coinTypeName);
         if (coinType == null) {
-            plugin.logInfo("Invalid material name in setting {0}.", Setting.COIN_TYPE);
+            plugin.logWarning("Invalid material name in setting %s! Default material will be used.", Setting.COIN_TYPE);
             coinType = DEFAULT_COIN_TYPE;
         }
         useCommonCoinItem = config.getBoolean(Setting.COIN_USE_COMMON_ITEM.getPath());
         coinPrice = config.getDouble(Setting.COIN_PRICE.getPath(), DEFAULT_COIN_PRICE);
         if (coinPrice <= 0) {
-            plugin.logInfo("The value of setting {0} must be greater than 0.", Setting.COIN_TYPE);
+            plugin.logWarning("The value of setting %s must be greater than 0! Default value will be used.", Setting.COIN_TYPE);
             coinPrice = DEFAULT_COIN_PRICE;
         }
     }
 
     @Override
-    public void unload() {}
-    
+    public void unload() {
+    }
+
     @Override
     public void reload() {
         plugin.reloadConfig();

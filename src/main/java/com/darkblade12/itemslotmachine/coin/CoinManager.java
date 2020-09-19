@@ -1,10 +1,11 @@
 package com.darkblade12.itemslotmachine.coin;
 
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
+import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.Settings;
+import com.darkblade12.itemslotmachine.command.CoinCommandHandler;
 import com.darkblade12.itemslotmachine.plugin.Manager;
 import com.darkblade12.itemslotmachine.plugin.Message;
-import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.plugin.command.CommandBase;
 import com.darkblade12.itemslotmachine.util.ItemBuilder;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
@@ -55,7 +56,7 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
         }
         coin = builder.build();
 
-        buyCommand = plugin.coinCommandHandler.getCommand("buy");
+        buyCommand = plugin.getCommandHandler(CoinCommandHandler.class).getCommand("buy");
         task = new BukkitRunnable() {
             @Override
             public void run() {
