@@ -3,6 +3,7 @@ package com.darkblade12.itemslotmachine.slotmachine;
 import com.darkblade12.itemslotmachine.ItemSlotMachine;
 import com.darkblade12.itemslotmachine.Permission;
 import com.darkblade12.itemslotmachine.coin.CoinManager;
+import com.darkblade12.itemslotmachine.design.DesignIncompleteException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.nameable.NameableComparator;
 import com.darkblade12.itemslotmachine.nameable.NameableList;
@@ -64,7 +65,7 @@ public final class SlotMachineManager extends Manager<ItemSlotMachine> {
         for (File file : FileUtils.getFiles(dataDirectory, SlotMachine.FILE_EXTENSION)) {
             try {
                 slots.add(SlotMachine.fromFile(plugin, file));
-            } catch (JsonParseException | InvalidValueException | IOException e) {
+            } catch (JsonParseException | InvalidValueException | IOException | DesignIncompleteException e) {
                 plugin.logException(e, "Failed to load slot machine file %s!", file.getName());
             }
         }

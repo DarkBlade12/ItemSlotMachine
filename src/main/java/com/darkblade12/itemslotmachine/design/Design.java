@@ -8,7 +8,9 @@ import com.darkblade12.itemslotmachine.reference.ReferenceCuboid;
 import com.darkblade12.itemslotmachine.reference.ReferenceItemFrame;
 import com.darkblade12.itemslotmachine.util.Cuboid;
 import com.darkblade12.itemslotmachine.util.FileUtils;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import org.bukkit.Location;
@@ -92,6 +94,18 @@ public final class Design implements Nameable {
 
     public static Design fromFile(String path) throws IOException, JsonParseException {
         return FileUtils.readJson(new File(path), Design.class);
+    }
+
+    public static void convert(JsonObject design) throws DesignIncompleteException {
+        JsonObject region = design.getAsJsonObject("region");
+        JsonElement firstVertex = region.remove("firstVertice");
+        JsonElement secondVertex = region.remove("secondVertice");
+        if (firstVertex.isJsonNull() || secondVertex.isJsonNull()) {
+            throw new DesignIncompleteException("The design is missing region vertices.");
+        }
+
+        region.add("firstVertex", firstVertex);
+        region.add("secondVertex", secondVertex);
     }
 
     public void invertItemFrames() {

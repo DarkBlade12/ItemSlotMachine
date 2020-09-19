@@ -93,24 +93,12 @@ public final class DesignManager extends Manager<ItemSlotMachine> {
         plugin.logInfo("%s design%s loaded.", amount, amount == 1 ? "" : "s");
     }
 
-    private Design convertDesign(File file) throws IOException, JsonParseException, DesignIncompleteException {
-        JsonObject obj = FileUtils.readJson(file, JsonObject.class);
-        JsonObject region = obj.getAsJsonObject("region");
-        String firstName = "firstVertice";
-        String secondName = "secondVertice";
-        JsonObject firstVertex = region.getAsJsonObject(firstName);
-        JsonObject secondVertex = region.getAsJsonObject(secondName);
-        if (firstVertex.isJsonNull() || secondVertex.isJsonNull()) {
-            throw new DesignIncompleteException("The design is missing region vertices.");
-        }
+    private static Design convertDesign(File file) throws IOException, JsonParseException, DesignIncompleteException {
+        JsonObject design = FileUtils.readJson(file, JsonObject.class);
+        Design.convert(design);
+        FileUtils.saveJson(file, design);
 
-        region.add("firstVertex", firstVertex);
-        region.add("secondVertex", secondVertex);
-        region.remove(firstName);
-        region.remove(secondName);
-
-        FileUtils.saveJson(file, obj);
-        return FileUtils.GSON.fromJson(obj, Design.class);
+        return FileUtils.GSON.fromJson(design, Design.class);
     }
 
     public void register(Design design) {

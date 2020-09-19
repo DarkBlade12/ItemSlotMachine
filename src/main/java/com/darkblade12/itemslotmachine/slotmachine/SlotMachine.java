@@ -6,6 +6,7 @@ import com.darkblade12.itemslotmachine.Settings;
 import com.darkblade12.itemslotmachine.coin.CoinManager;
 import com.darkblade12.itemslotmachine.design.Design;
 import com.darkblade12.itemslotmachine.design.DesignBuildException;
+import com.darkblade12.itemslotmachine.design.DesignIncompleteException;
 import com.darkblade12.itemslotmachine.nameable.Nameable;
 import com.darkblade12.itemslotmachine.plugin.Message;
 import com.darkblade12.itemslotmachine.plugin.hook.VaultHook;
@@ -32,9 +33,8 @@ import com.darkblade12.itemslotmachine.util.ItemUtils;
 import com.darkblade12.itemslotmachine.util.MessageUtils;
 import com.darkblade12.itemslotmachine.util.SafeLocation;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -96,8 +96,8 @@ public final class SlotMachine implements Nameable {
         settings = new SlotMachineSettings(plugin, name);
     }
 
-    public static SlotMachine create(ItemSlotMachine plugin, String name, Design design,
-                                     Player viewer) throws DesignBuildException, IOException {
+    public static SlotMachine create(ItemSlotMachine plugin, String name, Design design, Player viewer)
+            throws DesignBuildException, IOException {
         SafeLocation buildLocation = SafeLocation.fromBukkitLocation(viewer.getLocation());
         Direction buildDirection = Direction.getViewDirection(viewer);
         design.build(viewer.getLocation(), buildDirection, plugin.getSettings());
@@ -115,17 +115,25 @@ public final class SlotMachine implements Nameable {
         return slot;
     }
 
-    public static SlotMachine fromFile(ItemSlotMachine plugin, File file) throws IOException, JsonIOException,
-                                                                                 JsonSyntaxException, InvalidValueException {
+    public static SlotMachine fromFile(ItemSlotMachine plugin, File file) throws IOException, JsonParseException, InvalidValueException,
+                                                                                 DesignIncompleteException {
         SlotMachine slot = FileUtils.readJson(file, SlotMachine.class);
+        if (!slot.design.getRegion().isValid()) {
+            JsonObject slotObj = FileUtils.readJson(file, JsonObject.class);
+            Design.convert(slotObj.getAsJsonObject("design"));
+            FileUtils.saveJson(file, slotObj);
+
+            slot = FileUtils.GSON.fromJson(slotObj, SlotMachine.class);
+        }
+
         slot.plugin = plugin;
         slot.settings = new SlotMachineSettings(plugin, slot.name);
         slot.settings.load();
         return slot;
     }
 
-    public static SlotMachine fromFile(ItemSlotMachine plugin, String path) throws IOException, JsonIOException,
-                                                                                   JsonSyntaxException, InvalidValueException {
+    public static SlotMachine fromFile(ItemSlotMachine plugin, String path) throws IOException, JsonParseException, InvalidValueException,
+                                                                                   DesignIncompleteException {
         return fromFile(plugin, new File(path));
     }
 
@@ -574,10 +582,12 @@ public final class SlotMachine implements Nameable {
             itemPot = slot.itemPot;
             settings = slot.settings;
             updateSign();
-        } catch (JsonParseException | IOException ex) {
-            throw new SlotMachineException("Failed to read slot machine data", ex);
-        } catch (InvalidValueException ex) {
-            throw new SlotMachineException("Failed to load settings", ex);
+        } catch (JsonParseException | IOException e) {
+            throw new SlotMachineException("Failed to read slot machine data.", e);
+        } catch (InvalidValueException e) {
+            throw new SlotMachineException("Failed to load settings.", e);
+        } catch (DesignIncompleteException e) {
+            throw new SlotMachineException("Failed to convert design.", e);
         }
     }
 
