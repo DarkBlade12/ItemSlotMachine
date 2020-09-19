@@ -82,7 +82,9 @@ public final class CoinManager extends Manager<ItemSlotMachine> {
 
     @Override
     protected void onDisable() {
-        task.cancel();
+        if (task != null) {
+            task.cancel();
+        }
     }
 
     public double calculatePrice(int coins) {
