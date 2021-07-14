@@ -78,12 +78,12 @@ item-pot:
   enabled: true
 
   # The default content of the item pot, which will be set after a player has won the pot
-  # Item format: <item_name>[-<amount>]
+  # Item format: <item_name>[-<amount>][-<name>][-<lore>]
   # The item name 'coin' can be used for a coin item
   default: ['feather-5', 'diamond-1', 'iron_ingot-1']
 
   # The items which are added to the pot by every spin
-  # Item format: <item_name>[-<amount>]
+  # Item format: <item_name>[-<amount>][-<name>][-<lore>]
   # The item name 'coin' can be used for a coin item
   raise: ['glowstone_dust-2', 'lapis_lazuli-2']
 
