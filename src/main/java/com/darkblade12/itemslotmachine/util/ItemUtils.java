@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,32 @@ public final class ItemUtils {
                 item.setAmount(amount);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid amount value.");
+            }
+        }
+
+        if (data.length >= 3) {
+            try {
+                String t_name = data[2];
+                ItemMeta data_ = item.getItemMeta();
+                data_.setDisplayName(t_name);
+                item.setItemMeta(data_);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid name value.");
+            }
+        }
+
+        if (data.length >= 4) {
+            try {
+                String lore = data[3];
+                ItemMeta data_ = item.getItemMeta();
+                List<String> lores = new ArrayList<String>();
+                for(String s : lore.split("\n")) {
+                    lores.add(s);
+                }
+                data_.setLore(lores);
+                item.setItemMeta(data_);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid lore value.");
             }
         }
 
